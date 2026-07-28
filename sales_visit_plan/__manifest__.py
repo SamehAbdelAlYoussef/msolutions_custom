@@ -32,6 +32,11 @@
         'data/email_templates.xml',
         'views/sales_plan_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'sales_visit_plan/static/src/js/get_location.js',
+        ],
+    },
     'demo': [
         'demo/demo_data.xml',
     ],

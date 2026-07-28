@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل استخدام نظام خطط الزيارات البيعية | Sales Visit Plan</title>
+    <style>
+        :root {
+            --primary: #714B67;
+            --primary-light: #8B6B82;
+            --accent: #17A2B8;
+            --success: #28A745;
+            --warning: #FFC107;
+            --dark: #2C3E50;
+            --light-bg: #F8F9FA;
+            --border: #DEE2E6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #F1F3F5;
+            color: #333;
+            line-height: 1.85;
+            font-size: 16px;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #5A3D52 100%);
+            color: #fff;
+            padding: 48px 24px 40px;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+        }
+        .header .icon {
+            font-size: 54px;
+            margin-bottom: 12px;
+        }
+        .header h1 {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        .header .subtitle {
+            font-size: 18px;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+        .header .meta {
+            margin-top: 16px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        /* ============================================================
+           CONTAINER
+           ============================================================ */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+        }
+
+        /* ============================================================
+           CARDS & SECTIONS
+           ============================================================ */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            margin-bottom: 28px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .card-header {
+            background: var(--light-bg);
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-header .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .card-body {
+            padding: 24px;
+        }
+
+        /* ============================================================
+           TYPOGRAPHY
+           ============================================================ */
+        h2 { font-size: 24px; color: var(--dark); margin: 28px 0 14px; }
+        h3 { font-size: 19px; color: var(--primary); margin: 22px 0 10px; border-right: 4px solid var(--accent); padding-right: 12px; }
+        p  { margin-bottom: 14px; }
+        ul, ol { margin: 10px 0 16px 0; padding-right: 28px; }
+        li { margin-bottom: 7px; }
+
+        /* ============================================================
+           STATUSBAR / WORKFLOW
+           ============================================================ */
+        .workflow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            flex-wrap: wrap;
+            margin: 24px 0;
+        }
+        .workflow .step {
+            background: var(--light-bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 22px;
+            text-align: center;
+            min-width: 130px;
+            font-weight: 700;
+            font-size: 15px;
+            position: relative;
+        }
+        .workflow .step.new       { border-color: #17A2B8; background: #E8F8FA; color: #0C6B7A; }
+        .workflow .step.to_approve{ border-color: #FFC107; background: #FFF9E6; color: #856404; }
+        .workflow .step.approved  { border-color: #28A745; background: #E8F5E9; color: #155724; }
+        .workflow .arrow {
+            font-size: 26px;
+            margin: 0 6px;
+            color: #999;
+            font-weight: bold;
+        }
+
+        /* ============================================================
+           ALERT BOXES
+           ============================================================ */
+        .alert {
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            border-right: 5px solid;
+            font-size: 15px;
+        }
+        .alert-info    { background: #E8F8FA; border-color: #17A2B8; color: #0C5460; }
+        .alert-warning { background: #FFF9E6; border-color: #FFC107; color: #856404; }
+        .alert-success { background: #E8F5E9; border-color: #28A745; color: #155724; }
+        .alert-danger  { background: #FDEDEE; border-color: #DC3545; color: #721C24; }
+        .alert strong { display: block; margin-bottom: 4px; }
+
+        /* ============================================================
+           TABLE
+           ============================================================ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 15px;
+        }
+        th, td {
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            text-align: right;
+        }
+        th {
+            background: var(--primary);
+            color: #fff;
+            font-weight: 700;
+        }
+        tr:nth-child(even) { background: var(--light-bg); }
+
+        /* ============================================================
+           LOCK DEMO
+           ============================================================ */
+        .lock-demo {
+            position: relative;
+            display: inline-block;
+            width: 240px;
+            height: 160px;
+            background: #fff;
+            border-radius: 10px;
+            border: 2px dashed var(--border);
+            margin: 16px 0;
+            overflow: hidden;
+        }
+        .lock-demo .overlay-demo {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(33,33,33,0.50);
+            backdrop-filter: blur(1.5px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+        .lock-demo .overlay-demo .lock-icon {
+            font-size: 44px;
+            color: rgba(255,255,255,0.92);
+            text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+            margin-bottom: 8px;
+        }
+        .lock-demo .overlay-demo .lock-text {
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+        }
+        .lock-demo .overlay-demo .lock-manager {
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+            margin-top: 4px;
+        }
+
+        /* ============================================================
+           STEPS / NUMBERS
+           ============================================================ */
+        .step-list { counter-reset: step-counter; list-style: none; padding: 0; }
+        .step-list li {
+            counter-increment: step-counter;
+            position: relative;
+            padding: 14px 64px 14px 16px;
+            margin-bottom: 10px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        .footer {
+            text-align: center;
+            padding: 28px;
+            color: #999;
+            font-size: 14px;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 768px) {
+            .container { padding: 16px 10px; }
+            .header h1 { font-size: 26px; }
+            .card-body { padding: 16px; }
+            .workflow { flex-direction: column; gap: 6px; }
+            .workflow .arrow { transform: rotate(90deg); }
+        }
+
+        /* ============================================================
+           PRINT
+           ============================================================ */
+        @media print {
+            body { background: #fff; font-size: 13px; }
+            .header { background: var(--primary) !important; -webkit-print-color-adjust: exact; }
+            .card { box-shadow: none; break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ================================================================
+     HEADER
+     ================================================================ -->
+<div class="header">
+    <div class="icon">📋</div>
+    <h1>دليل استخدام نظام خطط الزيارات البيعية</h1>
+    <p class="subtitle">Sales Visit Plan Management — Odoo 19</p>
+    <p class="meta">
+        الإصدار 19.0.1.0.0 &nbsp;|&nbsp;
+        تطوير: Msoulatioons &nbsp;|&nbsp;
+        الترخيص: LGPL-3
+    </p>
+</div>
+
+<div class="container">
+
+<!-- ================================================================
+     نظرة عامة
+     ================================================================ -->
+<div class="card">
+    <div class="card-header">
+        🎯 نظرة عامة على النظام
+    </div>
+    <div class="card-body">
+        <p>
+            نظام <strong>خطط الزيارات البيعية</strong> هو وحدة متكاملة لإدارة زيارات
+            المندوبين العلميين ومندوبي المبيعات للأطباء والصيدليات. يتيح النظام:
+        </p>
+        <ul>
+            <li>إنشاء خطط زيارة منظمة مع سير عمل (Workflow) متكامل: <strong>جديد ← بانتظار الموافقة ← معتمد</strong></li>
+            <li>إدارة تفاصيل الزيارات (زيارة أولى، زيارة متكررة، مكتملة) لكل طبيب / صيدلية</li>
+            <li>تتبع الهدايا المقدمة أثناء الزيارات باستخدام منتجات Odoo</li>
+            <li>إرسال إشعارات بريد إلكتروني تلقائية للمديرين للموافقة</li>
+            <li>عرض لوحات Kanban متداخلة: لوحة رئيسية لحالة الخطة، ولوحة داخلية لمراحل الزيارة</li>
+            <li>تحويل الزيارات الأولى إلى زيارات متكررة بشكل ديناميكي</li>
+            <li>إنشاء جهات اتصال (Contacts) وفرص بيعية (CRM Leads) تلقائياً عند اكتمال الزيارة</li>
+            <li>نظام أدوار وصلاحيات: مندوب مبيعات vs مدير مبيعات</li>
+        </ul>
+    </div>
+</div>
+
+<!-- ================================================================
+     الأدوار والصلاحيات
+     ================================================================ -->
+<div class="card">
+    <div class="card-header">
+        👥 الأدوار والصلاحيات
+    </div>
+    <div class="card-body">
+
+        <h3>1. مندوب المبيعات (Salesperson)</h3>
+        <p>المستخدم العادي الذي يقوم بإنشاء خطط الزيارة وإدارتها. يستطيع:</p>
+        <ul>
+            <li>✅ إنشاء خطة زيارة جديدة</li>
+            <li>✅ إضافة خطوط زيارة (أطباء / صيدليات) داخل الخطة</li>
+            <li>✅ إرسال الخطة للموافقة (Request Approval)</li>
+            <li>✅ تحويل الزيارة الأولى إلى زيارة متكررة (Convert to Repeat)</li>
+            <li>✅ تعليم الزيارة كمكتملة (Mark as Completed)</li>
+            <li>❌ <strong>لا يستطيع</strong> الموافقة على الخطط (تظهر له أيقونة قفل 🔒)</li>
+            <li>❌ <strong>لا يستطيع</strong> سحب الكرت من عمود "بانتظار الموافقة" إلى "معتمد"</li>
+        </ul>
+
+        <div class="alert alert-info">
+            <strong>💡 ملاحظة:</strong>
+            عند محاولة مندوب المبيعات سحب كرت خطة من حالة "بانتظار الموافقة" إلى "معتمد"،
+            تظهر له رسالة تنبيه: <em>"Only Sales Managers can approve plans."</em>
+            مع ذكر اسم الخطة المعنية.
+        </div>
+
+        <h3>2. مدير المبيعات (Sales Manager)</h3>
+        <p>المستخدم الذي يحمل الصلاحية <strong>Manager (Sales Visit Plan)</strong>. يستطيع:</p>
+        <ul>
+            <li>✅ كل ما يستطيعه مندوب المبيعات</li>
+            <li>✅ الموافقة على خطط الزيارة (Approve Plan)</li>
+            <li>✅ سحب الكروت بين أعمدة Kanban بحرية كاملة</li>
+            <li>✅ <strong>لا يظهر له</strong> قفل التجميد 🔒 على الكروت في حالة "بانتظار الموافقة"</li>
+            <li>✅ إضافة ملاحظات إدارية (Manager Notes) على الخطة</li>
+        </ul>
+
+        <div class="alert alert-warning">
+            <strong>⚠️ هام:</strong>
+            لتعيين مستخدم كمدير، اذهب إلى:
+            <br>الإعدادات ← المستخدمون ← اختر المستخدم ← تبويب الصلاحيات ← أضف مجموعة
+            <strong>"Manager (Sales Visit Plan)"</strong>
+        </div>
+
+    </div>
+</div>
+
+<!-- ================================================================
+     سير العمل
+     ================================================================ -->
+<div class="card">
+    <div class="card-header">
+        🔄 سير العمل (Workflow)
+    </div>
+    <div class="card-body">
+
+        <p>تمر خطة الزيارة بثلاث مراحل رئيسية:</p>
+
+        <div class="workflow">
+            <div class="step new">
+                🆕 جديد<br><small>New</small>
+            </div>
+            <span class="arrow">→</span>
+            <div class="step to_approve">
+                ⏳ بانتظار الموافقة<br><small>Waiting for Approval</small>
+            </div>
+            <span class="arrow">→</span>
+            <div class="step approved">
+                ✅ معتمد<br><small>Approved</small>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>المرحلة</th>
+                    <th>الاسم التقني</th>
+                    <th>لون العمود</th>
+                    <th>الوصف</th>
+                    <th>الإجراء المتاح</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>جديد</td>
+                    <td><code>new</code></td>
+                    <td>🔵 أزرق (Info)</td>
+                    <td>الخطة قيد الإنشاء، لم تُرسل للموافقة بعد</td>
+                    <td>Request Approval</td>
+                </tr>
+                <tr>
+                    <td>بانتظار الموافقة</td>
+                    <td><code>to_approve</code></td>
+                    <td>🟡 أصفر (Warning)</td>
+                    <td>الخطة بانتظار مراجعة واعتماد المدير</td>
+                    <td>Approve Plan (للمدير فقط)</td>
+                </tr>
+                <tr>
+                    <td>معتمد</td>
+                    <td><code>approved</code></td>
+                    <td>🟢 أخضر (Success)</td>
+                    <td>الخطة معتمدة وجاهزة للتنفيذ</td>
+                    <td>— (الحالة نهائية)</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<!-- ================================================================
+     كيفية الاستخدام - خطوة بخطوة
+     ================================================================ -->
+<div class="card">
+    <div class="card-header">
+        📖 طريقة الاستخدام خطوة بخطوة
+    </div>
+    <div class="card-body">
+
+        <h3>الخطوة 1: الدخول إلى النظام</h3>
+        <p>
+            من القائمة الرئيسية، اذهب إلى:
+            <strong>Sales Visit Plans ← Plans</strong>
+        </p>
+        <p>
+            ستظهر لك لوحة Kanban مقسمة إلى 3 أعمدة رئيسية:
+            <strong>New</strong> | <strong>Waiting for Approval</strong> | <strong>Approved</strong>
+        </p>
+
+        <h3>الخطوة 2: إنشاء خطة زيارة جديدة</h3>
+        <ol class="step-list">
+            <li>اضغط على زر <strong>➕ New</strong> في أعلى يسار الشاشة</li>
+            <li>املأ البيانات الأساسية للخطة:
+                <ul>
+                    <li><strong>Plan Name</strong> (اسم الخطة): مثال "خطة زيارات القاهرة - الربع الأول"</li>
+                    <li><strong>Salesperson</strong> (المندوب): يتم تعبئته تلقائياً بالمستخدم الحالي</li>
+                    <li><strong>Approval Manager</strong> (مدير الموافقة): اختر المدير المسؤول عن اعتماد الخطة</li>
+                    <li><strong>Region / Governorate</strong> (المنطقة): المحافظة أو المنطقة المستهدفة</li>
+                    <li><strong>Start Date</strong> (تاريخ البداية) و <strong>End Date</strong> (تاريخ النهاية)</li>
+                </ul>
+            </li>
+            <li>يتم حساب <strong>مدة الخطة (Duration)</strong> تلقائياً بناءً على التاريخين</li>
+        </ol>
+
+        <h3>الخطوة 3: إضافة خطوط الزيارة (Visit Lines)</h3>
+        <ol class="step-list">
+            <li>افتح الخطة من خلال الضغط على الكرت في لوحة Kanban</li>
+            <li>في تبويب <strong>Visit Lines</strong>، اضغط على <strong>➕ Add a Line</strong></li>
+            <li>املأ بيانات كل زيارة:
+                <ul>
+                    <li><strong>Doctor / Pharmacist Name</strong>: اسم الطبيب أو الصيدلي</li>
+                    <li><strong>Phone</strong>: رقم الهاتف</li>
+                    <li><strong>Specialty</strong>: التخصص الطبي</li>
+                    <li><strong>Pharmacy Name</strong>: اسم الصيدلية</li>
+                    <li><strong>Visit Stage</strong>: المرحلة (زيارة أولى / زيارة متكررة / مكتملة)</li>
+                    <li><strong>Scheduled Visit Date</strong>: تاريخ الزيارة المخطط</li>
+                    <li><strong>Gifts</strong>: الهدايا المقدمة (منتجات من Odoo)</li>
+                    <li><strong>Gift Notes</strong>: ملاحظات حول الهدايا</li>
+                </ul>
+            </li>
+            <li>يمكنك إضافة أكثر من خط زيارة داخل الخطة الواحدة</li>
+        </ol>
+
+        <div class="alert alert-info">
+            <strong>💡 تنبيه:</strong>
+            عدد الزيارات <strong>Visit Count</strong> الظاهر على كرت الخطة في الـ Kanban
+            يتم حسابه تلقائياً من عدد خطوط الزيارة المضافة.
+        </div>
+
+        <h3>الخطوة 4: إرسال الخطة للموافقة</h3>
+        <ol class="step-list">
+            <li>تأكد من إضافة جميع خطوط الزيارة المطلوبة</li>
+            <li>افتح الخطة واضغط على زر <strong>Request Approval</strong> (أعلى النموذج)</li>
+            <li>ستظهر رسالة تأكيد: <em>"Are you sure you want to send this plan for approval?"</em></li>
+            <li>بعد التأكيد:
+                <ul>
+                    <li>تتغير حالة الخطة إلى <strong>Waiting for Approval</strong></li>
+                    <li>يتم إرسال بريد إلكتروني تلقائي للمدير (أو المديرين)</li>
+                    <li>يتم إنشاء مهمة (To-Do Activity) للمدير للمراجعة</li>
+                    <li>يظهر منشور في سجل المحادثات (Chatter) بتفاصيل الإرسال</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>الخطوة 5: ميزة قفل التجميد 🔒 — للشكل البصري</h3>
+        <p>
+            عند إرسال الخطة للموافقة، <strong>يظهر مندوب المبيعات</strong> العادي قفل تجميد
+            شفاف على كرت الخطة في لوحة Kanban:
+        </p>
+
+        <div class="lock-demo">
+            <div class="overlay-demo">
+                <span class="lock-icon">🔒</span>
+                <span class="lock-text">Waiting for Approval</span>
+                <span class="lock-manager">المدير: Mitchell Admin</span>
+            </div>
+        </div>
+
+        <ul>
+            <li>🔒 <strong>أيقونة قفل</strong> كبيرة في منتصف الكرت</li>
+            <li>📝 رسالة <strong>"Waiting for Approval"</strong> تحت القفل مباشرة</li>
+            <li>👤 <strong>اسم المدير المسؤول</strong> عن الموافقة (إذا تم تعيينه)</li>
+            <li>🎨 خلفية داكنة شبه شفافة مع تأثير ضبابي (blur)</li>
+        </ul>
+
+        <div class="alert alert-danger">
+            <strong>🚫 حماية من التلاعب:</strong>
+            إذا حاول مندوب المبيعات سحب الكرت من عمود "بانتظار الموافقة" إلى عمود "معتمد"،
+            تظهر رسالة خطأ تمنع الإجراء:
+            <br><em>"Only Sales Managers can approve plans. Plan: [اسم الخطة]. Please contact your manager to approve this plan."</em>
+        </div>
+
+        <div class="alert alert-success">
+            <strong>✅ للمدير فقط:</strong>
+            المدير الحاصل على صلاحية <strong>Manager (Sales Visit Plan)</strong>
+            <strong>لا يظهر له</strong> قفل التجميد على الإطلاق، ويستطيع سحب الكروت والموافقة بحرية كاملة.
+        </div>
+
+        <h3>الخطوة 6: المدير يوافق على الخطة</h3>
+        <ol class="step-list">
+            <li>يستلم المدير بريداً إلكترونياً + مهمة (Activity) للمراجعة</li>
+            <li>يفتح المدير الخطة ويراجع تفاصيلها</li>
+            <li>يستطيع المدير إضافة <strong>Manager Notes</strong> (ملاحظات إدارية) في التبويب المخصص</li>
+            <li>يضغط المدير على زر <strong>Approve Plan</strong> أخضر اللون</li>
+            <li>بعد الموافقة:
+                <ul>
+                    <li>تتغير حالة الخطة إلى <strong>Approved</strong></li>
+                    <li>يظهر شريط ✅ <strong>Approved</strong> أخضر أعلى كرت الخطة</li>
+                    <li>يتم إرسال بريد إلكتروني تأكيدي للمندوب</li>
+                    <li>يتم إنشاء مهمة (Activity) للمندوب لإعلامه بأنه يمكنه البدء بالزيارات</li>
+                </ul>
+            </li>
+        </ol>
+
+    </div>
+</div>
+
+<!-- ================================================================
+     إدارة الزيارات
+     ================================================================ -->
+<div class="card">
+    <div class="card-header">
+        🏥 إدارة خطوط الزيارة (Visit Lines)
+    </div>
+    <div class="card-body">
+
+        <h3>مراحل الزيارة (Visit Stages)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>المرحلة</th>
+                    <th>القيمة التقنية</th>
+                    <th>اللون</th>
+                    <th>الوصف</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>زيارة أولى</td>
+                    <td><code>first_visit</code></td>
+                    <td>🔵 أزرق</td>
+                    <td>أول زيارة لهذا الطبيب / الصيدلية</td>
+                </tr>
+                <tr>
+                    <td>زيارة متكررة</td>
+                    <td><code>repeat_visit</code></td>
+                    <td>🟠 برتقالي</td>
+                    <td>زيارة متابعة (بعد تحويلها من أولى)</td>
+                </tr>
+                <tr>
+                    <td>مكتملة</td>
+                    <td><code>completed</code></td>
+                    <td>🟢 أخضر</td>
+                    <td>تمت الزيارة بنجاح</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>العمليات المتاحة على خط الزيارة:</h3>
+        <ul>
+            <li>
+                <strong>Convert to Repeat</strong> 🔄:
+                تحويل الزيارة من "أولى" إلى "متكررة" — يظهر زر برتقالي في كرت Kanban
+            </li>
+            <li>
+                <strong>Mark as Completed</strong> ✅:
+                تعليم الزيارة كمكتملة — يقوم تلقائياً بإنشاء:
+                <ul>
+                    <li>جهة اتصال (Contact) في دفتر العناوين</li>
+                    <li>فرصة بيعية (CRM Lead / Opportunity) مرتبطة بالطبيب</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Reopen as Planned</strong> 🔓:
+                إعادة فتح زيارة مكتملة وتحويلها إلى "مخطط لها" من جديد
+            </li>
+        </ul>
+
+        <div class="alert alert-info">
+            <strong>💡 تكامل مع CRM:</strong>
+            عند اكتمال الزيارة، يتم إنشاء:
+            <br>① <strong>Contact</strong> (res.partner) باسم الطبيب ورقم هاتفه
+            <br>② <strong>CRM Lead</strong> (crm.lead) فرصة بيعية تحتوي على ملخص الزيارة والهدايا المقدمة
+            <br>يمكنك الوصول للفرصة البيعية من خلال أيقونة ⭐ في أعلى نموذج الزيارة.
+        </div>
+
+    </div>
+</div>
+
+<!-- ================================================================
+     طريقة عرض Kanban
+     ================================================================ -->
+<div class="card">
+    <div class="card-header">
+        📊 نظام عرض Kanban
+    </div>
+    <div class="card-body">
+
+        <h3>1. لوحة Kanban الرئيسية (Plans)</h3>
+        <p>تعرض جميع خطط الزيارة مقسمة حسب الحالة في 3 أعمدة:</p>
+        <ul>
+            <li><strong>New</strong> 🆕 — الخطط الجديدة قيد الإنشاء</li>
+            <li><strong>Waiting for Approval</strong> ⏳ — الخطط المرسلة للموافقة (يظهر عليها قفل 🔒 للمندوب)</li>
+            <li><strong>Approved</strong> ✅ — الخطط المعتمدة والجاهزة للتنفيذ</li>
+        </ul>
+        <p>يوجد شريط تقدم (Progress Bar) أعلى اللوحة يوضح توزيع الحالات بالألوان.</p>
+
+        <h3>2. لوحة Kanban الداخلية (Visit Lines)</h3>
+        <p>داخل كل خطة، في تبويب Visit Lines، توجد لوحة Kanban مصغرة لخطوط الزيارة مقسمة حسب:</p>
+        <ul>
+            <li><strong>First Visit</strong> — الزيارات الأولى</li>
+            <li><strong>Repeat Visit</strong> — الزيارات المتكررة</li>
+        </ul>
+        <p>يمكن سحب الكروت بين الأعمدة أو استخدام زر <strong>Convert to Repeat</strong>.</p>
+
+        <h3>3. فتح الكرت</h3>
+        <ul>
+            <li><strong>الضغط على جسم الكرت</strong>: يفتح لوحة Visit Lines الداخلية مباشرة</li>
+            <li><strong>أيقونة ⚙️ في الأعلى</strong>: تفتح نموذج تفاصيل الخطة (الإعدادات)</li>
+        </ul>
+
+    </div>
+</div>
+
+<!-- ================================================================
+     البحث والتصفية
+     ================================================================ -->
+<div class="card">
+    <div class="card-header">
+        🔍 البحث والتصفية (Search & Filters)
+    </div>
+    <div class="card-body">
+
+        <p>يوفر النظام إمكانيات بحث وتصفية متقدمة:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>الفلتر</th>
+                    <th>الوظيفة</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>New</strong></td>
+                    <td>عرض الخطط في حالة "جديد" فقط</td>
+                </tr>
+                <tr>
+                    <td><strong>Waiting for Approval</strong></td>
+                    <td>عرض الخطط في حالة "بانتظار الموافقة" فقط</td>
+                </tr>
+                <tr>
+                    <td><strong>Approved</strong></td>
+                    <td>عرض الخطط المعتمدة فقط</td>
+                </tr>
+                <tr>
+                    <td><strong>My Plans</strong></td>
+                    <td>عرض الخطط الخاصة بالمستخدم الحالي فقط</td>
+                </tr>
+                <tr>
+                    <td><strong>Salesperson</strong> (تجميع)</td>
+                    <td>تجميع الخطط حسب المندوب</td>
+                </tr>
+                <tr>
+                    <td><strong>Region</strong> (تجميع)</td>
+                    <td>تجميع الخطط حسب المنطقة</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>يمكن أيضاً البحث بالاسم مباشرة من خلال حقل البحث العلوي.</p>
+
+    </div>
+</div>
+
+<!-- ================================================================
+     الإشعارات والتكامل
+     ================================================================ -->
+<div class="card">
+    <div class="card-header">
+        ✉️ الإشعارات والتكاملات
+    </div>
+    <div class="card-body">
+
+        <h3>البريد الإلكتروني</h3>
+        <ul>
+            <li>📧 عند إرسال الخطة للموافقة ← بريد للمدير (أو المديرين)</li>
+            <li>📧 عند الموافقة على الخطة ← بريد تأكيدي للمندوب</li>
+        </ul>
+
+        <h3>الأنشطة (Activities)</h3>
+        <ul>
+            <li>📋 مهمة <strong>To-Do</strong> تُنشأ للمدير عند طلب الموافقة</li>
+            <li>📋 مهمة <strong>To-Do</strong> تُنشأ للمندوب عند اعتماد الخطة</li>
+        </ul>
+
+        <h3>سجل المحادثات (Chatter)</h3>
+        <ul>
+            <li>💬 جميع التغييرات تُسجل تلقائياً في الـ Chatter</li>
+            <li>💬 تتبع كامل لتاريخ الخطة (Tracking) عبر ميزة <strong>mail.thread</strong></li>
+            <li>💬 إمكانية إرسال رسائل ومناقشات داخل الخطة</li>
+        </ul>
+
+        <h3>سجل التتبع (Tracking)</h3>
+        <p>
+            الحقول التالية مفعّل عليها التتبع التلقائي، ويظهر تاريخ تغييرها في الـ Chatter:
+        </p>
+        <ul>
+            <li>اسم الخطة (Plan Name)</li>
+            <li>المندوب (Salesperson)</li>
+            <li>مدير الموافقة (Approval Manager)</li>
+            <li>المنطقة (Region)</li>
+            <li>تاريخ البداية والنهاية</li>
+            <li>حالة الخطة (State)</li>
+        </ul>
+
+    </div>
+</div>
+
+<!-- ================================================================
+     ملخص سريع
+     ================================================================ -->
+<div class="card">
+    <div class="card-header">
+        ⚡ ملخص سريع — Quick Reference
+    </div>
+    <div class="card-body">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>الإجراء</th>
+                    <th>من يقوم به؟</th>
+                    <th>أين؟</th>
+                    <th>النتيجة</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>إنشاء خطة جديدة</td>
+                    <td>مندوب المبيعات</td>
+                    <td>القائمة ← Plans ← New</td>
+                    <td>تظهر في عمود New</td>
+                </tr>
+                <tr>
+                    <td>إضافة خطوط زيارة</td>
+                    <td>مندوب المبيعات</td>
+                    <td>داخل الخطة ← تبويب Visit Lines</td>
+                    <td>زيارات مضافة للخطة</td>
+                </tr>
+                <tr>
+                    <td>طلب الموافقة</td>
+                    <td>مندوب المبيعات</td>
+                    <td>زر Request Approval</td>
+                    <td>تنتقل إلى Waiting + بريد للمدير + قفل 🔒</td>
+                </tr>
+                <tr>
+                    <td>الموافقة على الخطة</td>
+                    <td>مدير المبيعات</td>
+                    <td>زر Approve Plan</td>
+                    <td>تنتقل إلى Approved + بريد للمندوب</td>
+                </tr>
+                <tr>
+                    <td>تحويل زيارة لمتكررة</td>
+                    <td>مندوب المبيعات</td>
+                    <td>زر Convert to Repeat</td>
+                    <td>تنتقل لعمود Repeat Visit</td>
+                </tr>
+                <tr>
+                    <td>تعليم الزيارة مكتملة</td>
+                    <td>مندوب المبيعات</td>
+                    <td>زر Mark as Completed</td>
+                    <td>إنشاء Contact + CRM Lead تلقائياً</td>
+                </tr>
+                <tr>
+                    <td>سحب كرت Waiting ← Approved</td>
+                    <td>مندوب المبيعات</td>
+                    <td>Kanban Drag &amp; Drop</td>
+                    <td>🚫 ممنوع — رسالة خطأ</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<!-- ================================================================
+     FOOTER
+     ================================================================ -->
+<div class="footer">
+    <p>© 2026 Msoulatioons — Sales Visit Plan Module v19.0.1.0.0</p>
+    <p>للدعم الفني، يرجى التواصل مع فريق التطوير</p>
+</div>
+
+</div><!-- /container -->
+
+</body>
+</html>

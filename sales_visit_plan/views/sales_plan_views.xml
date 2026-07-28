@@ -124,6 +124,12 @@
                             string="Convert to Repeat"
                             class="btn-warning"
                             invisible="visit_stage != 'first_visit'"/>
+                    <button name="onClickGetLocation"
+                            type="object"
+                            string="📍 Get My Location"
+                            class="btn-outline-primary"
+                            title="Use your device GPS to capture the current location"
+                            invisible="visit_stage == 'completed'"/>
                     <field name="visit_stage" widget="statusbar"
                            statusbar_visible="first_visit,repeat_visit,completed"
                            clickable="1"/>
@@ -150,6 +156,10 @@
                         <field name="specialty"/>
                         <field name="pharmacy_name"/>
                         <field name="visit_date"/>
+                        <field name="location_url" widget="url"
+                               placeholder="https://maps.google.com/?q=..."/>
+                        <field name="partner_latitude" invisible="1"/>
+                        <field name="partner_longitude" invisible="1"/>
                     </group>
                     <group string="Gifts">
                         <field name="gift_ids" widget="many2many_tags"/>
@@ -158,6 +168,18 @@
                 </sheet>
                 <chatter/>
             </form>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Map View: sales.plan.line
+         Shows all visit locations on a map (uses partner coords)
+         ================================================================ -->
+    <record id="sales_plan_line_map" model="ir.ui.view">
+        <field name="name">sales.plan.line.map</field>
+        <field name="model">sales.plan.line</field>
+        <field name="arch" type="xml">
+            <map res_partner="partner_id"/>
         </field>
     </record>
 
@@ -334,6 +356,14 @@
                             invisible="state != 'to_approve'"
                             confirm="Are you sure you want to approve this plan?"/>
 
+                    <!-- Get Current Location (async, client-side) -->
+                    <button name="onClickGetLocation"
+                            type="object"
+                            string="📍 Get My Location"
+                            class="btn-outline-primary"
+                            title="Use your device GPS to capture the current location"
+                            invisible="state == 'approved'"/>
+
                     <!-- Statusbar -->
                     <field name="state" widget="statusbar"
                            statusbar_visible="new,to_approve,approved"
@@ -357,6 +387,10 @@
                             <field name="manager_id"
                                    context="{'default_groups_ref': ['sales_visit_plan.group_sales_manager']}"/>
                             <field name="region"/>
+                            <field name="location_url" widget="url"
+                                   placeholder="https://maps.google.com/?q=..."/>
+                            <field name="partner_latitude" invisible="1"/>
+                            <field name="partner_longitude" invisible="1"/>
                         </group>
                         <group>
                             <field name="date_start"/>
@@ -446,7 +480,7 @@
     <record id="sales_plan_line_action" model="ir.actions.act_window">
         <field name="name">Visit Lines</field>
         <field name="res_model">sales.plan.line</field>
-        <field name="view_mode">list,kanban,form</field>
+        <field name="view_mode">list,kanban,form,map</field>
         <field name="context">{}</field>
     </record>
 
