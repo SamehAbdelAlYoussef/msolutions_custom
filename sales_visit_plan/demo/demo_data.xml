@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         Demo: Sample Products (Gifts)
+         ================================================================ -->
+    <record id="demo_gift_pen" model="product.product">
+        <field name="name">Medical Pen - Silver</field>
+        <field name="type">consu</field>
+        <field name="list_price">2.50</field>
+        <field name="default_code">GIFT-PEN-001</field>
+    </record>
+
+    <record id="demo_gift_notebook" model="product.product">
+        <field name="name">Doctor Notebook</field>
+        <field name="type">consu</field>
+        <field name="list_price">5.00</field>
+        <field name="default_code">GIFT-NB-001</field>
+    </record>
+
+    <record id="demo_gift_mug" model="product.product">
+        <field name="name">Branded Coffee Mug</field>
+        <field name="type">consu</field>
+        <field name="list_price">8.00</field>
+        <field name="default_code">GIFT-MUG-001</field>
+    </record>
+
+    <record id="demo_gift_bag" model="product.product">
+        <field name="name">Tote Bag - Medical</field>
+        <field name="type">consu</field>
+        <field name="list_price">12.00</field>
+        <field name="default_code">GIFT-BAG-001</field>
+    </record>
+
+    <record id="demo_gift_calendar" model="product.product">
+        <field name="name">Desk Calendar 2026</field>
+        <field name="type">consu</field>
+        <field name="list_price">3.00</field>
+        <field name="default_code">GIFT-CAL-001</field>
+    </record>
+
+    <record id="demo_gift_sample_kit" model="product.product">
+        <field name="name">Product Sample Kit - Cardiology</field>
+        <field name="type">consu</field>
+        <field name="list_price">25.00</field>
+        <field name="default_code">SAMPLE-CARD-001</field>
+    </record>
+
+    <record id="demo_gift_sample_kit_pedia" model="product.product">
+        <field name="name">Product Sample Kit - Pediatrics</field>
+        <field name="type">consu</field>
+        <field name="list_price">25.00</field>
+        <field name="default_code">SAMPLE-PED-001</field>
+    </record>
+
+    <!-- ================================================================
+         Demo: Assign Manager to group_sales_manager
+         ================================================================ -->
+    <function model="res.groups" name="write">
+        <value eval="[ref('sales_visit_plan.group_sales_manager')]"/>
+        <value eval="{'user_ids': [(4, ref('base.user_admin'))]}"/>
+    </function>
+
+    <!-- ================================================================
+         Demo: Sales Plan 1 — New (plan for Cairo, first visits)
+         ================================================================ -->
+    <record id="demo_plan_1_new" model="sales.plan">
+        <field name="name">Cairo East - First Visits (July 2026)</field>
+        <field name="user_id" ref="base.user_admin"/>
+        <field name="region">Cairo - Nasr City &amp; Heliopolis</field>
+        <field name="date_start">2026-07-27</field>
+        <field name="date_end">2026-07-31</field>
+        <field name="state">new</field>
+    </record>
+
+    <!-- Lines for Plan 1 -->
+    <record id="demo_plan_1_line_1" model="sales.plan.line">
+        <field name="plan_id" ref="demo_plan_1_new"/>
+        <field name="doctor_name">Dr. Ahmed El-Sayed</field>
+        <field name="phone">01001234567</field>
+        <field name="specialty">Cardiology</field>
+        <field name="pharmacy_name">El-Salam Pharmacy</field>
+        <field name="visit_stage">first_visit</field>
+        <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_pen'), ref('demo_gift_notebook')])]"/>
+        <field name="gift_notes">Deliver new product brochure</field>
+        <field name="visit_date">2026-07-28</field>
+        <!-- state merged into visit_stage -->
+    </record>
+
+    <record id="demo_plan_1_line_2" model="sales.plan.line">
+        <field name="plan_id" ref="demo_plan_1_new"/>
+        <field name="doctor_name">Dr. Sarah Hassan</field>
+        <field name="phone">01009876543</field>
+        <field name="specialty">Pediatrics</field>
+        <field name="pharmacy_name">Al-Amal Pharmacy</field>
+        <field name="visit_stage">first_visit</field>
+        <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_sample_kit_pedia')])]"/>
+        <field name="gift_notes">Free samples for pediatric patients</field>
+        <field name="visit_date">2026-07-29</field>
+        <!-- state merged into visit_stage -->
+    </record>
+
+    <record id="demo_plan_1_line_3" model="sales.plan.line">
+        <field name="plan_id" ref="demo_plan_1_new"/>
+        <field name="doctor_name">Dr. Mohamed Ali</field>
+        <field name="phone">01005556677</field>
+        <field name="specialty">Internal Medicine</field>
+        <field name="pharmacy_name"/>
+        <field name="visit_stage">repeat_visit</field>
+        <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_mug'), ref('demo_gift_calendar')])]"/>
+        <field name="gift_notes">Follow up on last month's prescription</field>
+        <field name="visit_date">2026-07-30</field>
+        <!-- state merged into visit_stage -->
+    </record>
+
+    <!-- ================================================================
+         Demo: Sales Plan 2 — Waiting for Approval
+         ================================================================ -->
+    <record id="demo_plan_2_to_approve" model="sales.plan">
+        <field name="name">Alexandria - August Visits</field>
+        <field name="user_id" ref="base.user_admin"/>
+        <field name="region">Alexandria - Downtown &amp; Smouha</field>
+        <field name="date_start">2026-08-03</field>
+        <field name="date_end">2026-08-07</field>
+        <field name="state">to_approve</field>
+        <field name="manager_notes">Please confirm visit schedule</field>
+    </record>
+
+    <record id="demo_plan_2_line_1" model="sales.plan.line">
+        <field name="plan_id" ref="demo_plan_2_to_approve"/>
+        <field name="doctor_name">Dr. Layla Ibrahim</field>
+        <field name="phone">01003334455</field>
+        <field name="specialty">Dermatology</field>
+        <field name="pharmacy_name">Al-Nour Pharmacy</field>
+        <field name="visit_stage">first_visit</field>
+        <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_bag')])]"/>
+        <field name="gift_notes">New skincare product launch</field>
+        <field name="visit_date">2026-08-04</field>
+        <!-- state merged into visit_stage -->
+    </record>
+
+    <record id="demo_plan_2_line_2" model="sales.plan.line">
+        <field name="plan_id" ref="demo_plan_2_to_approve"/>
+        <field name="doctor_name">Dr. Omar Nabil</field>
+        <field name="phone">01007778899</field>
+        <field name="specialty">Orthopedics</field>
+        <field name="pharmacy_name"/>
+        <field name="visit_stage">repeat_visit</field>
+        <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_pen')])]"/>
+        <field name="gift_notes">Quarterly follow-up</field>
+        <field name="visit_date">2026-08-05</field>
+        <!-- state merged into visit_stage -->
+    </record>
+
+    <!-- ================================================================
+         Demo: Sales Plan 3 — Approved (completed plan)
+         ================================================================ -->
+    <record id="demo_plan_3_approved" model="sales.plan">
+        <field name="name">Giza District - July Visits</field>
+        <field name="user_id" ref="base.user_admin"/>
+        <field name="region">Giza - Dokki &amp; Mohandessin</field>
+        <field name="date_start">2026-07-20</field>
+        <field name="date_end">2026-07-24</field>
+        <field name="state">approved</field>
+        <field name="manager_notes">Approved — excellent coverage plan</field>
+    </record>
+
+    <record id="demo_plan_3_line_1" model="sales.plan.line">
+        <field name="plan_id" ref="demo_plan_3_approved"/>
+        <field name="doctor_name">Dr. Yasser Mahmoud</field>
+        <field name="phone">01008889900</field>
+        <field name="specialty">Cardiology</field>
+        <field name="pharmacy_name">Heart Care Pharmacy</field>
+        <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_sample_kit'), ref('demo_gift_notebook')])]"/>
+        <field name="gift_notes">Monthly prescription review</field>
+        <field name="visit_date">2026-07-21</field>
+        <field name="visit_stage">completed</field>
+    </record>
+
+    <record id="demo_plan_3_line_2" model="sales.plan.line">
+        <field name="plan_id" ref="demo_plan_3_approved"/>
+        <field name="doctor_name">Dr. Nada Fathy</field>
+        <field name="phone">01001112233</field>
+        <field name="specialty">ENT</field>
+        <field name="pharmacy_name">Al-Shifa Pharmacy</field>
+        <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_bag'), ref('demo_gift_calendar')])]"/>
+        <field name="gift_notes">First visit - introduce new ENT product range</field>
+        <field name="visit_date">2026-07-22</field>
+        <field name="visit_stage">completed</field>
+    </record>
+
+    <record id="demo_plan_3_line_3" model="sales.plan.line">
+        <field name="plan_id" ref="demo_plan_3_approved"/>
+        <field name="doctor_name">Dr. Karim Adel</field>
+        <field name="phone">01004445566</field>
+        <field name="specialty">Neurology</field>
+        <field name="pharmacy_name"/>
+        <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_mug')])]"/>
+        <field name="gift_notes">Quarterly check-in</field>
+        <field name="visit_date">2026-07-23</field>
+        <field name="visit_stage">completed</field>
+    </record>
+
+</odoo>

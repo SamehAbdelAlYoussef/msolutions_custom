@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ============================================================
+             Email Template: Approval Request → Manager
+             ============================================================ -->
+        <record id="email_template_approval_request" model="mail.template">
+            <field name="name">Sales Plan Approval Request</field>
+            <field name="model_id" ref="model_sales_plan"/>
+            <field name="subject">Plan Approval Request: {{ object.name }}</field>
+            <field name="lang">{{ object.user_id.partner_id.lang or object.user_id.lang or 'en_US' }}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto;">
+
+    <h2 style="color: #714B67;">Plan Approval Request</h2>
+
+    <p>Dear <t t-out="object.manager_id.name"/>,</p>
+
+    <p>A new visit plan from <t t-out="object.user_id.name"/> requires your review and approval.</p>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+        <tr style="background-color: #f9f9f9;">
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Plan Name</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.name"/></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Salesperson</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.user_id.name"/></td>
+        </tr>
+        <tr style="background-color: #f9f9f9;">
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Region</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.region"/></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Date Range</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">
+                <t t-out="object.date_start"/> → <t t-out="object.date_end"/>
+                (<t t-out="object.duration_days"/> days)
+            </td>
+        </tr>
+        <tr style="background-color: #f9f9f9;">
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Visits</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.visit_count"/> visit(s)</td>
+        </tr>
+    </table>
+
+    <p>Please review this plan and approve it through the system.</p>
+
+    <p>
+        <a t-att-href="'/web#id=%s&amp;model=sales.plan&amp;view_type=form' % object.id"
+           style="display: inline-block; padding: 10px 20px; background-color: #714B67; color: #ffffff;
+                  text-decoration: none; border-radius: 4px; font-weight: bold;">
+            Open Plan
+        </a>
+    </p>
+
+    <p style="color: #888; font-size: 12px; margin-top: 24px;">
+        This is an automated message from the Sales Visit Plan system.
+    </p>
+</div>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             Email Template: Approval Confirmation → Salesperson
+             ============================================================ -->
+        <record id="email_template_approval_confirmation" model="mail.template">
+            <field name="name">Sales Plan Approval Confirmation</field>
+            <field name="model_id" ref="model_sales_plan"/>
+            <field name="subject">Your Plan {{ object.name }} Has Been Approved!</field>
+            <field name="email_to">{{ object.user_id.email }}</field>
+            <field name="lang">{{ object.user_id.partner_id.lang or object.user_id.lang or 'en_US' }}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto;">
+
+    <h2 style="color: #28a745;">&#10003; Plan Approved</h2>
+
+    <p>Dear <t t-out="object.user_id.name"/>,</p>
+
+    <p>Your visit plan <strong><t t-out="object.name"/></strong> has been approved!</p>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+        <tr style="background-color: #f9f9f9;">
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Plan Name</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.name"/></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Region</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.region"/></td>
+        </tr>
+        <tr style="background-color: #f9f9f9;">
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Date Range</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">
+                <t t-out="object.date_start"/> → <t t-out="object.date_end"/>
+            </td>
+        </tr>
+    </table>
+
+    <p>You can now start executing your visits as scheduled.</p>
+
+    <p>
+        <a t-att-href="'/web#id=%s&amp;model=sales.plan&amp;view_type=form' % object.id"
+           style="display: inline-block; padding: 10px 20px; background-color: #28a745; color: #ffffff;
+                  text-decoration: none; border-radius: 4px; font-weight: bold;">
+            View Plan
+        </a>
+    </p>
+
+    <p style="color: #888; font-size: 12px; margin-top: 24px;">
+        This is an automated message from the Sales Visit Plan system.
+    </p>
+</div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

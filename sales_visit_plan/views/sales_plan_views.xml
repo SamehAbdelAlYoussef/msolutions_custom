@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         Tree View: sales.plan.line
+         (used inside the form's one2many fallback / quick list)
+         ================================================================ -->
+    <record id="sales_plan_line_tree" model="ir.ui.view">
+        <field name="name">sales.plan.line.tree</field>
+        <field name="model">sales.plan.line</field>
+        <field name="arch" type="xml">
+            <list string="Visit Lines" editable="bottom">
+                <field name="doctor_name"/>
+                <field name="phone" optional="show"/>
+                <field name="specialty" optional="show"/>
+                <field name="pharmacy_name" optional="show"/>
+                <field name="visit_stage" widget="badge" optional="show"/>
+                <field name="visit_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Kanban View: sales.plan.line  (level 2 — inside the plan form)
+         Grouped by visit_stage:  First Visit  |  Repeat Visit
+         ================================================================ -->
+    <record id="sales_plan_line_kanban" model="ir.ui.view">
+        <field name="name">sales.plan.line.kanban</field>
+        <field name="model">sales.plan.line</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="visit_stage" class="o_kanban_small_column">
+                <!-- Progress bar for visit_stage -->
+                <progressbar field="visit_stage"
+                             colors='{"first_visit": "primary", "repeat_visit": "warning", "completed": "success"}'/>
+
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <!-- Card header -->
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <field name="doctor_name"/>
+                                </div>
+                            </div>
+
+                            <!-- Card body -->
+                            <div class="o_kanban_card_content">
+                                <div t-if="record.phone.raw_value" class="text-muted mb-1">
+                                    <i class="fa fa-phone me-1" title="Phone"/> <field name="phone"/>
+                                </div>
+                                <div t-if="record.specialty.raw_value" class="text-muted mb-1">
+                                    <i class="fa fa-stethoscope me-1" title="Specialty"/> <field name="specialty"/>
+                                </div>
+                                <div t-if="record.pharmacy_name.raw_value" class="text-muted mb-1">
+                                    <i class="fa fa-medkit me-1" title="Pharmacy"/> <field name="pharmacy_name"/>
+                                </div>
+
+                                <!-- Gifts as tags -->
+                                <field name="gift_ids" widget="many2many_tags" invisible="not gift_ids"/>
+
+                                <div t-if="record.visit_date.raw_value" class="text-muted small mt-2">
+                                    <i class="fa fa-calendar me-1" title="Date"/> <field name="visit_date"/>
+                                </div>
+                            </div>
+
+                            <!-- Card footer with Convert button -->
+                            <div class="o_kanban_card_footer">
+                                <field name="visit_stage" widget="badge"
+                                       decoration-success="visit_stage == 'completed'"
+                                       decoration-info="visit_stage == 'first_visit'"
+                                       decoration-warning="visit_stage == 'repeat_visit'"/>
+                                <t t-if="record.visit_stage.raw_value == 'first_visit'">
+                                    <button type="object"
+                                            name="action_convert_to_repeat"
+                                            class="btn btn-sm btn-warning"
+                                            string="Convert to Repeat"
+                                            title="Move this visit to the Repeat Visit column"/>
+                                </t>
+                                <t t-else="">
+                                    <span class="badge bg-warning text-dark">Repeat Visit</span>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+                <!-- Fallback form for inline creation from the embedded kanban -->
+                <form>
+                    <group>
+                        <field name="doctor_name"/>
+                        <field name="phone"/>
+                        <field name="specialty"/>
+                        <field name="pharmacy_name"/>
+                        <field name="visit_stage"/>
+                        <field name="visit_date"/>
+                        <field name="gift_ids" widget="many2many_tags"/>
+                        <field name="gift_notes"/>
+                    </group>
+                </form>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Form View: sales.plan.line
+         ================================================================ -->
+    <record id="sales_plan_line_form" model="ir.ui.view">
+        <field name="name">sales.plan.line.form</field>
+        <field name="model">sales.plan.line</field>
+        <field name="arch" type="xml">
+            <form string="Visit Detail">
+                <header>
+                    <button name="action_mark_completed"
+                            type="object"
+                            string="Mark as Completed"
+                            class="btn-primary"
+                            invisible="visit_stage == 'completed'"/>
+                    <button name="action_mark_planned"
+                            type="object"
+                            string="Reopen as Planned"
+                            class="btn-secondary"
+                            invisible="visit_stage != 'completed'"/>
+                    <button name="action_convert_to_repeat"
+                            type="object"
+                            string="Convert to Repeat"
+                            class="btn-warning"
+                            invisible="visit_stage != 'first_visit'"/>
+                    <field name="visit_stage" widget="statusbar"
+                           statusbar_visible="first_visit,repeat_visit,completed"
+                           clickable="1"/>
+                </header>
+                <sheet>
+                    <div name="button_box" class="oe_button_box">
+                    <button type="object"
+                            class="oe_stat_button"
+                            icon="fa-star"
+                            name="action_open_lead"
+                            invisible="not lead_id"
+                            help="Open CRM Opportunity">
+                        <div class="o_form_field o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="lead_id" nolabel="1"/>
+                            </span>
+                            <span class="o_stat_text">Opportunity</span>
+                        </div>
+                    </button>
+                </div>
+                    <group>
+                        <field name="doctor_name"/>
+                        <field name="phone"/>
+                        <field name="specialty"/>
+                        <field name="pharmacy_name"/>
+                        <field name="visit_date"/>
+                    </group>
+                    <group string="Gifts">
+                        <field name="gift_ids" widget="many2many_tags"/>
+                        <field name="gift_notes"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Tree View: sales.plan
+         ================================================================ -->
+    <record id="sales_plan_tree" model="ir.ui.view">
+        <field name="name">sales.plan.tree</field>
+        <field name="model">sales.plan</field>
+        <field name="arch" type="xml">
+            <list string="Sales Plans">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="region" optional="show"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="duration_days" optional="show"/>
+                <field name="visit_count" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-warning="state == 'to_approve'"
+                       decoration-info="state == 'new'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Kanban View: sales.plan  (level 1)
+         Grouped by state:  New  |  Waiting for Approval  |  Approved
+         ================================================================ -->
+    <record id="sales_plan_kanban" model="ir.ui.view">
+        <field name="name">sales.plan.kanban</field>
+        <field name="model">sales.plan</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state"
+                    class="o_kanban_small_column"
+                    group_create="false"
+                    group_edit="false"
+                    group_delete="false"
+                    sample="1">
+
+                <progressbar field="state"
+                             colors='{"new": "info", "to_approve": "warning", "approved": "success"}'/>
+
+                <templates>
+                    <t t-name="card">
+                        <!-- Force-load the computed lock-overlay field + manager -->
+                        <field name="show_lock_overlay" invisible="1"/>
+                        <field name="manager_id" invisible="1"/>
+
+                        <div class="position-relative">
+
+                            <!-- Settings icon → opens form -->
+                            <a type="open" class="fa fa-cog position-absolute text-dark text-decoration-none"
+                               style="top: 8px; inset-inline-end: 8px; opacity: 0.7; z-index: 2; font-size: 20px; padding: 6px; border-radius: 4px;"
+                               title="Open Plan Settings"/>
+
+                            <!-- Main click area → opens Visit Lines kanban -->
+                            <button type="object" name="action_open_visit_lines"
+                                    class="btn-unstyled w-100 text-start p-0">
+
+                                <!-- Approved badge -->
+                                <t t-if="record.state.raw_value == 'approved'">
+                                    <div class="ribbon ribbon-top-right">
+                                        <span class="bg-success text-white px-2 py-1 rounded">
+                                            &#10003; Approved
+                                        </span>
+                                    </div>
+                                </t>
+
+                                <div class="o_kanban_card_header">
+                                    <div class="o_kanban_card_header_title">
+                                        <field name="name"/>
+                                    </div>
+                                </div>
+
+                                <div class="o_kanban_card_content">
+                                    <div class="mb-1">
+                                        <i class="fa fa-user me-1" title="User"/> <field name="user_id"/>
+                                    </div>
+                                    <div t-if="record.region.raw_value" class="mb-1">
+                                        <i class="fa fa-map-marker me-1" title="Region"/> <field name="region"/>
+                                    </div>
+                                    <div class="d-flex justify-content-between mt-2">
+                                        <span class="text-muted small">
+                                            <i class="fa fa-calendar me-1" title="Date"/>
+                                            <field name="date_start"/> → <field name="date_end"/>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Stats row -->
+                                <div class="o_kanban_card_footer">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-info">
+                                            <field name="visit_count"/> visit(s)
+                                        </span>
+                                        <span class="text-muted small">
+                                            <field name="duration_days"/> day(s)
+                                        </span>
+                                    </div>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'approved'"
+                                           decoration-warning="state == 'to_approve'"
+                                           decoration-info="state == 'new'"/>
+                                </div>
+                            </button>
+
+                            <!-- ================================================
+                                 Lock Overlay — visible only to non-managers
+                                 when the plan is "Waiting for Approval"
+                                 ================================================ -->
+                            <t t-if="record.show_lock_overlay.raw_value">
+                                <div class="o_sales_plan_lock_overlay position-absolute d-flex align-items-center justify-content-center"
+                                     style="top: 0; left: 0; right: 0; bottom: 0;
+                                            background: rgba(33, 33, 33, 0.50);
+                                            z-index: 10;
+                                            border-radius: var(--border-radius-lg, 0.5rem);
+                                            backdrop-filter: blur(1.5px);
+                                            pointer-events: none;">
+                                    <div class="text-center px-3">
+                                        <i class="fa fa-lock d-block mb-2"
+                                           style="font-size: 2.4rem;
+                                                  color: rgba(255, 255, 255, 0.92);
+                                                  text-shadow: 0 2px 12px rgba(0,0,0,0.4);"/>
+                                        <span class="d-block text-white fw-bold"
+                                              style="font-size: 0.85rem;
+                                                     text-shadow: 0 1px 6px rgba(0,0,0,0.5);">
+                                            Waiting for Approval
+                                        </span>
+                                        <t t-if="record.manager_id.raw_value">
+                                            <span class="d-block text-white-50 mt-1"
+                                                  style="font-size: 0.78rem;
+                                                         text-shadow: 0 1px 4px rgba(0,0,0,0.4);">
+                                                <field name="manager_id"/>
+                                            </span>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Form View: sales.plan
+         ================================================================ -->
+    <record id="sales_plan_form" model="ir.ui.view">
+        <field name="name">sales.plan.form</field>
+        <field name="model">sales.plan</field>
+        <field name="arch" type="xml">
+            <form string="Sales Visit Plan">
+
+                <!-- ==================== Header ==================== -->
+                <header>
+                    <!-- Request Approval button: visible only in 'new' state -->
+                    <button name="action_request_approval"
+                            type="object"
+                            string="Request Approval"
+                            class="btn-primary"
+                            invisible="state != 'new'"
+                            confirm="Are you sure you want to send this plan for approval? The manager will be notified."/>
+
+                    <!-- Approve Plan button: visible only for managers in 'to_approve' state -->
+                    <button name="action_approve_plan"
+                            type="object"
+                            string="Approve Plan"
+                            class="btn-success"
+                            groups="sales_visit_plan.group_sales_manager"
+                            invisible="state != 'to_approve'"
+                            confirm="Are you sure you want to approve this plan?"/>
+
+                    <!-- Statusbar -->
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="new,to_approve,approved"
+                           clickable="1"/>
+                </header>
+
+                <!-- ==================== Sheet ==================== -->
+                <sheet>
+                    <!-- Title -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g., Q1 Cairo Visits"
+                                   class="oe_inline"/>
+                        </h1>
+                    </div>
+
+                    <!-- Main group -->
+                    <group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="manager_id"
+                                   context="{'default_groups_ref': ['sales_visit_plan.group_sales_manager']}"/>
+                            <field name="region"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="duration_days" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- Notebook -->
+                    <notebook>
+                        <!-- Tab: Visit Lines (level-2 Kanban) -->
+                        <page string="Visit Lines">
+                            <field name="line_ids"
+                                   mode="kanban"
+                                   context="{'default_plan_id': id, 'kanban_view_ref': 'sales_visit_plan.sales_plan_line_kanban'}">
+                            </field>
+                        </page>
+
+                        <!-- Tab: Manager Notes -->
+                        <page string="Manager Notes">
+                            <group>
+                                <field name="manager_notes" nolabel="1"
+                                       placeholder="Add notes or comments about this plan..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <!-- Chatter -->
+                              <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Search View: sales.plan
+         ================================================================ -->
+    <record id="sales_plan_search" model="ir.ui.view">
+        <field name="name">sales.plan.search</field>
+        <field name="model">sales.plan</field>
+        <field name="arch" type="xml">
+            <search string="Search Plans">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="region"/>
+                <separator/>
+                <filter string="New" name="filter_new"
+                        domain="[('state','=','new')]"/>
+                <filter string="Waiting for Approval" name="filter_to_approve"
+                        domain="[('state','=','to_approve')]"/>
+                <filter string="Approved" name="filter_approved"
+                        domain="[('state','=','approved')]"/>
+                <separator/>
+                <filter string="My Plans" name="filter_my_plans"
+                        domain="[('user_id','=',uid)]"/>
+                <separator/>
+                <filter string="Salesperson" name="group_by_user"
+                        context="{'group_by': 'user_id'}"/>
+                <filter string="Region" name="group_by_region"
+
+                        context="{'group_by': 'region'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Window Actions
+         ================================================================ -->
+    <record id="sales_plan_action" model="ir.actions.act_window">
+        <field name="name">Sales Visit Plans</field>
+        <field name="res_model">sales.plan</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="sales_plan_search"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first sales visit plan!
+            </p>
+            <p>
+                Sales Visit Plans help you organize field visits to doctors
+                and pharmacies. Create a plan, add visit lines, and send it
+                for manager approval.
+            </p>
+        </field>
+    </record>
+
+    <record id="sales_plan_line_action" model="ir.actions.act_window">
+        <field name="name">Visit Lines</field>
+        <field name="res_model">sales.plan.line</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="context">{}</field>
+    </record>
+
+    <!-- ================================================================
+         Menu Items
+         ================================================================ -->
+    <menuitem id="menu_sales_visit_root"
+              name="Sales Visit Plans"
+              sequence="45"
+              web_icon="sales_visit_plan,static/description/icon.png"/>
+
+    <menuitem id="menu_sales_plan"
+              name="Plans"
+              parent="menu_sales_visit_root"
+              action="sales_plan_action"
+              sequence="10"/>
+
+    <menuitem id="menu_sales_plan_line"
+              name="Visit Lines"
+              parent="menu_sales_visit_root"
+              action="sales_plan_line_action"
+              sequence="20"/>
+
+</odoo>

@@ -1,0 +1,867 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sales_visit_plan
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-27 14:43+0000\n"
+"PO-Revision-Date: 2026-07-27 14:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sales_visit_plan
+#: model:mail.template,body_html:sales_visit_plan.email_template_approval_confirmation
+msgid ""
+"<div style=\"font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto;\">\n"
+"\n"
+"    <h2 style=\"color: #28a745;\">✓ Plan Approved</h2>\n"
+"\n"
+"    <p>Dear <t t-out=\"object.user_id.name\"/>,</p>\n"
+"\n"
+"    <p>Your visit plan <strong><t t-out=\"object.name\"/></strong> has been approved!</p>\n"
+"\n"
+"    <table style=\"width: 100%; border-collapse: collapse; margin: 16px 0;\">\n"
+"        <tr style=\"background-color: #f9f9f9;\">\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd; font-weight: bold;\">Plan Name</td>\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd;\"><t t-out=\"object.name\"/></td>\n"
+"        </tr>\n"
+"        <tr>\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd; font-weight: bold;\">Region</td>\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd;\"><t t-out=\"object.region\"/></td>\n"
+"        </tr>\n"
+"        <tr style=\"background-color: #f9f9f9;\">\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd; font-weight: bold;\">Date Range</td>\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd;\">\n"
+"                <t t-out=\"object.date_start\"/> → <t t-out=\"object.date_end\"/>\n"
+"            </td>\n"
+"        </tr>\n"
+"    </table>\n"
+"\n"
+"    <p>You can now start executing your visits as scheduled.</p>\n"
+"\n"
+"    <p>\n"
+"        <a t-att-href=\"'/web#id=%s&amp;model=sales.plan&amp;view_type=form' % object.id\" style=\"display: inline-block; padding: 10px 20px; background-color: #28a745; color: #ffffff;                   text-decoration: none; border-radius: 4px; font-weight: bold;\">\n"
+"            View Plan\n"
+"        </a>\n"
+"    </p>\n"
+"\n"
+"    <p style=\"color: #888; font-size: 12px; margin-top: 24px;\">\n"
+"        This is an automated message from the Sales Visit Plan system.\n"
+"    </p>\n"
+"</div>\n"
+"            "
+msgstr ""
+
+#. module: sales_visit_plan
+#: model:mail.template,body_html:sales_visit_plan.email_template_approval_request
+msgid ""
+"<div style=\"font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto;\">\n"
+"\n"
+"    <h2 style=\"color: #714B67;\">Plan Approval Request</h2>\n"
+"\n"
+"    <p>Dear Manager,</p>\n"
+"\n"
+"    <p>A new visit plan requires your review and approval.</p>\n"
+"\n"
+"    <table style=\"width: 100%; border-collapse: collapse; margin: 16px 0;\">\n"
+"        <tr style=\"background-color: #f9f9f9;\">\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd; font-weight: bold;\">Plan Name</td>\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd;\"><t t-out=\"object.name\"/></td>\n"
+"        </tr>\n"
+"        <tr>\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd; font-weight: bold;\">Salesperson</td>\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd;\"><t t-out=\"object.user_id.name\"/></td>\n"
+"        </tr>\n"
+"        <tr style=\"background-color: #f9f9f9;\">\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd; font-weight: bold;\">Region</td>\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd;\"><t t-out=\"object.region\"/></td>\n"
+"        </tr>\n"
+"        <tr>\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd; font-weight: bold;\">Date Range</td>\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd;\">\n"
+"                <t t-out=\"object.date_start\"/> → <t t-out=\"object.date_end\"/>\n"
+"                (<t t-out=\"object.duration_days\"/> days)\n"
+"            </td>\n"
+"        </tr>\n"
+"        <tr style=\"background-color: #f9f9f9;\">\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd; font-weight: bold;\">Visits</td>\n"
+"            <td style=\"padding: 8px; border: 1px solid #ddd;\"><t t-out=\"object.visit_count\"/> visit(s)</td>\n"
+"        </tr>\n"
+"    </table>\n"
+"\n"
+"    <p>Please review this plan and approve it through the system.</p>\n"
+"\n"
+"    <p>\n"
+"        <a t-att-href=\"'/web#id=%s&amp;model=sales.plan&amp;view_type=form' % object.id\" style=\"display: inline-block; padding: 10px 20px; background-color: #714B67; color: #ffffff;                   text-decoration: none; border-radius: 4px; font-weight: bold;\">\n"
+"            Open Plan\n"
+"        </a>\n"
+"    </p>\n"
+"\n"
+"    <p style=\"color: #888; font-size: 12px; margin-top: 24px;\">\n"
+"        This is an automated message from the Sales Visit Plan system.\n"
+"    </p>\n"
+"</div>\n"
+"            "
+msgstr ""
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_kanban
+msgid "<i class=\"fa fa-calendar me-1\" title=\"Date\"/>"
+msgstr "<i class=\"fa fa-calendar me-1\" title=\"التاريخ\"/>"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
+msgid "<i class=\"fa fa-map-marker me-1\" title=\"Region\"/>"
+msgstr "<i class=\"fa fa-map-marker me-1\" title=\"المنطقة\"/>"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_kanban
+msgid "<i class=\"fa fa-medkit me-1\" title=\"Pharmacy\"/>"
+msgstr "<i class=\"fa fa-medkit me-1\" title=\"صيدلية\"/>"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_kanban
+msgid "<i class=\"fa fa-phone me-1\" title=\"Phone\"/>"
+msgstr "<i class=\"fa fa-phone me-1\" title=\"الهاتف\"/>"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_kanban
+msgid "<i class=\"fa fa-stethoscope me-1\" title=\"Specialty\"/>"
+msgstr "<i class=\"fa fa-stethoscope me-1\" title=\"التخصص\"/>"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
+msgid "<i class=\"fa fa-user me-1\" title=\"User\"/>"
+msgstr "<i class=\"fa fa-user me-1\" title=\"المستخدم\"/>"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_kanban
+msgid "<span class=\"badge bg-warning text-dark\">Repeat Visit</span>"
+msgstr "<span class=\"badge bg-warning text-dark\">تكرار زيارة</span>"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
+msgid ""
+"<span class=\"bg-success text-white px-2 py-1 rounded\">\n"
+"                                            ✓ Approved\n"
+"                                        </span>"
+msgstr ""
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
+msgid "<span class=\"o_stat_text\">Opportunity</span>"
+msgstr ""
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_needaction
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__message_needaction
+msgid "Action Needed"
+msgstr "مطلوب إجراء"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__activity_ids
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__activity_ids
+msgid "Activities"
+msgstr "النشاطات"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__activity_exception_decoration
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "تزيين استثناء النشاط"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__activity_state
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__activity_state
+msgid "Activity State"
+msgstr "حالة النشاط"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__activity_type_icon
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "أيقونة نوع النشاط"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
+msgid "Add notes or comments about this plan..."
+msgstr "أضف ملاحظات أو تعليقات حول هذه الخطة..."
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
+msgid "Approve Plan"
+msgstr "اعتماد الخطة"
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Approve Sales Plan: %s"
+msgstr "اعتماد خطة الزيارات: %s"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields.selection,name:sales_visit_plan.selection__sales_plan__state__approved
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_search
+msgid "Approved"
+msgstr "معتمدة"
+
+#. module: sales_visit_plan
+#: model:sales.plan,manager_notes:sales_visit_plan.demo_plan_3_approved
+msgid "Approved — excellent coverage plan"
+msgstr "معتمدة — خطة تغطية ممتازة"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
+msgid "Are you sure you want to approve this plan?"
+msgstr "هل أنت متأكد من اعتماد هذه الخطة؟"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
+msgid ""
+"Are you sure you want to send this plan for approval? The manager will be "
+"notified."
+msgstr ""
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_attachment_count
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__message_attachment_count
+msgid "Attachment Count"
+msgstr "عدد المرفقات"
+
+#. module: sales_visit_plan
+#: model:product.template,name:sales_visit_plan.demo_gift_mug_product_template
+msgid "Branded Coffee Mug"
+msgstr "كوب قهوة بعلامة تجارية"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields.selection,name:sales_visit_plan.selection__sales_plan_line__visit_stage__completed
+msgid "Completed"
+msgstr ""
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__partner_id
+msgid "Contact"
+msgstr ""
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_kanban
+msgid "Convert to Repeat"
+msgstr "تحويل إلى تكرار"
+
+#. module: sales_visit_plan
+#: model_terms:ir.actions.act_window,help:sales_visit_plan.sales_plan_action
+msgid "Create your first sales visit plan!"
+msgstr "أنشئ أول خطة زيارات ميدانية لك!"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__create_uid
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__create_uid
+msgid "Created by"
+msgstr "أنشئ بواسطة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__create_date
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__create_date
+msgid "Created on"
+msgstr "أنشئ في"
+
+#. module: sales_visit_plan
+#: model:sales.plan.line,gift_notes:sales_visit_plan.demo_plan_1_line_1
+msgid "Deliver new product brochure"
+msgstr "تسليم كتيب منتج جديد"
+
+#. module: sales_visit_plan
+#: model:product.template,name:sales_visit_plan.demo_gift_calendar_product_template
+msgid "Desk Calendar 2026"
+msgstr "تقويم مكتبي 2026"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__display_name
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__display_name
+msgid "Display Name"
+msgstr "اسم العرض"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__doctor_name
+msgid "Doctor / Pharmacist Name"
+msgstr "اسم الدكتور / الصيدلي"
+
+#. module: sales_visit_plan
+#: model:product.template,name:sales_visit_plan.demo_gift_notebook_product_template
+msgid "Doctor Notebook"
+msgstr "دفتر ملاحظات الطبيب"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__duration_days
+msgid "Duration (Days)"
+msgstr "المدة (بالأيام)"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__date_end
+msgid "End Date"
+msgstr "تاريخ النهاية"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields.selection,name:sales_visit_plan.selection__sales_plan_line__visit_stage__first_visit
+msgid "First Visit"
+msgstr "زيارة أولى"
+
+#. module: sales_visit_plan
+#: model:sales.plan.line,gift_notes:sales_visit_plan.demo_plan_3_line_2
+msgid "First visit - introduce new ENT product range"
+msgstr "زيارة أولى - تقديم مجموعة منتجات أنف وأذن وحنجرة جديدة"
+
+#. module: sales_visit_plan
+#: model:sales.plan.line,gift_notes:sales_visit_plan.demo_plan_1_line_3
+msgid "Follow up on last month's prescription"
+msgstr "متابعة وصفة الشهر الماضي"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_follower_ids
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__message_follower_ids
+msgid "Followers"
+msgstr "المتابعون"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_partner_ids
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "المتابعون (شركاء)"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__activity_type_icon
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "أيقونة Font Awesome مثال: fa-tasks"
+
+#. module: sales_visit_plan
+#: model:sales.plan.line,gift_notes:sales_visit_plan.demo_plan_1_line_2
+msgid "Free samples for pediatric patients"
+msgstr "عينات مجانية لمرضى الأطفال"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__gift_notes
+msgid "Gift Notes"
+msgstr "وصف الهدية"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__gift_ids
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
+msgid "Gifts"
+msgstr "الهدايا"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__has_message
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__has_message
+msgid "Has Message"
+msgstr "لديه رسالة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__id
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__id
+msgid "ID"
+msgstr "المعرف"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__activity_exception_icon
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__activity_exception_icon
+msgid "Icon"
+msgstr "أيقونة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__activity_exception_icon
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "أيقونة للإشارة إلى نشاط استثنائي."
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__message_needaction
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "إذا تم التحديد، الرسائل الجديدة تتطلب انتباهك."
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__message_has_error
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__message_has_sms_error
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__message_has_error
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "إذا تم التحديد، بعض الرسائل بها خطأ في التسليم."
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_is_follower
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__message_is_follower
+msgid "Is Follower"
+msgstr "متابع"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__write_uid
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__write_uid
+msgid "Last Updated by"
+msgstr "آخر تحديث بواسطة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__write_date
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__write_date
+msgid "Last Updated on"
+msgstr "آخر تحديث في"
+
+#. module: sales_visit_plan
+#: model:res.groups,name:sales_visit_plan.group_sales_manager
+msgid "Manager (Sales Visit Plan)"
+msgstr "مدير (خطة الزيارات الميدانية)"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__manager_notes
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
+msgid "Manager Notes"
+msgstr "ملاحظات المدير"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
+msgid "Mark as Completed"
+msgstr "تحديد كمكتملة"
+
+#. module: sales_visit_plan
+#: model:product.template,name:sales_visit_plan.demo_gift_pen_product_template
+msgid "Medical Pen - Silver"
+msgstr "قلم طبي - فضي"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_has_error
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__message_has_error
+msgid "Message Delivery error"
+msgstr "خطأ في تسليم الرسالة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_ids
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__message_ids
+msgid "Messages"
+msgstr "الرسائل"
+
+#. module: sales_visit_plan
+#: model:sales.plan.line,gift_notes:sales_visit_plan.demo_plan_3_line_1
+msgid "Monthly prescription review"
+msgstr "مراجعة الوصفة الشهرية"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_kanban
+msgid "Move this visit to the Repeat Visit column"
+msgstr "نقل هذه الزيارة إلى عمود تكرار الزيارة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__my_activity_date_deadline
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "موعد نشاطي"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_search
+msgid "My Plans"
+msgstr "خططي"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields.selection,name:sales_visit_plan.selection__sales_plan__state__new
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_search
+msgid "New"
+msgstr "جديد"
+
+#. module: sales_visit_plan
+#: model:sales.plan.line,gift_notes:sales_visit_plan.demo_plan_2_line_1
+msgid "New skincare product launch"
+msgstr "إطلاق منتج جديد للعناية بالبشرة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__activity_calendar_event_id
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__activity_date_deadline
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "موعد النشاط القادم"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__activity_summary
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__activity_summary
+msgid "Next Activity Summary"
+msgstr "ملخص النشاط القادم"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__activity_type_id
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__activity_type_id
+msgid "Next Activity Type"
+msgstr "نوع النشاط القادم"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_needaction_counter
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__message_needaction_counter
+msgid "Number of Actions"
+msgstr "عدد الإجراءات"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_has_error_counter
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__message_has_error_counter
+msgid "Number of errors"
+msgstr "عدد الأخطاء"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__message_needaction_counter
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "عدد الرسائل التي تتطلب إجراء"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__message_has_error_counter
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "عدد الرسائل التي بها خطأ في التسليم"
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Only \"First Visit\" lines can be converted to repeat visits."
+msgstr "فقط الزيارات الأولى يمكن تحويلها إلى تكرار زيارة."
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Only Sales Managers can approve plans."
+msgstr "فقط مدراء المبيعات يمكنهم اعتماد الخطط."
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Only plans in \"New\" status can request approval."
+msgstr "فقط الخطط في حالة \"جديد\" يمكن طلب الموافقة عليها."
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Only plans in \"Waiting for Approval\" status can be approved."
+msgstr "فقط الخطط في حالة \"بانتظار الموافقة\" يمكن اعتمادها."
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
+msgid "Open CRM Opportunity"
+msgstr ""
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
+msgid "Open Plan Settings"
+msgstr "فتح إعدادات الخطة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__lead_id
+msgid "Opportunity"
+msgstr ""
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__pharmacy_name
+msgid "Pharmacy Name"
+msgstr "اسم الصيدلية"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__phone
+msgid "Phone"
+msgstr "رقم الهاتف"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__plan_id
+msgid "Plan"
+msgstr "الخطة"
+
+#. module: sales_visit_plan
+#: model:mail.template,subject:sales_visit_plan.email_template_approval_request
+msgid "Plan Approval Request: {{ object.name }}"
+msgstr "طلب اعتماد الخطة: {{ object.name }}"
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Plan Approved: %s"
+msgstr "تم اعتماد الخطة: %s"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__name
+msgid "Plan Name"
+msgstr "اسم الخطة"
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Plan approved by %s."
+msgstr "تم اعتماد الخطة من قبل %s."
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Plan sent for approval by %s."
+msgstr "تم إرسال الخطة للموافقة من قبل %s."
+
+#. module: sales_visit_plan
+#: model:ir.ui.menu,name:sales_visit_plan.menu_sales_plan
+msgid "Plans"
+msgstr "الخطط"
+
+#. module: sales_visit_plan
+#: model:sales.plan,manager_notes:sales_visit_plan.demo_plan_2_to_approve
+msgid "Please confirm visit schedule"
+msgstr "الرجاء تأكيد جدول الزيارات"
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid ""
+"Please review and approve the sales visit plan \"%(plan)s\" created by "
+"%(user)s."
+msgstr ""
+
+#. module: sales_visit_plan
+#: model:product.template,name:sales_visit_plan.demo_gift_sample_kit_product_template
+msgid "Product Sample Kit - Cardiology"
+msgstr "مجموعة عينات منتجات - أمراض القلب"
+
+#. module: sales_visit_plan
+#: model:product.template,name:sales_visit_plan.demo_gift_sample_kit_pedia_product_template
+msgid "Product Sample Kit - Pediatrics"
+msgstr "مجموعة عينات منتجات - طب الأطفال"
+
+#. module: sales_visit_plan
+#: model:sales.plan.line,gift_notes:sales_visit_plan.demo_plan_3_line_3
+msgid "Quarterly check-in"
+msgstr "فحص ربع سنوي"
+
+#. module: sales_visit_plan
+#: model:sales.plan.line,gift_notes:sales_visit_plan.demo_plan_2_line_2
+msgid "Quarterly follow-up"
+msgstr "متابعة ربع سنوية"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_search
+msgid "Region"
+msgstr "المنطقة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__region
+msgid "Region / Governorate"
+msgstr "المنطقة / المحافظة"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
+msgid "Reopen as Planned"
+msgstr ""
+
+#. module: sales_visit_plan
+#: model:ir.model.fields.selection,name:sales_visit_plan.selection__sales_plan_line__visit_stage__repeat_visit
+msgid "Repeat Visit"
+msgstr "تكرار زيارة"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
+msgid "Request Approval"
+msgstr "طلب الموافقة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__activity_user_id
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__activity_user_id
+msgid "Responsible User"
+msgstr "المستخدم المسؤول"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_has_sms_error
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: sales_visit_plan
+#: model:mail.template,name:sales_visit_plan.email_template_approval_confirmation
+msgid "Sales Plan Approval Confirmation"
+msgstr "تأكيد اعتماد خطة الزيارات"
+
+#. module: sales_visit_plan
+#: model:mail.template,name:sales_visit_plan.email_template_approval_request
+msgid "Sales Plan Approval Request"
+msgstr "طلب اعتماد خطة الزيارات"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_tree
+msgid "Sales Plans"
+msgstr "خطط المبيعات"
+
+#. module: sales_visit_plan
+#: model:ir.model,name:sales_visit_plan.model_sales_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
+msgid "Sales Visit Plan"
+msgstr "خطة الزيارات الميدانية"
+
+#. module: sales_visit_plan
+#: model:ir.model,name:sales_visit_plan.model_sales_plan_line
+msgid "Sales Visit Plan Line"
+msgstr "تفاصيل الزيارة"
+
+#. module: sales_visit_plan
+#: model:ir.actions.act_window,name:sales_visit_plan.sales_plan_action
+#: model:ir.ui.menu,name:sales_visit_plan.menu_sales_visit_root
+msgid "Sales Visit Plans"
+msgstr "خطط الزيارات الميدانية"
+
+#. module: sales_visit_plan
+#: model_terms:ir.actions.act_window,help:sales_visit_plan.sales_plan_action
+msgid ""
+"Sales Visit Plans help you organize field visits to doctors\n"
+"                and pharmacies. Create a plan, add visit lines, and send it\n"
+"                for manager approval."
+msgstr ""
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__user_id
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_search
+msgid "Salesperson"
+msgstr "المندوب المسؤول"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__visit_date
+msgid "Scheduled Visit Date"
+msgstr "تاريخ الزيارة المجدولة"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_search
+msgid "Search Plans"
+msgstr "بحث في الخطط"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__specialty
+msgid "Specialty"
+msgstr "التخصص"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__date_start
+msgid "Start Date"
+msgstr "تاريخ البداية"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__state
+msgid "Status"
+msgstr "الحالة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__activity_state
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: sales_visit_plan
+#: model:product.template,name:sales_visit_plan.demo_gift_bag_product_template
+msgid "Tote Bag - Medical"
+msgstr "حقيبة قماشية طبية"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__activity_exception_decoration
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "نوع النشاط الاستثنائي في السجل."
+
+#. module: sales_visit_plan
+#: model:res.groups,comment:sales_visit_plan.group_sales_manager
+msgid "Users in this group can approve sales visit plans."
+msgstr "المستخدمون في هذه المجموعة يمكنهم اعتماد خطط الزيارات الميدانية."
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__visit_count
+msgid "Visit Count"
+msgstr "عدد الزيارات"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
+msgid "Visit Detail"
+msgstr "تفاصيل الزيارة"
+
+#. module: sales_visit_plan
+#: model:ir.actions.act_window,name:sales_visit_plan.sales_plan_line_action
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__line_ids
+#: model:ir.ui.menu,name:sales_visit_plan.menu_sales_plan_line
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_tree
+msgid "Visit Lines"
+msgstr "خطوط الزيارة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__visit_stage
+msgid "Visit Stage"
+msgstr "مرحلة الزيارة"
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Visit converted to Repeat Visit by %(user)s."
+msgstr "تم تحويل الزيارة إلى تكرار زيارة بواسطة %(user)s."
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Visit marked as Completed."
+msgstr ""
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Visit reopened as Planned."
+msgstr ""
+
+#. module: sales_visit_plan
+#: model:ir.model.fields.selection,name:sales_visit_plan.selection__sales_plan__state__to_approve
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_search
+msgid "Waiting for Approval"
+msgstr "بانتظار الموافقة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__website_message_ids
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__website_message_ids
+msgid "Website Messages"
+msgstr "رسائل الموقع"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__website_message_ids
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__website_message_ids
+msgid "Website communication history"
+msgstr "سجل اتصالات الموقع"
+
+#. module: sales_visit_plan
+#: model:mail.template,subject:sales_visit_plan.email_template_approval_confirmation
+msgid "Your Plan {{ object.name }} Has Been Approved!"
+msgstr "تم اعتماد خطتك: {{ object.name }}"
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Your visit plan \"%s\" has been approved. You can now start your visits."
+msgstr "تم اعتماد خطة الزيارات الخاصة بك \"%s\". يمكنك الآن بدء زياراتك."
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
+msgid "day(s)"
+msgstr "يوم"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
+msgid "e.g., Q1 Cairo Visits"
+msgstr "مثال: زيارات القاهرة - الربع الأول"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
+msgid "visit(s)"
+msgstr "زيارة"
