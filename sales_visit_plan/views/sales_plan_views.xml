@@ -419,7 +419,7 @@
                         <h1>
                             <field name="name" placeholder="e.g., Q1 Cairo Visits"
                                    class="oe_inline"
-                                   attrs="{'readonly': [('is_locked', '=', True)]}"/>
+                                   readonly="is_locked"/>
                         </h1>
                     </div>
 
