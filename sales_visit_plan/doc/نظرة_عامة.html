@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظرة عامة | Sales Visit Plan — Business Overview</title>
+    <style>
+        :root {
+            --primary: #714B67;
+            --accent: #17A2B8;
+            --success: #28A745;
+            --warning: #FFC107;
+            --dark: #2C3E50;
+            --light-bg: #F8F9FA;
+            --border: #DEE2E6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #F1F3F5;
+            color: #333;
+            line-height: 1.85;
+            font-size: 16px;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #5A3D52 100%);
+            color: #fff;
+            padding: 48px 24px 40px;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+        }
+        .header h1 { font-size: 34px; font-weight: 800; margin-bottom: 8px; }
+        .header .subtitle { font-size: 18px; opacity: 0.85; }
+        .header .meta { margin-top: 16px; font-size: 14px; opacity: 0.7; }
+        .container { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            margin-bottom: 28px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .card-header {
+            background: var(--light-bg);
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        .card-body { padding: 24px; }
+        h2 { font-size: 24px; color: var(--dark); margin: 28px 0 14px; }
+        h3 { font-size: 19px; color: var(--primary); margin: 22px 0 10px; border-right: 4px solid var(--accent); padding-right: 12px; }
+        p { margin-bottom: 14px; }
+        ul, ol { margin: 10px 0 16px 0; padding-right: 28px; }
+        li { margin-bottom: 7px; }
+        .workflow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            flex-wrap: wrap;
+            margin: 24px 0;
+        }
+        .workflow .step {
+            background: var(--light-bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 22px;
+            text-align: center;
+            min-width: 130px;
+            font-weight: 700;
+        }
+        .workflow .step.new { border-color: #17A2B8; background: #E8F8FA; color: #0C6B7A; }
+        .workflow .step.to_approve { border-color: #FFC107; background: #FFF9E6; color: #856404; }
+        .workflow .step.approved { border-color: #28A745; background: #E8F5E9; color: #155724; }
+        .workflow .arrow { font-size: 26px; margin: 0 6px; color: #999; font-weight: bold; }
+        .alert {
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            border-right: 5px solid;
+        }
+        .alert-info { background: #E8F8FA; border-color: #17A2B8; color: #0C5460; }
+        .alert-warning { background: #FFF9E6; border-color: #FFC107; color: #856404; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 15px;
+        }
+        th, td { padding: 12px 14px; border: 1px solid var(--border); text-align: right; }
+        th { background: var(--primary); color: #fff; font-weight: 700; }
+        tr:nth-child(even) { background: var(--light-bg); }
+        .footer {
+            text-align: center;
+            padding: 28px;
+            color: #999;
+            font-size: 14px;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 16px 10px; }
+            .header h1 { font-size: 26px; }
+            .workflow { flex-direction: column; gap: 6px; }
+            .workflow .arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>📋 نظرة عامة — نظام خطط الزيارات الميدانية</h1>
+    <p class="subtitle">Sales Visit Plan — Business & Module Overview</p>
+    <p class="meta">إصدار 19.0.1.0.0 | Msoulatioons</p>
+</div>
+
+<div class="container">
+
+<!-- المشكلة -->
+<div class="card">
+    <div class="card-header">🤔 المشكلة اللي بيحلها النظام</div>
+    <div class="card-body">
+        <p>في شركات الأدوية والمبيعات الميدانية، المندوبين العلميين ومندوبي المبيعات بيقوموا بزيارات يومية للأطباء والصيدليات. إدارة الزيارات دي بشكل يدوي (Excel أو ورق) بتسبب:</p>
+        <ul>
+            <li>❌ ضياع بيانات الزيارات وعدم توثيقها</li>
+            <li>❌ صعوبة تتبع حالة كل خطة — مين اللي زار مين وامتى؟</li>
+            <li>❌ عدم وجود نظام موافقات رسمي قبل تنفيذ الزيارات</li>
+            <li>❌ صعوبة ربط الزيارات بالهدايا المقدمة والفرص البيعية</li>
+            <li>❌ عدم وجود رؤية جغرافية لأماكن الزيارات</li>
+        </ul>
+    </div>
+</div>
+
+<!-- الحل -->
+<div class="card">
+    <div class="card-header">💡 الحل: نظام Sales Visit Plan</div>
+    <div class="card-body">
+        <p>نظام <strong>خطط الزيارات الميدانية</strong> هو وحدة متكاملة داخل Odoo بتوفر:</p>
+
+        <h3>🎯 التخطيط المسبق</h3>
+        <p>المندوب بيقدر يخطط لزياراته قبل ما ينزل الميدان. بيحدد مين هيزور (الأطباء والصيدليات)، امتى، فين، وايه الهدايا اللي هياخدها معاه.</p>
+
+        <h3>✅ نظام موافقات</h3>
+        <p>قبل ما المندوب يبدأ زياراته، المدير لازم يوافق على الخطة. ده بيضمن إن الزيارات متوافقة مع استراتيجية الشركة وإن الموارد (الهدايا والعينات) مستخدمة بشكل صح.</p>
+
+        <h3>📍 تتبع جغرافي</h3>
+        <p>المندوب بيقدر يحدد موقع كل زيارة على الخريطة باستخدام GPS الموبايل أو رابط Google Maps. المدير يقدر يشوف كل الزيارات على خريطة واحدة.</p>
+
+        <h3>🔄 تحويل الزيارات</h3>
+        <p>الزيارة الأولى لأي طبيب ممكن تتحول لزيارة متكررة لما يحتاج متابعة. النظام بيسأل عن سبب وتاريخ جديد وبيقيد ده في السجل.</p>
+
+        <h3>🤝 تكامل مع CRM</h3>
+        <p>لما الزيارة بتكتمل، النظام تلقائياً بينشئ جهة اتصال (Contact) وفرصة بيعية (CRM Lead). ده بيربط العمل الميداني بقاعدة بيانات العملاء.</p>
+
+        <h3>📊 رؤية كاملة</h3>
+        <p>كل حاجة متسجلة في Chatter — مين عمل ايه وامتى. المدير يقدر يشوف كل الخطط والزيارات بتاعت فريقه في لوحة Kanban واحدة.</p>
+    </div>
+</div>
+
+<!-- الأدوار -->
+<div class="card">
+    <div class="card-header">👥 الأدوار في النظام</div>
+    <div class="card-body">
+        <table>
+            <thead><tr><th>الدور</th><th>المجموعة</th><th>المسؤوليات</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>مندوب مبيعات</strong></td>
+                    <td>Salesperson</td>
+                    <td>إنشاء الخطط، إضافة الزيارات، إرسال للموافقة، تحديد المواقع، تحويل الزيارات</td>
+                </tr>
+                <tr>
+                    <td><strong>مدير مبيعات</strong></td>
+                    <td>Manager (Sales Visit Plan)</td>
+                    <td>الموافقة على الخطط، رؤية كل الخطط المسندة إليه، إضافة ملاحظات</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="alert alert-info">
+            <strong>🔐 قاعدة الرؤية:</strong> كل مستخدم بيشوف الخطط الخاصة بيه بس.
+            المدير بيشوف الخطط اللي متسندة ليه للموافقة + خططه الشخصية.
+        </div>
+    </div>
+</div>
+
+<!-- سير العمل -->
+<div class="card">
+    <div class="card-header">🔄 سير العمل (Business Workflow)</div>
+    <div class="card-body">
+
+        <h3>مراحل الخطة</h3>
+        <div class="workflow">
+            <div class="step new">🆕 جديد<br><small>New</small></div>
+            <span class="arrow">→</span>
+            <div class="step to_approve">⏳ بانتظار الموافقة<br><small>Waiting for Approval</small></div>
+            <span class="arrow">→</span>
+            <div class="step approved">✅ معتمد<br><small>Approved</small></div>
+        </div>
+
+        <h3>تفاصيل كل مرحلة</h3>
+        <table>
+            <thead><tr><th>المرحلة</th><th>اللي بيحصل فيها</th><th>مين بيقدر يعمل ايه</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>New</strong></td>
+                    <td>المندوب بينشئ الخطة وبيضيف الزيارات. بيجهز كل التفاصيل — الأطباء، التواريخ، المواقع، الهدايا.</td>
+                    <td>المندوب: يقدر يعدل أي حاجة<br>المدير: يقدر يعدل ويعتمد</td>
+                </tr>
+                <tr>
+                    <td><strong>Waiting for Approval</strong></td>
+                    <td>الخطة متقفلة للتعديل. المندوب ميقدرش يعدل أي حاجة. المدير بيستلم إيميل + Activity للمراجعة.</td>
+                    <td>المندوب: <strong>للقراءة فقط</strong> (يقدر يرجعها لـ New)<br>المدير: يقدر يراجع ويعتمد</td>
+                </tr>
+                <tr>
+                    <td><strong>Approved</strong></td>
+                    <td>الخطة معتمدة. المندوب بيستلم إيميل تأكيد + Activity. يقدر يبدأ زياراته.</td>
+                    <td>المندوب: يقدر ينفذ الزيارات<br>المدير: رؤية كاملة</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- مراحل الزيارة -->
+<div class="card">
+    <div class="card-header">🏥 مراحل الزيارة الواحدة</div>
+    <div class="card-body">
+        <table>
+            <thead><tr><th>المرحلة</th><th>المعنى</th><th>التحكم</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td>🔵 First Visit</td>
+                    <td>أول زيارة للطبيب أو الصيدلية دي</td>
+                    <td>يقدر يتحول لـ Repeat Visit (Wizard يسأل عن تاريخ وسبب)</td>
+                </tr>
+                <tr>
+                    <td>🟠 Repeat Visit</td>
+                    <td>زيارة متابعة</td>
+                    <td>زيارة متكررة بعد التحويل</td>
+                </tr>
+                <tr>
+                    <td>🟢 Completed</td>
+                    <td>الزيارة تمت بنجاح</td>
+                    <td>بينشئ Contact + CRM Lead تلقائياً</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- المزايا الرئيسية -->
+<div class="card">
+    <div class="card-header">⭐ المزايا الرئيسية — ملخص سريع</div>
+    <div class="card-body">
+        <table>
+            <thead><tr><th>الميزة</th><th>الوصف</th></tr></thead>
+            <tbody>
+                <tr><td>📋 تخطيط الزيارات</td><td>إنشاء خطط زيارة منظمة بمواعيد وأماكن وهدايا</td></tr>
+                <tr><td>✅ سير موافقات</td><td>New → Waiting → Approved مع أدوار وصلاحيات</td></tr>
+                <tr><td>🔒 قفل تلقائي</td><td>الخطة بتتقفل للتعديل لما تتبعت للموافقة (للقراءة فقط)</td></tr>
+                <tr><td>📍 تحديد المواقع</td><td>GPS + Google Maps URL + Reverse Geocoding للعنوان</td></tr>
+                <tr><td>🗺️ عرض الخريطة</td><td>كل الزيارات على خريطة واحدة مع تفاصيل كاملة</td></tr>
+                <tr><td>🔄 تحويل الزيارات</td><td>أولى → متكررة مع Wizard (تاريخ + سبب) + Log في Chatter</td></tr>
+                <tr><td>📅 أنشطة مجدولة</td><td>Activity تلقائية على كل زيارة بتاريخها</td></tr>
+                <tr><td>🤝 تكامل CRM</td><td>إنشاء Contact + Lead تلقائي عند اكتمال الزيارة</td></tr>
+                <tr><td>📊 Kanban مزدوج</td><td>لوحة للخطط + لوحة داخلية للزيارات</td></tr>
+                <tr><td>✉️ إيميلات تلقائية</td><td>إشعارات للمدير والمندوب في كل مرحلة</td></tr>
+                <tr><td>🔐 أدوار وصلاحيات</td><td>مندوب ≠ مدير — رؤية وتحكم مختلفين</td></tr>
+                <tr><td>📝 سجل كامل</td><td>Chatter + Tracking لكل التغييرات</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</div>
+
+<div class="footer">
+    <p>© 2026 Msoulatioons — Sales Visit Plan Module v19.0.1.0.0</p>
+    <p>→ <a href="دليل_المستخدم.html">الدليل العملي (User Guide)</a> للشرح التفصيلي خطوة بخطوة</p>
+</div>
+
+</body>
+</html>

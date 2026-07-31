@@ -297,7 +297,7 @@
     <p class="meta">
         الإصدار 19.0.1.0.0 &nbsp;|&nbsp;
         تطوير: Msoulatioons &nbsp;|&nbsp;
-        الترخيص: LGPL-3
+        <a href="نظرة_عامة.html" style="color:#fff; text-decoration:underline;">← النظرة العامة (Business Overview)</a>
     </p>
 </div>
 
@@ -342,18 +342,21 @@
         <ul>
             <li>✅ إنشاء خطة زيارة جديدة</li>
             <li>✅ إضافة خطوط زيارة (أطباء / صيدليات) داخل الخطة</li>
+            <li>✅ استخدام GPS لتحديد موقع الزيارة (📍 Get My Location)</li>
             <li>✅ إرسال الخطة للموافقة (Request Approval)</li>
-            <li>✅ تحويل الزيارة الأولى إلى زيارة متكررة (Convert to Repeat)</li>
+            <li>✅ تحويل الزيارة الأولى إلى زيارة متكررة عبر Wizard</li>
             <li>✅ تعليم الزيارة كمكتملة (Mark as Completed)</li>
-            <li>❌ <strong>لا يستطيع</strong> الموافقة على الخطط (تظهر له أيقونة قفل 🔒)</li>
-            <li>❌ <strong>لا يستطيع</strong> سحب الكرت من عمود "بانتظار الموافقة" إلى "معتمد"</li>
+            <li>✅ سحب الكرت من "بانتظار الموافقة" رجوعاً إلى "جديد" للتعديل</li>
+            <li>👁️ <strong>يشوف فقط</strong> الخطط اللي هو منشئها</li>
+            <li>❌ <strong>لا يستطيع</strong> تعديل الخطة وهي في حالة "بانتظار الموافقة" (للقراءة فقط)</li>
+            <li>❌ <strong>لا يستطيع</strong> الموافقة على الخطط</li>
         </ul>
 
         <div class="alert alert-info">
-            <strong>💡 ملاحظة:</strong>
-            عند محاولة مندوب المبيعات سحب كرت خطة من حالة "بانتظار الموافقة" إلى "معتمد"،
-            تظهر له رسالة تنبيه: <em>"Only Sales Managers can approve plans."</em>
-            مع ذكر اسم الخطة المعنية.
+            <strong>🔒 عند إرسال الخطة للموافقة:</strong><br>
+            • كل الحقول بتتحول لـ <strong>Readonly</strong> — مينفعش تعدل أي حاجة<br>
+            • Banner تحذيري بيظهر: "الخطة بانتظار موافقة المدير"<br>
+            • للتعديل: اسحب الكرت رجوعاً لـ New ← عدّل ← أرسل مرة أخرى
         </div>
 
         <h3>2. مدير المبيعات (Sales Manager)</h3>
@@ -634,6 +637,117 @@
             <br>② <strong>CRM Lead</strong> (crm.lead) فرصة بيعية تحتوي على ملخص الزيارة والهدايا المقدمة
             <br>يمكنك الوصول للفرصة البيعية من خلال أيقونة ⭐ في أعلى نموذج الزيارة.
         </div>
+
+    </div>
+</div>
+
+<!-- ================================================================
+     تحديد المواقع والخرائط
+     ================================================================ -->
+<div class="card">
+    <div class="card-header">
+        📍 تحديد المواقع وعرض الخريطة
+    </div>
+    <div class="card-body">
+
+        <h3>تحديد الموقع via GPS</h3>
+        <ol class="step-list">
+            <li>افتح نموذج تفاصيل الزيارة</li>
+            <li>اضغط على زر <strong>📍 Get My Location</strong></li>
+            <li>اسمح للمتصفح بالوصول لموقعك</li>
+            <li>النظام تلقائياً بيحدد إحداثيات GPS ويحولها لرابط Google Maps</li>
+            <li>العنوان التفصيلي بيظهر في حقل <strong>Location Details</strong> (Reverse Geocoding)</li>
+            <li>كل مرة تضغط فيها على الزر، العنوان الجديد <strong>بيتضاف</strong> للموجود (مش بيمسح القديم)</li>
+        </ol>
+
+        <h3>استخدام رابط Google Maps</h3>
+        <ul>
+            <li>تقدر تpaste رابط Google Maps مباشرة في حقل <strong>Location URL</strong></li>
+            <li>النظام تلقائياً بيستخلص الإحداثيات من الرابط</li>
+            <li>وبيعمل Reverse Geocode عشان يجيب العنوان التفصيلي</li>
+            <li>العنوان بيتحط في <strong>Location Details</strong> كـ HTML</li>
+        </ul>
+
+        <h3>🗺️ عرض الخريطة (Map View)</h3>
+        <ul>
+            <li>من قائمة <strong>Visit Lines</strong>، اختار عرض <strong>Map</strong></li>
+            <li>كل الزيارات اللي عندها إحداثيات هتظهر كـ Pins على الخريطة</li>
+            <li>الضغط على أي Pin بيفتح popup فيه:
+                <ul>
+                    <li><strong>Name</strong>: اسم الدكتور</li>
+                    <li><strong>Address</strong>: العنوان التفصيلي (من Reverse Geocoding)</li>
+                    <li><strong>Salesperson</strong>: المندوب المسؤول</li>
+                    <li><strong>Location</strong>: رابط Google Maps</li>
+                    <li><strong>Pharmacy</strong>: اسم الصيدلية</li>
+                    <li><strong>Phone</strong>: رقم الهاتف</li>
+                </ul>
+            </li>
+            <li>زر <strong>Navigate to</strong> بيفتح Google Maps Directions</li>
+            <li>زر <strong>Open</strong> بيفتح نموذج تفاصيل الزيارة</li>
+        </ul>
+
+        <div class="alert alert-info">
+            <strong>💡 Reverse Geocoding:</strong>
+            النظام بيستخدم OpenStreetMap (Nominatim) عشان يحول الإحداثيات (lat, lng) لعنوان حقيقي: "طريق العواسجه، الزقازيق، الشرقية، مصر".
+        </div>
+
+    </div>
+</div>
+
+<!-- ================================================================
+     معالج تحويل الزيارة
+     ================================================================ -->
+<div class="card">
+    <div class="card-header">
+        🔄 معالج تحويل الزيارة (Convert to Repeat Wizard)
+    </div>
+    <div class="card-body">
+
+        <h3>طريقة التحويل:</h3>
+        <ol class="step-list">
+            <li>في لوحة Kanban، <strong>اسحب</strong> كرت الزيارة من عمود First Visit لـ Repeat Visit</li>
+            <li>أو اضغط على زر <strong>Convert to Repeat</strong> (تحت الكرت أو في الـ Header)</li>
+            <li>الـ <strong>Wizard</strong> هيفتح فيه:
+                <ul>
+                    <li>📅 <strong>New Scheduled Date</strong>: التاريخ الجديد للزيارة</li>
+                    <li>📝 <strong>Reason for Repeat Visit</strong>: سبب التحويل</li>
+                </ul>
+            </li>
+            <li>اضغط <strong>Confirm &amp; Convert</strong></li>
+            <li>الزيارة هتتنقل لعمود Repeat Visit + بينزل Log في الـ Chatter بالسبب والتاريخ</li>
+        </ol>
+
+        <div class="alert alert-warning">
+            <strong>⚠️ تنبيه:</strong>
+            السحب المباشر (Drag) من First لـ Repeat بيفتح الـ Wizard تلقائياً. متقدرش تتخطى الـ Wizard — لازم تحدد تاريخ وسبب.
+        </div>
+
+    </div>
+</div>
+
+<!-- ================================================================
+     الأنشطة المجدولة
+     ================================================================ -->
+<div class="card">
+    <div class="card-header">
+        📅 الأنشطة المجدولة (Scheduled Activities)
+    </div>
+    <div class="card-body">
+
+        <h3>Activity تلقائية لكل زيارة</h3>
+        <ul>
+            <li>لما تحدد <strong>Scheduled Visit Date</strong> لخط الزيارة، النظام تلقائياً بينشئ <strong>Activity (To-Do)</strong></li>
+            <li>الـ Activity بتظهر في Chatter بتاع الزيارة وفي قائمة الأنشطة</li>
+            <li>الـ Deadline بتاع النشاط = تاريخ الزيارة المحدد</li>
+            <li>الـ Activity متعينة على <strong>مندوب المبيعات</strong> بتاع الخطة</li>
+        </ul>
+
+        <h3>تحديث تلقائي</h3>
+        <ul>
+            <li>لما <strong>تغير</strong> تاريخ الزيارة → الـ Activity القديمة بتتمسح وواحدة جديدة بتتعمل</li>
+            <li>لما <strong>تمسح</strong> التاريخ → الـ Activity بتتمسح</li>
+            <li>دايماً فيه <strong>Activity واحدة فقط</strong> لكل خط زيارة — متطابقة مع أحدث تاريخ</li>
+        </ul>
 
     </div>
 </div>
