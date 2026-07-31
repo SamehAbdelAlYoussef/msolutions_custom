@@ -14,6 +14,7 @@
                 <field name="phone" optional="show"/>
                 <field name="specialty" optional="show"/>
                 <field name="pharmacy_name" optional="show"/>
+                <field name="location_details" widget="html" optional="show"/>
                 <field name="visit_stage" widget="badge" optional="show"/>
                 <field name="visit_date"/>
             </list>
@@ -61,6 +62,9 @@
                                 <div t-if="record.visit_date.raw_value" class="text-muted small mt-2">
                                     <i class="fa fa-calendar me-1" title="Date"/> <field name="visit_date"/>
                                 </div>
+                                <div t-if="record.location_details.raw_value" class="text-muted small mt-1">
+                                    <field name="location_details" widget="html"/>
+                                </div>
                             </div>
 
                             <!-- Card footer with Convert button -->
@@ -75,9 +79,6 @@
                                             class="btn btn-sm btn-warning"
                                             string="Convert to Repeat"
                                             title="Move this visit to the Repeat Visit column"/>
-                                </t>
-                                <t t-else="">
-                                    <span class="badge bg-warning text-dark">Repeat Visit</span>
                                 </t>
                             </div>
                         </div>
@@ -135,7 +136,29 @@
                            clickable="1"/>
                 </header>
                 <sheet>
+                    <!-- Warning banner when parent plan is waiting for approval -->
+                    <field name="plan_id" invisible="1"/>
+                    <field name="plan_locked" invisible="1"/>
+                    <div class="alert alert-warning text-center" role="alert"
+                         invisible="not plan_locked">
+                        <i class="fa fa-lock me-2"/>
+                        <strong>الخطة بانتظار موافقة المدير</strong>
+                        <br/>لا يمكنك تعديل خطوط الزيارة حاليًا حتى يراجع المدير الخطة.
+                    </div>
                     <div name="button_box" class="oe_button_box">
+                    <button type="object"
+                            class="oe_stat_button"
+                            icon="fa-user"
+                            name="action_open_partner"
+                            invisible="not partner_id"
+                            help="Open Contact">
+                        <div class="o_form_field o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="partner_id" nolabel="1"/>
+                            </span>
+                            <span class="o_stat_text">Contact</span>
+                        </div>
+                    </button>
                     <button type="object"
                             class="oe_stat_button"
                             icon="fa-star"
@@ -151,19 +174,21 @@
                     </button>
                 </div>
                     <group>
-                        <field name="doctor_name"/>
-                        <field name="phone"/>
-                        <field name="specialty"/>
-                        <field name="pharmacy_name"/>
-                        <field name="visit_date"/>
-                        <field name="location_url" widget="url"
+                        <field name="doctor_name" readonly="plan_locked"/>
+                        <field name="phone" readonly="plan_locked"/>
+                        <field name="specialty" readonly="plan_locked"/>
+                        <field name="pharmacy_name" readonly="plan_locked"/>
+                        <field name="visit_date" readonly="plan_locked"/>
+                        <field name="location_url" widget="url" readonly="plan_locked"
                                placeholder="https://maps.google.com/?q=..."/>
+                        <field name="location_details" widget="html" readonly="plan_locked"
+                               placeholder="Detailed address will appear here..."/>
                         <field name="partner_latitude" invisible="1"/>
                         <field name="partner_longitude" invisible="1"/>
                     </group>
                     <group string="Gifts">
-                        <field name="gift_ids" widget="many2many_tags"/>
-                        <field name="gift_notes"/>
+                        <field name="gift_ids" widget="many2many_tags" readonly="plan_locked"/>
+                        <field name="gift_notes" readonly="plan_locked"/>
                     </group>
                 </sheet>
                 <chatter/>
@@ -179,7 +204,12 @@
         <field name="name">sales.plan.line.map</field>
         <field name="model">sales.plan.line</field>
         <field name="arch" type="xml">
-            <map res_partner="partner_id"/>
+            <map res_partner="partner_id">
+                    <field name="salesperson_id" string="Salesperson"/>
+                    <field name="location_url" string="Location"/>
+                    <field name="pharmacy_name" string="Pharmacy"/>
+                    <field name="phone" string="Phone"/>
+                </map>
         </field>
     </record>
 
@@ -263,12 +293,6 @@
                                     <div t-if="record.region.raw_value" class="mb-1">
                                         <i class="fa fa-map-marker me-1" title="Region"/> <field name="region"/>
                                     </div>
-                                    <div class="d-flex justify-content-between mt-2">
-                                        <span class="text-muted small">
-                                            <i class="fa fa-calendar me-1" title="Date"/>
-                                            <field name="date_start"/> → <field name="date_end"/>
-                                        </span>
-                                    </div>
                                 </div>
 
                                 <!-- Stats row -->
@@ -287,6 +311,16 @@
                                            decoration-info="state == 'new'"/>
                                 </div>
                             </button>
+
+                            <!-- Approve button for managers (outside main click area) -->
+                            <t t-if="record.state.raw_value == 'to_approve'">
+                                <button type="object"
+                                        name="action_approve_plan"
+                                        class="btn btn-sm btn-success w-100 mt-1"
+                                        string="Approve Plan"
+                                        groups="sales_visit_plan.group_sales_manager"
+                                        confirm="Are you sure you want to approve this plan?"/>
+                            </t>
 
                             <!-- ================================================
                                  Lock Overlay — visible only to non-managers
@@ -308,15 +342,20 @@
                                         <span class="d-block text-white fw-bold"
                                               style="font-size: 0.85rem;
                                                      text-shadow: 0 1px 6px rgba(0,0,0,0.5);">
-                                            Waiting for Approval
+                                            بانتظار موافقة المدير
                                         </span>
                                         <t t-if="record.manager_id.raw_value">
                                             <span class="d-block text-white-50 mt-1"
                                                   style="font-size: 0.78rem;
                                                          text-shadow: 0 1px 4px rgba(0,0,0,0.4);">
-                                                <field name="manager_id"/>
+                                                المدير: <field name="manager_id"/>
                                             </span>
                                         </t>
+                                        <span class="d-block text-white-50 mt-2"
+                                              style="font-size: 0.7rem;
+                                                     text-shadow: 0 1px 4px rgba(0,0,0,0.4);">
+                                            للتعديل: اسحب إلى New ← عدّل ← أرسل للموافقة
+                                        </span>
                                     </div>
                                 </div>
                             </t>
@@ -345,7 +384,7 @@
                             string="Request Approval"
                             class="btn-primary"
                             invisible="state != 'new'"
-                            confirm="Are you sure you want to send this plan for approval? The manager will be notified."/>
+                            confirm="سيتم إرسال الخطة للمدير للموافقة عليها. بعد الإرسال لا يمكنك التعديل عليها. إذا أردت التعديل: اسحب الخطة إلى New ← عدّل ← أرسل مرة أخرى."/>
 
                     <!-- Approve Plan button: visible only for managers in 'to_approve' state -->
                     <button name="action_approve_plan"
@@ -356,14 +395,6 @@
                             invisible="state != 'to_approve'"
                             confirm="Are you sure you want to approve this plan?"/>
 
-                    <!-- Get Current Location (async, client-side) -->
-                    <button name="onClickGetLocation"
-                            type="object"
-                            string="📍 Get My Location"
-                            class="btn-outline-primary"
-                            title="Use your device GPS to capture the current location"
-                            invisible="state == 'approved'"/>
-
                     <!-- Statusbar -->
                     <field name="state" widget="statusbar"
                            statusbar_visible="new,to_approve,approved"
@@ -372,30 +403,34 @@
 
                 <!-- ==================== Sheet ==================== -->
                 <sheet>
+                    <!-- Hidden technical field for readonly logic -->
+                    <field name="is_locked" invisible="1"/>
+
+                    <!-- Warning banner when plan is locked -->
+                    <div class="alert alert-warning text-center" role="alert"
+                         invisible="not is_locked">
+                        <i class="fa fa-lock me-2"/>
+                        <strong>الخطة بانتظار موافقة المدير</strong>
+                        <br/>لا يمكنك التعديل حاليًا. للتعديل: ارجع الخطة إلى New ← عدّل ← أرسل مرة أخرى.
+                    </div>
+
                     <!-- Title -->
                     <div class="oe_title">
                         <h1>
                             <field name="name" placeholder="e.g., Q1 Cairo Visits"
-                                   class="oe_inline"/>
+                                   class="oe_inline"
+                                   attrs="{'readonly': [('is_locked', '=', True)]}"/>
                         </h1>
                     </div>
 
                     <!-- Main group -->
                     <group>
                         <group>
-                            <field name="user_id"/>
-                            <field name="manager_id"
+                            <field name="user_id" readonly="is_locked"/>
+                            <field name="manager_id" readonly="is_locked"
                                    context="{'default_groups_ref': ['sales_visit_plan.group_sales_manager']}"/>
-                            <field name="region"/>
-                            <field name="location_url" widget="url"
-                                   placeholder="https://maps.google.com/?q=..."/>
-                            <field name="partner_latitude" invisible="1"/>
-                            <field name="partner_longitude" invisible="1"/>
-                        </group>
-                        <group>
-                            <field name="date_start"/>
-                            <field name="date_end"/>
-                            <field name="duration_days" readonly="1"/>
+                            <field name="region" readonly="is_locked"/>
+                            <field name="duration_days" readonly="is_locked"/>
                         </group>
                     </group>
 
@@ -404,7 +439,7 @@
                         <!-- Tab: Visit Lines (level-2 Kanban) -->
                         <page string="Visit Lines">
                             <field name="line_ids"
-                                   mode="kanban"
+                                   mode="kanban" readonly="is_locked"
                                    context="{'default_plan_id': id, 'kanban_view_ref': 'sales_visit_plan.sales_plan_line_kanban'}">
                             </field>
                         </page>
@@ -412,7 +447,7 @@
                         <!-- Tab: Manager Notes -->
                         <page string="Manager Notes">
                             <group>
-                                <field name="manager_notes" nolabel="1"
+                                <field name="manager_notes" nolabel="1" readonly="is_locked"
                                        placeholder="Add notes or comments about this plan..."/>
                             </group>
                         </page>
@@ -503,5 +538,36 @@
               parent="menu_sales_visit_root"
               action="sales_plan_line_action"
               sequence="20"/>
+
+    <!-- ================================================================
+         Wizard: Convert Visit to Repeat
+         ================================================================ -->
+    <record id="sales_visit_line_convert_wizard_form" model="ir.ui.view">
+        <field name="name">sales.visit.line.convert.wizard.form</field>
+        <field name="model">sales.visit.line.convert.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Convert to Repeat Visit">
+                <sheet>
+                    <div class="alert alert-warning text-center mb-3" role="alert">
+                        <i class="fa fa-refresh fa-2x mb-2 d-block"/>
+                        <strong>Convert First Visit to Repeat Visit</strong>
+                        <p class="mb-0 mt-1">This will move the visit to the Repeat Visit column and update the scheduled date.</p>
+                    </div>
+                    <group>
+                        <field name="line_id" invisible="1"/>
+                        <field name="new_date" widget="date"/>
+                        <field name="reason" widget="textarea"
+                               placeholder="e.g. Follow-up required, new prescription..."
+                               style="height: 80px;"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button special="cancel" string="Cancel" class="btn-secondary"/>
+                    <button name="action_confirm_convert" type="object"
+                            string="Confirm &amp; Convert" class="btn-warning"/>
+                </footer>
+            </form>
+        </field>
+    </record>
 
 </odoo>

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-27 14:43+0000\n"
-"PO-Revision-Date: 2026-07-27 14:43+0000\n"
+"POT-Creation-Date: 2026-07-31 22:23+0000\n"
+"PO-Revision-Date: 2026-07-31 22:23+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -65,9 +65,9 @@ msgid ""
 "\n"
 "    <h2 style=\"color: #714B67;\">Plan Approval Request</h2>\n"
 "\n"
-"    <p>Dear Manager,</p>\n"
+"    <p>Dear <t t-out=\"object.manager_id.name\"/>,</p>\n"
 "\n"
-"    <p>A new visit plan requires your review and approval.</p>\n"
+"    <p>A new visit plan from <t t-out=\"object.user_id.name\"/> requires your review and approval.</p>\n"
 "\n"
 "    <table style=\"width: 100%; border-collapse: collapse; margin: 16px 0;\">\n"
 "        <tr style=\"background-color: #f9f9f9;\">\n"
@@ -111,10 +111,18 @@ msgid ""
 msgstr ""
 
 #. module: sales_visit_plan
-#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_kanban
 msgid "<i class=\"fa fa-calendar me-1\" title=\"Date\"/>"
 msgstr "<i class=\"fa fa-calendar me-1\" title=\"التاريخ\"/>"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
+msgid ""
+"<i class=\"fa fa-lock d-block mb-2\" style=\"font-size: 2.4rem;                                                   color: rgba(255, 255, 255, 0.92);                                                   text-shadow: 0 2px 12px rgba(0,0,0,0.4);\"/>\n"
+"                                        <span class=\"d-block text-white fw-bold\" style=\"font-size: 0.85rem;                                                      text-shadow: 0 1px 6px rgba(0,0,0,0.5);\">\n"
+"                                            بانتظار موافقة المدير\n"
+"                                        </span>"
+msgstr ""
 
 #. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
@@ -132,6 +140,13 @@ msgid "<i class=\"fa fa-phone me-1\" title=\"Phone\"/>"
 msgstr "<i class=\"fa fa-phone me-1\" title=\"الهاتف\"/>"
 
 #. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_visit_line_convert_wizard_form
+msgid ""
+"<i class=\"fa fa-refresh fa-2x mb-2 d-block\"/>\n"
+"                        <strong>Convert First Visit to Repeat Visit</strong>"
+msgstr ""
+
+#. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_kanban
 msgid "<i class=\"fa fa-stethoscope me-1\" title=\"Specialty\"/>"
 msgstr "<i class=\"fa fa-stethoscope me-1\" title=\"التخصص\"/>"
@@ -142,11 +157,6 @@ msgid "<i class=\"fa fa-user me-1\" title=\"User\"/>"
 msgstr "<i class=\"fa fa-user me-1\" title=\"المستخدم\"/>"
 
 #. module: sales_visit_plan
-#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_kanban
-msgid "<span class=\"badge bg-warning text-dark\">Repeat Visit</span>"
-msgstr "<span class=\"badge bg-warning text-dark\">تكرار زيارة</span>"
-
-#. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
 msgid ""
 "<span class=\"bg-success text-white px-2 py-1 rounded\">\n"
@@ -155,9 +165,22 @@ msgid ""
 msgstr ""
 
 #. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
+msgid ""
+"<span class=\"d-block text-white-50 mt-2\" style=\"font-size: 0.7rem;                                                      text-shadow: 0 1px 4px rgba(0,0,0,0.4);\">\n"
+"                                            للتعديل: اسحب إلى New ← عدّل ← أرسل للموافقة\n"
+"                                        </span>"
+msgstr ""
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
+msgid "<span class=\"o_stat_text\">Contact</span>"
+msgstr "<span class=\"o_stat_text\">جهة الاتصال</span>"
+
+#. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
 msgid "<span class=\"o_stat_text\">Opportunity</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">الفرصة</span>"
 
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_needaction
@@ -195,7 +218,13 @@ msgid "Add notes or comments about this plan..."
 msgstr "أضف ملاحظات أو تعليقات حول هذه الخطة..."
 
 #. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__manager_id
+msgid "Approval Manager"
+msgstr "مدير الموافقة"
+
+#. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
 msgid "Approve Plan"
 msgstr "اعتماد الخطة"
 
@@ -218,15 +247,9 @@ msgstr "معتمدة — خطة تغطية ممتازة"
 
 #. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
 msgid "Are you sure you want to approve this plan?"
 msgstr "هل أنت متأكد من اعتماد هذه الخطة؟"
-
-#. module: sales_visit_plan
-#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
-msgid ""
-"Are you sure you want to send this plan for approval? The manager will be "
-"notified."
-msgstr ""
 
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_attachment_count
@@ -235,25 +258,63 @@ msgid "Attachment Count"
 msgstr "عدد المرفقات"
 
 #. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__partner_latitude
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__partner_longitude
+msgid ""
+"Auto-parsed from the Google Maps URL. Used by the map view to display the "
+"pin — same field name as res.partner."
+msgstr ""
+"يتم تحليله تلقائياً من رابط خرائط جوجل. يُستخدم بواسطة عرض الخريطة لعرض "
+"العلامة."
+
+#. module: sales_visit_plan
 #: model:product.template,name:sales_visit_plan.demo_gift_mug_product_template
 msgid "Branded Coffee Mug"
 msgstr "كوب قهوة بعلامة تجارية"
 
 #. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_visit_line_convert_wizard_form
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. module: sales_visit_plan
 #: model:ir.model.fields.selection,name:sales_visit_plan.selection__sales_plan_line__visit_stage__completed
 msgid "Completed"
-msgstr ""
+msgstr "مكتملة"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_visit_line_convert_wizard_form
+msgid "Confirm & Convert"
+msgstr "تأكيد وتحويل"
 
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__partner_id
 msgid "Contact"
-msgstr ""
+msgstr "جهة اتصال"
+
+#. module: sales_visit_plan
+#: model:ir.model,name:sales_visit_plan.model_sales_visit_line_convert_wizard
+msgid "Convert Visit to Repeat Wizard"
+msgstr "معالج تحويل الزيارة إلى زيارة مكررة"
 
 #. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_kanban
 msgid "Convert to Repeat"
 msgstr "تحويل إلى تكرار"
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_visit_line_convert_wizard_form
+msgid "Convert to Repeat Visit"
+msgstr "تحويل إلى زيارة مكررة"
+
+#. module: sales_visit_plan
+#. odoo-javascript
+#: code:addons/sales_visit_plan/static/src/js/get_location.js:0
+msgid "Could not get your location."
+msgstr "تعذر الحصول على موقعك."
 
 #. module: sales_visit_plan
 #: model_terms:ir.actions.act_window,help:sales_visit_plan.sales_plan_action
@@ -263,12 +324,14 @@ msgstr "أنشئ أول خطة زيارات ميدانية لك!"
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__create_uid
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__create_uid
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_visit_line_convert_wizard__create_uid
 msgid "Created by"
 msgstr "أنشئ بواسطة"
 
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__create_date
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__create_date
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_visit_line_convert_wizard__create_date
 msgid "Created on"
 msgstr "أنشئ في"
 
@@ -283,8 +346,23 @@ msgid "Desk Calendar 2026"
 msgstr "تقويم مكتبي 2026"
 
 #. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__location_details
+msgid ""
+"Detailed address reverse-geocoded from the location URL coordinates. Updated"
+" automatically when the URL changes."
+msgstr ""
+"العنوان التفصيلي المستخلص من إحداثيات رابط الموقع. يتم تحديثه تلقائياً عند "
+"تغيير الرابط."
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
+msgid "Detailed address will appear here..."
+msgstr "سيظهر العنوان التفصيلي هنا..."
+
+#. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__display_name
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__display_name
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_visit_line_convert_wizard__display_name
 msgid "Display Name"
 msgstr "اسم العرض"
 
@@ -299,6 +377,20 @@ msgid "Doctor Notebook"
 msgstr "دفتر ملاحظات الطبيب"
 
 #. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid ""
+"Doctor: %(doctor)s\n"
+"Pharmacy: %(pharmacy)s\n"
+"Phone: %(phone)s\n"
+"Date: %(date)s"
+msgstr ""
+"الطبيب: %(doctor)s\n"
+"الصيدلية: %(pharmacy)s\n"
+"الهاتف: %(phone)s\n"
+"التاريخ: %(date)s"
+
+#. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__duration_days
 msgid "Duration (Days)"
 msgstr "المدة (بالأيام)"
@@ -307,6 +399,11 @@ msgstr "المدة (بالأيام)"
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__date_end
 msgid "End Date"
 msgstr "تاريخ النهاية"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_visit_line_convert_wizard__reason
+msgid "Explain why this visit is being converted to a repeat visit."
+msgstr "وضح سبب تحويل هذه الزيارة إلى زيارة مكررة."
 
 #. module: sales_visit_plan
 #: model:ir.model.fields.selection,name:sales_visit_plan.selection__sales_plan_line__visit_stage__first_visit
@@ -347,6 +444,30 @@ msgid "Free samples for pediatric patients"
 msgstr "عينات مجانية لمرضى الأطفال"
 
 #. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__partner_latitude
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__partner_latitude
+msgid "Geo Latitude"
+msgstr "خط العرض"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__partner_longitude
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__partner_longitude
+msgid "Geo Longitude"
+msgstr "خط الطول"
+
+#. module: sales_visit_plan
+#. odoo-javascript
+#: code:addons/sales_visit_plan/static/src/js/get_location.js:0
+msgid "Geolocation is not supported by your browser."
+msgstr "تحديد الموقع الجغرافي غير مدعوم من متصفحك."
+
+#. module: sales_visit_plan
+#. odoo-javascript
+#: code:addons/sales_visit_plan/static/src/js/get_location.js:0
+msgid "Getting your current location…"
+msgstr "جارٍ الحصول على موقعك الحالي…"
+
+#. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__gift_notes
 msgid "Gift Notes"
 msgstr "وصف الهدية"
@@ -366,6 +487,7 @@ msgstr "لديه رسالة"
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__id
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__id
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_visit_line_convert_wizard__id
 msgid "ID"
 msgstr "المعرف"
 
@@ -404,14 +526,54 @@ msgstr "متابع"
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__write_uid
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__write_uid
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_visit_line_convert_wizard__write_uid
 msgid "Last Updated by"
 msgstr "آخر تحديث بواسطة"
 
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__write_date
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__write_date
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_visit_line_convert_wizard__write_date
 msgid "Last Updated on"
 msgstr "آخر تحديث في"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_map
+msgid "Location"
+msgstr "الموقع"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__location_details
+msgid "Location Details"
+msgstr "تفاصيل الموقع"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__location_url
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__location_url
+msgid "Location URL"
+msgstr "رابط الموقع"
+
+#. module: sales_visit_plan
+#. odoo-javascript
+#: code:addons/sales_visit_plan/static/src/js/get_location.js:0
+msgid ""
+"Location permission denied. Please allow location access in your browser "
+"settings and try again."
+msgstr ""
+"تم رفض إذن الوصول للموقع. يرجى السماح بالوصول للموقع من إعدادات المتصفح "
+"وإعادة المحاولة."
+
+#. module: sales_visit_plan
+#. odoo-javascript
+#: code:addons/sales_visit_plan/static/src/js/get_location.js:0
+msgid "Location request timed out. Please try again."
+msgstr "انتهت مهلة طلب الموقع. يرجى المحاولة مرة أخرى."
+
+#. module: sales_visit_plan
+#. odoo-javascript
+#: code:addons/sales_visit_plan/static/src/js/get_location.js:0
+msgid "Location unavailable. Check your deviceʼs GPS."
+msgstr "الموقع غير متاح. تحقق من GPS جهازك."
 
 #. module: sales_visit_plan
 #: model:res.groups,name:sales_visit_plan.group_sales_manager
@@ -474,6 +636,11 @@ msgid "New"
 msgstr "جديد"
 
 #. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_visit_line_convert_wizard__new_date
+msgid "New Scheduled Date"
+msgstr "التاريخ الجديد المجدول"
+
+#. module: sales_visit_plan
 #: model:sales.plan.line,gift_notes:sales_visit_plan.demo_plan_2_line_1
 msgid "New skincare product launch"
 msgstr "إطلاق منتج جديد للعناية بالبشرة"
@@ -482,7 +649,7 @@ msgstr "إطلاق منتج جديد للعناية بالبشرة"
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__activity_calendar_event_id
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "حدث تقويم النشاط القادم"
 
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__activity_date_deadline
@@ -501,6 +668,12 @@ msgstr "ملخص النشاط القادم"
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__activity_type_id
 msgid "Next Activity Type"
 msgstr "نوع النشاط القادم"
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "No reason provided."
+msgstr "لم يتم تقديم سبب."
 
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_needaction_counter
@@ -535,8 +708,26 @@ msgstr "فقط الزيارات الأولى يمكن تحويلها إلى تك
 #. module: sales_visit_plan
 #. odoo-python
 #: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Only \"First Visit\" lines can be converted."
+msgstr "فقط الزيارات الأولى يمكن تحويلها."
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
 msgid "Only Sales Managers can approve plans."
 msgstr "فقط مدراء المبيعات يمكنهم اعتماد الخطط."
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid ""
+"Only Sales Managers can approve plans.\n"
+"Plan: %(plan_names)s\n"
+"Please contact your manager to approve this plan."
+msgstr ""
+"فقط مدراء المبيعات يمكنهم اعتماد الخطط.\n"
+"الخطة: %(plan_names)s\n"
+"يرجى التواصل مع مديرك لاعتماد هذه الخطة."
 
 #. module: sales_visit_plan
 #. odoo-python
@@ -553,7 +744,12 @@ msgstr "فقط الخطط في حالة \"بانتظار الموافقة\" يم
 #. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
 msgid "Open CRM Opportunity"
-msgstr ""
+msgstr "فتح الفرصة التسويقية"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
+msgid "Open Contact"
+msgstr "فتح جهة الاتصال"
 
 #. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
@@ -563,7 +759,28 @@ msgstr "فتح إعدادات الخطة"
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__lead_id
 msgid "Opportunity"
+msgstr "فرصة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__location_url
+msgid ""
+"Paste a Google Maps / Waze link or any location URL so you can open the "
+"visit location directly."
+msgstr "الصق رابط خرائط جوجل / ويز أو أي رابط موقع لفتح مكان الزيارة مباشرة."
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__location_url
+msgid ""
+"Paste a Google Maps / Waze link or use \"📍 Get My Location\" to capture GPS "
+"coordinates."
 msgstr ""
+"الصق رابط خرائط جوجل / ويز أو استخدم \"📍 احصل على موقعي\" لالتقاط إحداثيات "
+"GPS."
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_map
+msgid "Pharmacy"
+msgstr "صيدلية"
 
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__pharmacy_name
@@ -572,6 +789,7 @@ msgstr "اسم الصيدلية"
 
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__phone
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_map
 msgid "Phone"
 msgstr "رقم الهاتف"
 
@@ -609,6 +827,12 @@ msgid "Plan sent for approval by %s."
 msgstr "تم إرسال الخطة للموافقة من قبل %s."
 
 #. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__partner_latitude
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__partner_longitude
+msgid "Plan-level coordinates, used by the map view."
+msgstr "إحداثيات على مستوى الخطة، تستخدم بواسطة عرض الخريطة."
+
+#. module: sales_visit_plan
 #: model:ir.ui.menu,name:sales_visit_plan.menu_sales_plan
 msgid "Plans"
 msgstr "الخطط"
@@ -625,6 +849,8 @@ msgid ""
 "Please review and approve the sales visit plan \"%(plan)s\" created by "
 "%(user)s."
 msgstr ""
+"يرجى مراجعة واعتماد خطة الزيارات الميدانية \"%(plan)s\" المنشأة بواسطة "
+"%(user)s."
 
 #. module: sales_visit_plan
 #: model:product.template,name:sales_visit_plan.demo_gift_sample_kit_product_template
@@ -647,6 +873,11 @@ msgid "Quarterly follow-up"
 msgstr "متابعة ربع سنوية"
 
 #. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_visit_line_convert_wizard__reason
+msgid "Reason for Repeat Visit"
+msgstr "سبب الزيارة المكررة"
+
+#. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_search
 msgid "Region"
 msgstr "المنطقة"
@@ -659,7 +890,7 @@ msgstr "المنطقة / المحافظة"
 #. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
 msgid "Reopen as Planned"
-msgstr ""
+msgstr "إعادة فتح كمخطط"
 
 #. module: sales_visit_plan
 #: model:ir.model.fields.selection,name:sales_visit_plan.selection__sales_plan_line__visit_stage__repeat_visit
@@ -681,7 +912,7 @@ msgstr "المستخدم المسؤول"
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__message_has_sms_error
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__message_has_sms_error
 msgid "SMS Delivery error"
-msgstr ""
+msgstr "خطأ في تسليم الرسائل القصيرة"
 
 #. module: sales_visit_plan
 #: model:mail.template,name:sales_visit_plan.email_template_approval_confirmation
@@ -722,9 +953,13 @@ msgid ""
 "                and pharmacies. Create a plan, add visit lines, and send it\n"
 "                for manager approval."
 msgstr ""
+"خطط الزيارات الميدانية تساعدك في تنظيم الزيارات الميدانية للأطباء "
+"والصيدليات. أنشئ خطة، أضف خطوط الزيارة، وأرسلها لاعتماد المدير."
 
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__user_id
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__salesperson_id
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_map
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_search
 msgid "Salesperson"
 msgstr "المندوب المسؤول"
@@ -735,9 +970,20 @@ msgid "Scheduled Visit Date"
 msgstr "تاريخ الزيارة المجدولة"
 
 #. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid "Scheduled Visit: %(doctor)s"
+msgstr "زيارة مجدولة: %(doctor)s"
+
+#. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_search
 msgid "Search Plans"
 msgstr "بحث في الخطط"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan__show_lock_overlay
+msgid "Show Lock Overlay"
+msgstr "إظهار طبقة القفل"
 
 #. module: sales_visit_plan
 #: model:ir.model.fields,field_description:sales_visit_plan.field_sales_plan_line__specialty
@@ -763,6 +1009,49 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
+"الحالة بناءً على الأنشطة\n"
+"متأخر: تجاوز تاريخ التسليم\n"
+"اليوم: تاريخ النشاط هو اليوم\n"
+"مخطط: أنشطة مستقبلية."
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__show_lock_overlay
+msgid ""
+"Technical field: shows lock overlay on kanban cards for non-managers when "
+"the plan is pending approval."
+msgstr ""
+"حقل تقني: يظهر طبقة قفل على بطاقات الكانبان لغير المدراء عندما تكون الخطة "
+"بانتظار الموافقة."
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,help:sales_visit_plan.field_sales_plan__manager_id
+msgid ""
+"The manager who will approve this plan and receive the approval request "
+"email."
+msgstr "المدير الذي سيعتمد هذه الخطة ويستلم بريد طلب الموافقة."
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid ""
+"The plan \"%(plan)s\" is waiting for approval.\n"
+"You cannot modify it. Please move it back to \"New\" first, make your changes, then resend for approval."
+msgstr "الخطة \"%(plan)s\" بانتظار الموافقة. لا يمكنك تعديلها. يرجى إعادتها إلى \"New\" أولاً، إجراء التعديلات، ثم إعادة الإرسال للموافقة."
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid ""
+"The plan \"%(plan)s\" is waiting for approval.\n"
+"You cannot modify its visit lines. Please ask your manager to move the plan back to \"New\" if changes are needed."
+msgstr "الخطة \"%(plan)s\" بانتظار الموافقة. لا يمكنك تعديل خطوط الزيارة. يرجى التواصل مع مديرك."
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_visit_line_convert_wizard_form
+msgid ""
+"This will move the visit to the Repeat Visit column and update the scheduled"
+" date."
+msgstr "هذا سينقل الزيارة إلى عمود الزيارة المكررة ويحدث التاريخ المجدول."
 
 #. module: sales_visit_plan
 #: model:product.template,name:sales_visit_plan.demo_gift_bag_product_template
@@ -774,6 +1063,11 @@ msgstr "حقيبة قماشية طبية"
 #: model:ir.model.fields,help:sales_visit_plan.field_sales_plan_line__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr "نوع النشاط الاستثنائي في السجل."
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
+msgid "Use your device GPS to capture the current location"
+msgstr "استخدم GPS جهازك لالتقاط الموقع الحالي"
 
 #. module: sales_visit_plan
 #: model:res.groups,comment:sales_visit_plan.group_sales_manager
@@ -789,6 +1083,11 @@ msgstr "عدد الزيارات"
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
 msgid "Visit Detail"
 msgstr "تفاصيل الزيارة"
+
+#. module: sales_visit_plan
+#: model:ir.model.fields,field_description:sales_visit_plan.field_sales_visit_line_convert_wizard__line_id
+msgid "Visit Line"
+msgstr "خط الزيارة"
 
 #. module: sales_visit_plan
 #: model:ir.actions.act_window,name:sales_visit_plan.sales_plan_line_action
@@ -807,20 +1106,50 @@ msgstr "مرحلة الزيارة"
 #. module: sales_visit_plan
 #. odoo-python
 #: code:addons/sales_visit_plan/models/sales_plan.py:0
-msgid "Visit converted to Repeat Visit by %(user)s."
-msgstr "تم تحويل الزيارة إلى تكرار زيارة بواسطة %(user)s."
+msgid ""
+"Visit converted to Repeat Visit by %(user)s.\n"
+"New Date: %(date)s\n"
+"Reason: %(reason)s"
+msgstr ""
+"تم تحويل الزيارة إلى زيارة مكررة بواسطة %(user)s.\n"
+"التاريخ الجديد: %(date)s\n"
+"السبب: %(reason)s"
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid ""
+"Visit created for %(doctor)s\n"
+"Phone: %(phone)s\n"
+"Pharmacy: %(pharmacy)s\n"
+"Date: %(date)s"
+msgstr ""
+"تم إنشاء زيارة لـ %(doctor)s\n"
+"الهاتف: %(phone)s\n"
+"الصيدلية: %(pharmacy)s\n"
+"التاريخ: %(date)s"
 
 #. module: sales_visit_plan
 #. odoo-python
 #: code:addons/sales_visit_plan/models/sales_plan.py:0
 msgid "Visit marked as Completed."
+msgstr "تم تحديد الزيارة كمكتملة."
+
+#. module: sales_visit_plan
+#. odoo-python
+#: code:addons/sales_visit_plan/models/sales_plan.py:0
+msgid ""
+"Visit moved to Repeat Visit via drag by %(user)s.\n"
+"Use \"Convert to Repeat\" button for date/reason."
 msgstr ""
+"تم نقل الزيارة إلى الزيارات المكررة عن طريق السحب بواسطة %(user)s.\n"
+"استخدم زر \"تحويل إلى تكرار\" لتعيين التاريخ والسبب."
 
 #. module: sales_visit_plan
 #. odoo-python
 #: code:addons/sales_visit_plan/models/sales_plan.py:0
 msgid "Visit reopened as Planned."
-msgstr ""
+msgstr "تم إعادة فتح الزيارة كمخطط."
 
 #. module: sales_visit_plan
 #: model:ir.model.fields.selection,name:sales_visit_plan.selection__sales_plan__state__to_approve
@@ -857,11 +1186,44 @@ msgid "day(s)"
 msgstr "يوم"
 
 #. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_visit_line_convert_wizard_form
+msgid "e.g. Follow-up required, new prescription..."
+msgstr "مثال: متابعة مطلوبة، وصفة طبية جديدة..."
+
+#. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
 msgid "e.g., Q1 Cairo Visits"
 msgstr "مثال: زيارات القاهرة - الربع الأول"
 
 #. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
+msgid "https://maps.google.com/?q=..."
+msgstr ""
+
+#. module: sales_visit_plan
 #: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
 msgid "visit(s)"
 msgstr "زيارة"
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_kanban
+msgid "المدير:"
+msgstr ""
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_form
+msgid ""
+"سيتم إرسال الخطة للمدير للموافقة عليها. بعد الإرسال لا يمكنك التعديل عليها. "
+"إذا أردت التعديل: اسحب الخطة إلى New ← عدّل ← أرسل مرة أخرى."
+msgstr ""
+
+#. module: sales_visit_plan
+#: model_terms:ir.ui.view,arch_db:sales_visit_plan.sales_plan_line_form
+msgid "📍 Get My Location"
+msgstr "📍 احصل على موقعي"
+
+#. module: sales_visit_plan
+#. odoo-javascript
+#: code:addons/sales_visit_plan/static/src/js/get_location.js:0
+msgid "📍 Location captured!  %(lat)s , %(lng)s"
+msgstr "📍 تم التقاط الموقع!  %(lat)s , %(lng)s"

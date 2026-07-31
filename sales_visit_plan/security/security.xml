@@ -10,4 +10,45 @@
         </record>
 
     </data>
+
+    <!-- Record Rules (noupdate=0 so they are created on upgrade) -->
+    <data noupdate="0">
+
+        <!-- === sales.plan rules === -->
+
+        <!-- Salespersons see only their own plans -->
+        <record id="ir_rule_sales_plan_salesperson" model="ir.rule">
+            <field name="name">Salesperson: own plans only</field>
+            <field name="model_id" ref="model_sales_plan"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Managers see plans assigned to them (+ their own plans) -->
+        <record id="ir_rule_sales_plan_manager" model="ir.rule">
+            <field name="name">Manager: assigned plans + own plans</field>
+            <field name="model_id" ref="model_sales_plan"/>
+            <field name="domain_force">['|', ('manager_id', '=', user.id), ('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_sales_manager'))]"/>
+        </record>
+
+        <!-- === sales.plan.line rules === -->
+
+        <!-- Salespersons see only lines of their own plans -->
+        <record id="ir_rule_sales_plan_line_salesperson" model="ir.rule">
+            <field name="name">Salesperson: own plan lines only</field>
+            <field name="model_id" ref="model_sales_plan_line"/>
+            <field name="domain_force">[('plan_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Managers see lines of assigned plans + own plans -->
+        <record id="ir_rule_sales_plan_line_manager" model="ir.rule">
+            <field name="name">Manager: assigned plan lines + own plan lines</field>
+            <field name="model_id" ref="model_sales_plan_line"/>
+            <field name="domain_force">['|', ('plan_id.manager_id', '=', user.id), ('plan_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_sales_manager'))]"/>
+        </record>
+
+    </data>
 </odoo>

@@ -1,4 +1,6 @@
+import json
 import re
+import urllib.request
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
@@ -8,6 +10,12 @@ _GMAPS_RE_AT = re.compile(r'/@(-?\d+\.\d+),(-?\d+\.\d+)')
 _GMAPS_RE_Q = re.compile(r'[?&]q=(-?\d+\.\d+)\s*,?\s*(-?\d+\.\d+)')
 _GMAPS_RE_PLACE = re.compile(r'/(-?\d+\.\d+),(-?\d+\.\d+)(?:/|[?&]|$)')
 _GMAPS_RE_LL = re.compile(r'll=(-?\d+\.\d+),(-?\d+\.\d+)')
+
+# Nominatim reverse geocoding URL (OpenStreetMap – free, no API key)
+_NOMINATIM_URL = (
+    'https://nominatim.openstreetmap.org/reverse'
+    '?format=json&lat={lat}&lon={lon}&addressdetails=1&accept-language=ar'
+)
 
 
 class SalesPlan(models.Model):
@@ -51,8 +59,7 @@ class SalesPlan(models.Model):
     )
     duration_days = fields.Integer(
         string='Duration (Days)',
-        compute='_compute_duration_days',
-        store=True,
+        tracking=True,
     )
     state = fields.Selection(
         selection=[
@@ -101,6 +108,11 @@ class SalesPlan(models.Model):
         help='Technical field: shows lock overlay on kanban cards for '
              'non-managers when the plan is pending approval.',
     )
+    is_locked = fields.Boolean(
+        compute='_compute_is_locked',
+        help='True when the plan is waiting for approval and the '
+             'current user is not a manager — used to make forms readonly.',
+    )
 
     # ------------------------------------------------------------
     # Compute Methods
@@ -140,22 +152,44 @@ class SalesPlan(models.Model):
                 plan.state == 'to_approve' and not is_manager
             )
 
+    @api.depends('state')
+    def _compute_is_locked(self):
+        """Lock the form for non-managers when the plan is pending approval."""
+        is_manager = self.env.user.has_group(
+            'sales_visit_plan.group_sales_manager'
+        )
+        for plan in self:
+            plan.is_locked = (
+                plan.state == 'to_approve' and not is_manager
+            )
+
     # ------------------------------------------------------------
-    # Override write() — block non-managers from approving plans
+    # Override write() — enforce approval workflow
     # ------------------------------------------------------------
     def write(self, vals):
-        if vals.get('state') == 'approved':
-            if not self.env.user.has_group(
-                'sales_visit_plan.group_sales_manager'
-            ):
-                raise UserError(
-                    _(
-                        'Only Sales Managers can approve plans.\n'
-                        'Plan: %(plan_names)s\n'
-                        'Please contact your manager to approve this plan.',
-                        plan_names=', '.join(self.mapped('name')),
-                    )
-                )
+        is_manager = self.env.user.has_group(
+            'sales_visit_plan.group_sales_manager'
+        )
+        # Only managers can approve
+        if vals.get('state') == 'approved' and not is_manager:
+            raise UserError(_(
+                'Only Sales Managers can approve plans.\n'
+                'Plan: %(plan_names)s\n'
+                'Please contact your manager to approve this plan.',
+                plan_names=', '.join(self.mapped('name')),
+            ))
+        # Non-managers cannot edit plans that are waiting for approval
+        # (except moving them back to New)
+        if not is_manager and set(vals.keys()) != {'state'} and vals.get('state') != 'new':
+            for plan in self:
+                if plan.state == 'to_approve':
+                    raise UserError(_(
+                        'The plan "%(plan)s" is waiting for approval.\n'
+                        'You cannot modify it. Please move it back to '
+                        '"New" first, make your changes, then resend '
+                        'for approval.',
+                        plan=plan.name,
+                    ))
         return super().write(vals)
 
     # ------------------------------------------------------------
@@ -305,6 +339,7 @@ class SalesPlanLine(models.Model):
     _name = 'sales.plan.line'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Sales Visit Plan Line'
+    _rec_name = 'doctor_name'
     _order = 'visit_date, id'
 
     # ------------------------------------------------------------
@@ -316,6 +351,18 @@ class SalesPlanLine(models.Model):
         required=True,
         ondelete='cascade',
         index=True,
+    )
+    plan_locked = fields.Boolean(
+        related='plan_id.is_locked',
+        string='Plan is Locked',
+        help='True when the parent plan is waiting for approval '
+             'and the user is not a manager.',
+    )
+    salesperson_id = fields.Many2one(
+        'res.users',
+        string='Salesperson',
+        related='plan_id.user_id',
+        store=True,
     )
     doctor_name = fields.Char(
         string='Doctor / Pharmacist Name',
@@ -365,6 +412,11 @@ class SalesPlanLine(models.Model):
         help='Paste a Google Maps / Waze link or any location URL '
              'so you can open the visit location directly.',
     )
+    location_details = fields.Html(
+        string='Location Details',
+        help='Detailed address reverse-geocoded from the location URL '
+             'coordinates. Updated automatically when the URL changes.',
+    )
     partner_latitude = fields.Float(
         string='Geo Latitude',
         digits=(10, 7),
@@ -399,16 +451,36 @@ class SalesPlanLine(models.Model):
     # ------------------------------------------------------------
     @api.onchange('location_url')
     def _onchange_location_url(self):
-        """Parse a Google Maps URL and auto-fill partner_latitude / partner_longitude.
-        Clear coordinates when the URL is removed."""
+        """Parse a Google Maps URL and auto-fill partner_latitude /
+        partner_longitude and location_details.  Clears coordinates
+        and details when the URL is removed."""
         if self.location_url:
             lat, lng = self._parse_google_maps_url(self.location_url)
             if lat is not None:
                 self.partner_latitude = lat
                 self.partner_longitude = lng
+                # Reverse-geocode and append to existing details
+                addr = self._reverse_geocode(lat, lng)
+                if addr:
+                    self.location_details = self._append_to_html_list(
+                        self.location_details, addr
+                    )
         else:
             self.partner_latitude = False
             self.partner_longitude = False
+            self.location_details = False
+
+    def _append_to_html_list(self, existing_html, new_item):
+        """Append *new_item* as a <li> to an existing HTML string."""
+        if not existing_html:
+            return f'<ul><li>{new_item}</li></ul>'
+        if '</ul>' in existing_html:
+            # Append to existing <ul>
+            return existing_html.replace(
+                '</ul>', f'<li>{new_item}</li></ul>'
+            )
+        # Wrap existing content in a <ul> and add the new item
+        return f'<ul><li>{existing_html}</li><li>{new_item}</li></ul>'
 
     def _parse_google_maps_url(self, url):
         """Extract (lat, lng) from common Google Maps URL formats.
@@ -432,6 +504,25 @@ class SalesPlanLine(models.Model):
                 return float(m.group(1)), float(m.group(2))
         return None, None
 
+    def _reverse_geocode(self, lat, lng):
+        """Convert (lat, lng) to a human-readable address using Nominatim.
+        Returns a string like '١٢ شارع التحرير, القاهرة' or None on failure."""
+        if lat is None or lng is None:
+            return None
+        try:
+            url = _NOMINATIM_URL.format(lat=lat, lon=lng)
+            req = urllib.request.Request(
+                url,
+                headers={'User-Agent': 'Odoo-SalesVisitPlan/19.0'},
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                data = json.loads(resp.read().decode())
+            if data and data.get('display_name'):
+                return data['display_name']
+        except Exception:
+            pass
+        return None
+
     # ------------------------------------------------------------
     # Auto-create / update partner with coordinates for the map
     # ------------------------------------------------------------
@@ -441,43 +532,124 @@ class SalesPlanLine(models.Model):
             self._apply_location_url_to_vals(vals)
         records = super().create(vals_list)
         records._sync_coords_to_partner()
+        # Schedule visit activity on the plan for lines that have a date
+        records.filtered(lambda r: r.visit_date)._update_visit_activity()
+        # Post creation message in chatter
+        for rec in records:
+            rec.message_post(
+                body=_(
+                    'Visit created for %(doctor)s\n'
+                    'Phone: %(phone)s\n'
+                    'Pharmacy: %(pharmacy)s\n'
+                    'Date: %(date)s',
+                    doctor=rec.doctor_name,
+                    phone=rec.phone or 'N/A',
+                    pharmacy=rec.pharmacy_name or 'N/A',
+                    date=rec.visit_date or 'N/A',
+                )
+            )
         return records
 
     def write(self, vals):
+        # Non-managers cannot edit visit lines of plans waiting for approval
+        is_manager = self.env.user.has_group(
+            'sales_visit_plan.group_sales_manager'
+        )
+        if not is_manager:
+            for line in self:
+                if line.plan_id.state == 'to_approve':
+                    raise UserError(_(
+                        'The plan "%(plan)s" is waiting for approval.\n'
+                        'You cannot modify its visit lines. Please ask '
+                        'your manager to move the plan back to "New" '
+                        'if changes are needed.',
+                        plan=line.plan_id.name,
+                    ))
         coords_updated = self._apply_location_url_to_vals(vals)
+        url_updated = 'location_url' in vals
+        date_updated = 'visit_date' in vals
+        # If dragged from first_visit → repeat_visit without the wizard,
+        # log a note in chatter so the cycle is still tracked
+        converted_via_drag = (
+            vals.get('visit_stage') == 'repeat_visit'
+            and not self.env.context.get('_convert_to_repeat')
+        )
         res = super().write(vals)
-        if coords_updated:
+        if coords_updated or url_updated:
             self._sync_coords_to_partner()
+        if date_updated:
+            self._update_visit_activity()
+        if converted_via_drag:
+            self.filtered(lambda r: r.visit_stage == 'repeat_visit').message_post(
+                body=_(
+                    'Visit moved to Repeat Visit via drag by %(user)s.\n'
+                    'Use "Convert to Repeat" button for date/reason.',
+                    user=self.env.user.name,
+                )
+            )
         return res
 
     def _apply_location_url_to_vals(self, vals):
-        """If *vals* contains a location_url but no partner_latitude,
-        parse the URL and inject lat/lng.  Returns True when coords were added."""
+        """If *vals* contains a location_url, parse it and inject
+        lat/lng + reverse-geocoded location_details.
+        Returns True when coordinates were changed or added."""
         url = vals.get('location_url')
-        if url and 'partner_latitude' not in vals:
-            lat, lng = self._parse_google_maps_url(url)
+        if url:
+            lat, lng = None, None
+            if 'partner_latitude' not in vals:
+                lat, lng = self._parse_google_maps_url(url)
+                if lat is not None:
+                    vals['partner_latitude'] = lat
+                    vals['partner_longitude'] = lng
+            else:
+                lat, lng = vals.get('partner_latitude'), vals.get('partner_longitude')
+            # Always reverse-geocode and append when we have coordinates
             if lat is not None:
-                vals['partner_latitude'] = lat
-                vals['partner_longitude'] = lng
+                addr = self._reverse_geocode(lat, lng)
+                if addr:
+                    existing = self.location_details if self.ids else False
+                    vals['location_details'] = self._append_to_html_list(
+                        existing, addr
+                    )
                 return True
         return 'partner_latitude' in vals or 'partner_longitude' in vals
 
     def _sync_coords_to_partner(self):
-        """Mirror the lineʼs coordinates onto its res.partner so both
-        stay in sync and the map view can read either source."""
+        """Mirror the lineʼs coordinates, location URL, and the reverse-
+        geocoded address onto res.partner so the map popup shows a real
+        human-readable address."""
         for line in self:
             if not line.partner_latitude or not line.partner_longitude:
                 continue
+            partner_vals = {
+                'partner_latitude': line.partner_latitude,
+                'partner_longitude': line.partner_longitude,
+            }
+            if line.location_url:
+                partner_vals['website'] = line.location_url
+
+            # Build street address: prefer reverse-geocoded address,
+            # fall back to pharmacy_name
+            address = self._reverse_geocode(
+                line.partner_latitude, line.partner_longitude
+            )
+            if address:
+                partner_vals['street'] = address
+            elif line.pharmacy_name:
+                partner_vals['street'] = line.pharmacy_name
+            elif line.location_url:
+                partner_vals['street'] = line.location_url
+
             if line.partner_id:
-                line.partner_id.write({
-                    'partner_latitude': line.partner_latitude,
-                    'partner_longitude': line.partner_longitude,
-                })
+                line.partner_id.write(partner_vals)
             else:
-                partner = line._find_or_create_partner()
-                partner.write({
-                    'partner_latitude': line.partner_latitude,
-                    'partner_longitude': line.partner_longitude,
+                # Create a minimal partner so the map view can show the pin
+                # (the map requires res_partner to function)
+                partner = self.env['res.partner'].create({
+                    'name': line.doctor_name,
+                    'phone': line.phone or '',
+                    'company_type': 'person',
+                    **partner_vals,
                 })
                 line.partner_id = partner.id
 
@@ -497,6 +669,56 @@ class SalesPlanLine(models.Model):
                 'company_type': 'person',
             })
         return partner
+
+    # ------------------------------------------------------------
+    # Activity scheduling on the visit line
+    # ------------------------------------------------------------
+    def _update_visit_activity(self):
+        """Create or update a To-Do activity on the visit line itself.
+        Deletes all previous To-Do activities on this line (and any legacy
+        ones on the parent plan), then creates a fresh one.  Ensures there
+        is always exactly ONE activity per line matching the latest visit_date.
+        If visit_date is empty all old activities are simply removed.
+        """
+        Activity = self.env['mail.activity']
+        activity_type = self.env.ref(
+            'mail.mail_activity_data_todo', raise_if_not_found=False
+        )
+        if not activity_type:
+            return
+
+        for line in self:
+            # Delete ALL previous To-Do activities linked to this line
+            # (and any legacy ones on the parent plan from older code)
+            old = Activity.search([
+                ('activity_type_id', '=', activity_type.id),
+                '|',
+                '&', ('res_model', '=', 'sales.plan.line'), ('res_id', '=', line.id),
+                '&', ('res_model', '=', 'sales.plan'), ('res_id', '=', line.plan_id.id),
+            ])
+            old.unlink()
+
+            # Nothing to schedule if no date
+            if not line.visit_date or not line.plan_id:
+                continue
+
+            # Create a fresh activity on the visit line
+            line.activity_schedule(
+                activity_type_id=activity_type.id,
+                user_id=line.plan_id.user_id.id,
+                date_deadline=line.visit_date,
+                summary=_('Scheduled Visit: %(doctor)s', doctor=line.doctor_name),
+                note=_(
+                    'Doctor: %(doctor)s\n'
+                    'Pharmacy: %(pharmacy)s\n'
+                    'Phone: %(phone)s\n'
+                    'Date: %(date)s',
+                    doctor=line.doctor_name,
+                    pharmacy=line.pharmacy_name or 'N/A',
+                    phone=line.phone or 'N/A',
+                    date=line.visit_date,
+                ),
+            )
 
     # ------------------------------------------------------------
     def action_mark_completed(self):
@@ -553,13 +775,66 @@ class SalesPlanLine(models.Model):
         self.message_post(body=_('Visit reopened as Planned.'))
 
     def action_convert_to_repeat(self):
-        """Change visit_stage from 'first_visit' to 'repeat_visit'."""
+        """Open the convert-to-repeat wizard."""
         self.ensure_one()
         if self.visit_stage != 'first_visit':
             raise UserError(
                 _('Only "First Visit" lines can be converted to repeat visits.')
             )
-        self.visit_stage = 'repeat_visit'
-        self.message_post(
-            body=_('Visit converted to Repeat Visit by %(user)s.', user=self.env.user.name)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Convert to Repeat Visit'),
+            'res_model': 'sales.visit.line.convert.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_line_id': self.id,
+                'default_new_date': fields.Date.today(),
+            },
+        }
+
+    def onClickGetLocation(self):
+        """Dummy method — the real work is done client-side by the JS
+        capture-phase click listener.  This exists only to satisfy the
+        view validator (button type="object" requires a server method)."""
+        return {'type': 'ir.actions.act_window_close'}
+
+
+class SalesVisitLineConvertWizard(models.TransientModel):
+    _name = 'sales.visit.line.convert.wizard'
+    _description = 'Convert Visit to Repeat Wizard'
+
+    line_id = fields.Many2one(
+        'sales.plan.line', string='Visit Line', required=True, ondelete='cascade',
+    )
+    new_date = fields.Date(
+        string='New Scheduled Date', required=True,
+    )
+    reason = fields.Text(
+        string='Reason for Repeat Visit',
+        help='Explain why this visit is being converted to a repeat visit.',
+    )
+
+    def action_confirm_convert(self):
+        """Convert the visit to repeat, update the date, and log the reason."""
+        self.ensure_one()
+        line = self.line_id
+        if line.visit_stage != 'first_visit':
+            raise UserError(_('Only "First Visit" lines can be converted.'))
+
+        # Update the visit (with context key to bypass the drag-block)
+        vals = {'visit_stage': 'repeat_visit'}
+        if self.new_date:
+            vals['visit_date'] = self.new_date
+        line.with_context(_convert_to_repeat=True).write(vals)
+
+        # Log in chatter
+        body = _(
+            'Visit converted to Repeat Visit by %(user)s.\n'
+            'New Date: %(date)s\n'
+            'Reason: %(reason)s',
+            user=self.env.user.name,
+            date=self.new_date or line.visit_date,
+            reason=self.reason or _('No reason provided.'),
         )
+        line.message_post(body=body)

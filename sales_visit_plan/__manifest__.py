@@ -35,6 +35,7 @@
     'assets': {
         'web.assets_backend': [
             'sales_visit_plan/static/src/js/get_location.js',
+            'sales_visit_plan/static/src/js/kanban_drag_wizard.js',
         ],
     },
     'demo': [
