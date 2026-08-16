@@ -78,7 +78,7 @@
         <field name="plan_id" ref="demo_plan_1_new"/>
         <field name="doctor_name">Dr. Ahmed El-Sayed</field>
         <field name="phone">01001234567</field>
-        <field name="specialty">Cardiology</field>
+        <field name="specialty_id" ref="spec_cardiology"/>
         <field name="pharmacy_name">El-Salam Pharmacy</field>
         <field name="visit_stage">first_visit</field>
         <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_pen'), ref('demo_gift_notebook')])]"/>
@@ -91,7 +91,7 @@
         <field name="plan_id" ref="demo_plan_1_new"/>
         <field name="doctor_name">Dr. Sarah Hassan</field>
         <field name="phone">01009876543</field>
-        <field name="specialty">Pediatrics</field>
+        <field name="specialty_id" ref="spec_pediatrics"/>
         <field name="pharmacy_name">Al-Amal Pharmacy</field>
         <field name="visit_stage">first_visit</field>
         <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_sample_kit_pedia')])]"/>
@@ -104,13 +104,23 @@
         <field name="plan_id" ref="demo_plan_1_new"/>
         <field name="doctor_name">Dr. Mohamed Ali</field>
         <field name="phone">01005556677</field>
-        <field name="specialty">Internal Medicine</field>
+        <field name="specialty_id" ref="spec_internal_medicine"/>
         <field name="pharmacy_name"/>
         <field name="visit_stage">repeat_visit</field>
         <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_mug'), ref('demo_gift_calendar')])]"/>
         <field name="gift_notes">Follow up on last month's prescription</field>
         <field name="visit_date">2026-07-30</field>
         <!-- state merged into visit_stage -->
+    </record>
+
+    <!-- Meeting line for Plan 1 (internal meeting — cannot be completed) -->
+    <record id="demo_plan_1_line_meeting" model="sales.plan.line">
+        <field name="plan_id" ref="demo_plan_1_new"/>
+        <field name="visit_type">meeting</field>
+        <field name="meeting_name">Weekly Team Sync - Cairo Region</field>
+        <field name="meeting_link">https://meet.google.com/abc-defg-hij</field>
+        <field name="visit_stage">first_visit</field>
+        <field name="visit_date">2026-07-27</field>
     </record>
 
     <!-- ================================================================
@@ -130,7 +140,7 @@
         <field name="plan_id" ref="demo_plan_2_to_approve"/>
         <field name="doctor_name">Dr. Layla Ibrahim</field>
         <field name="phone">01003334455</field>
-        <field name="specialty">Dermatology</field>
+        <field name="specialty_id" ref="spec_dermatology"/>
         <field name="pharmacy_name">Al-Nour Pharmacy</field>
         <field name="visit_stage">first_visit</field>
         <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_bag')])]"/>
@@ -143,7 +153,7 @@
         <field name="plan_id" ref="demo_plan_2_to_approve"/>
         <field name="doctor_name">Dr. Omar Nabil</field>
         <field name="phone">01007778899</field>
-        <field name="specialty">Orthopedics</field>
+        <field name="specialty_id" ref="spec_orthopedics"/>
         <field name="pharmacy_name"/>
         <field name="visit_stage">repeat_visit</field>
         <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_pen')])]"/>
@@ -169,7 +179,7 @@
         <field name="plan_id" ref="demo_plan_3_approved"/>
         <field name="doctor_name">Dr. Yasser Mahmoud</field>
         <field name="phone">01008889900</field>
-        <field name="specialty">Cardiology</field>
+        <field name="specialty_id" ref="spec_cardiology"/>
         <field name="pharmacy_name">Heart Care Pharmacy</field>
         <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_sample_kit'), ref('demo_gift_notebook')])]"/>
         <field name="gift_notes">Monthly prescription review</field>
@@ -181,7 +191,7 @@
         <field name="plan_id" ref="demo_plan_3_approved"/>
         <field name="doctor_name">Dr. Nada Fathy</field>
         <field name="phone">01001112233</field>
-        <field name="specialty">ENT</field>
+        <field name="specialty_id" ref="spec_ent"/>
         <field name="pharmacy_name">Al-Shifa Pharmacy</field>
         <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_bag'), ref('demo_gift_calendar')])]"/>
         <field name="gift_notes">First visit - introduce new ENT product range</field>
@@ -193,7 +203,7 @@
         <field name="plan_id" ref="demo_plan_3_approved"/>
         <field name="doctor_name">Dr. Karim Adel</field>
         <field name="phone">01004445566</field>
-        <field name="specialty">Neurology</field>
+        <field name="specialty_id" ref="spec_neurology"/>
         <field name="pharmacy_name"/>
         <field name="gift_ids" eval="[(6, 0, [ref('demo_gift_mug')])]"/>
         <field name="gift_notes">Quarterly check-in</field>

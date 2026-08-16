@@ -2,8 +2,10 @@ import json
 import re
 import urllib.request
 
+from markupsafe import Markup
+
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 # Pre-compiled patterns for _parse_google_maps_url
 _GMAPS_RE_AT = re.compile(r'/@(-?\d+\.\d+),(-?\d+\.\d+)')
@@ -190,7 +192,51 @@ class SalesPlan(models.Model):
                         'for approval.',
                         plan=plan.name,
                     ))
-        return super().write(vals)
+        # Detect plans that newly change state so the right party is notified
+        # whatever the path (button, statusbar, or kanban drag).
+        newly_approved = self.browse()
+        newly_to_approve = self.browse()
+        if vals.get('state') == 'approved':
+            newly_approved = self.filtered(lambda p: p.state != 'approved')
+        if vals.get('state') == 'to_approve':
+            newly_to_approve = self.filtered(lambda p: p.state != 'to_approve')
+        res = super().write(vals)
+        if newly_to_approve:
+            newly_to_approve._notify_request_approval()
+        if newly_approved:
+            newly_approved._notify_plan_approved()
+        return res
+
+    def _notify_request_approval(self):
+        """Notify the manager(s) that a plan needs approval — email logged
+        in the chatter + a To-Do activity for each manager."""
+        for plan in self:
+            managers = plan._get_sales_managers()
+            plan.message_post_with_source(
+                'sales_visit_plan.email_template_approval_request',
+                subtype_xmlid='mail.mt_comment',
+                message_type='comment',
+                partner_ids=managers.mapped('partner_id').ids,
+            )
+            plan._create_manager_activity(managers)
+            plan.message_post(
+                body=_('Plan sent for approval by %s.') % self.env.user.name
+            )
+
+    def _notify_plan_approved(self):
+        """Notify the salesperson that the plan is approved — email logged
+        in the chatter + a To-Do activity + a note."""
+        for plan in self:
+            plan.message_post_with_source(
+                'sales_visit_plan.email_template_approval_confirmation',
+                subtype_xmlid='mail.mt_comment',
+                message_type='comment',
+                partner_ids=plan.user_id.partner_id.ids,
+            )
+            plan._create_salesperson_activity()
+            plan.message_post(
+                body=_('Plan approved by %s.') % self.env.user.name
+            )
 
     # ------------------------------------------------------------
     # Helper: keep empty groups visible in Kanban
@@ -227,29 +273,9 @@ class SalesPlan(models.Model):
                 _('Only plans in "New" status can request approval.')
             )
 
+        # Notifications (email logged in chatter + manager activity) are
+        # handled centrally in write() so it also works via statusbar/drag.
         self.state = 'to_approve'
-
-        managers = self._get_sales_managers()
-
-        # Send email to all sales managers
-        template = self.env.ref(
-            'sales_visit_plan.email_template_approval_request',
-            raise_if_not_found=False,
-        )
-        if template:
-            for manager in managers:
-                template.send_mail(
-                    self.id,
-                    email_values={'email_to': manager.email},
-                )
-
-        # Create a To-Do activity for each manager
-        self._create_manager_activity(managers)
-
-        # Post a note in the chatter
-        self.message_post(
-            body=_('Plan sent for approval by %s.') % self.env.user.name
-        )
 
     # ------------------------------------------------------------
     # Action: Approve Plan  (manager only)
@@ -266,23 +292,9 @@ class SalesPlan(models.Model):
                 _('Only Sales Managers can approve plans.')
             )
 
+        # Notifications (email + activity + chatter) are handled centrally
+        # in write() so approval works via button, statusbar, or kanban drag.
         self.state = 'approved'
-
-        # Send confirmation to the salesperson
-        template = self.env.ref(
-            'sales_visit_plan.email_template_approval_confirmation',
-            raise_if_not_found=False,
-        )
-        if template:
-            template.send_mail(self.id)
-
-        # Schedule activity for the salesperson
-        self._create_salesperson_activity()
-
-        # Post a note in the chatter
-        self.message_post(
-            body=_('Plan approved by %s.') % self.env.user.name
-        )
 
     # ------------------------------------------------------------
     # Internal helpers
@@ -334,6 +346,140 @@ class SalesPlan(models.Model):
                 ),
             )
 
+    # ------------------------------------------------------------
+    # Scheduled action: notify managers about their salespersons'
+    # overdue activities (email + internal Inbox message).
+    # ------------------------------------------------------------
+    @api.model
+    def _cron_notify_overdue_activities(self):
+        """Runs daily. Collects overdue activities on sales plans / visit
+        lines, groups them per manager → salesperson, and sends each
+        manager a digest by email and as an internal message."""
+        today = fields.Date.today()
+        activities = self.env['mail.activity'].search([
+            ('date_deadline', '<', today),
+            ('res_model', 'in', ('sales.plan', 'sales.plan.line')),
+        ])
+        if not activities:
+            return
+
+        # buckets: manager.id -> {'manager': user, 'people': {sp.id: {...}}}
+        buckets = {}
+        for act in activities:
+            plan = self._plan_of_activity(act)
+            if not plan:
+                continue
+            managers = plan.manager_id or self._get_sales_managers_fallback()
+            salesperson = act.user_id or plan.user_id
+            for manager in managers:
+                if not manager:
+                    continue
+                mbucket = buckets.setdefault(
+                    manager.id, {'manager': manager, 'people': {}})
+                pbucket = mbucket['people'].setdefault(
+                    salesperson.id, {'user': salesperson, 'items': []})
+                pbucket['items'].append({
+                    'summary': (act.summary
+                                or act.activity_type_id.display_name
+                                or _('Activity')),
+                    'record': self._activity_record_name(act, plan),
+                    'deadline': act.date_deadline,
+                    'days': (today - act.date_deadline).days,
+                })
+
+        for data in buckets.values():
+            self._send_overdue_digest(data['manager'], data['people'])
+
+    def _plan_of_activity(self, act):
+        """Return the sales.plan tied to an activity (directly or via line)."""
+        if act.res_model == 'sales.plan':
+            return self.env['sales.plan'].browse(act.res_id).exists()
+        line = self.env['sales.plan.line'].browse(act.res_id).exists()
+        return line.plan_id if line else self.env['sales.plan']
+
+    def _activity_record_name(self, act, plan):
+        """Human label for the record the activity sits on."""
+        if act.res_model == 'sales.plan.line':
+            line = self.env['sales.plan.line'].browse(act.res_id).exists()
+            if line:
+                return _('%(line)s (Plan: %(plan)s)',
+                         line=line.display_name, plan=plan.name)
+        return _('Plan: %s') % plan.name
+
+    def _get_sales_managers_fallback(self):
+        """Managers to use when a plan has no explicit manager_id."""
+        group = self.env.ref(
+            'sales_visit_plan.group_sales_manager', raise_if_not_found=False)
+        return group.user_ids if group else self.env['res.users']
+
+    def _send_overdue_digest(self, manager, people):
+        """Build and send the overdue digest to one manager: email +
+        internal Inbox message."""
+        if not manager or not people:
+            return
+
+        total = sum(len(p['items']) for p in people.values())
+        blocks = []
+        for pdata in people.values():
+            sp = pdata['user']
+            rows = ''.join(
+                '<li>%s — <b>%s</b> '
+                '<span style="color:#c92a2a;">(%s — %s day(s) late)</span></li>' % (
+                    item['record'], item['summary'],
+                    item['deadline'], item['days'])
+                for item in pdata['items']
+            )
+            blocks.append(
+                '<div style="margin:10px 0;">'
+                '<div style="font-weight:bold;color:#087F5B;font-size:14px;">'
+                '%s <span style="color:#868e96;">(%s overdue)</span></div>'
+                '<ul style="margin:4px 0 0;">%s</ul></div>' % (
+                    sp.display_name or _('Undefined'),
+                    len(pdata['items']), rows)
+            )
+
+        body = (
+            '<div style="font-family:Arial,Helvetica,sans-serif;max-width:640px;">'
+            '<h2 style="color:#087F5B;">Overdue Visit Activities</h2>'
+            '<p>Dear %(manager)s,</p>'
+            '<p>The following <b>%(total)s</b> activity(ies) assigned to your '
+            'team in <b>Sales Visit Plans</b> are overdue and still open:</p>'
+            '%(blocks)s'
+            '<p style="color:#888;font-size:12px;margin-top:20px;">'
+            'Automated daily reminder from the Sales Visit Plan system.</p>'
+            '</div>'
+        ) % {
+            'manager': manager.name,
+            'total': total,
+            'blocks': ''.join(blocks),
+        }
+        subject = _('Overdue Visit Activities — %s item(s)') % total
+
+        # 1) Direct chat message from the System (OdooBot). This always lands
+        #    in the manager's Discuss chat window regardless of their
+        #    notification preference (unlike message_notify, which routes to
+        #    email for "Handle by Emails" users).
+        odoobot = self.env.ref('base.user_root', raise_if_not_found=False)
+        if manager.partner_id and odoobot:
+            channel = self.env['discuss.channel'].with_user(odoobot)._get_or_create_chat(
+                partners_to=[manager.partner_id.id],
+            )
+            channel.with_user(odoobot).message_post(
+                body=Markup(body),
+                subject=subject,
+                message_type='comment',
+                subtype_xmlid='mail.mt_comment',
+            )
+
+        # 2) Email — guaranteed copy in the manager's mailbox.
+        if manager.email:
+            self.env['mail.mail'].sudo().create({
+                'subject': subject,
+                'body_html': body,
+                'email_to': manager.email,
+                'auto_delete': True,
+            }).send()
+
 
 class SalesPlanLine(models.Model):
     _name = 'sales.plan.line'
@@ -364,18 +510,50 @@ class SalesPlanLine(models.Model):
         related='plan_id.user_id',
         store=True,
     )
-    doctor_name = fields.Char(
-        string='Doctor / Pharmacist Name',
+    visit_type = fields.Selection(
+        selection=[
+            ('doctor', 'Doctor'),
+            ('pharmacy', 'Pharmacy'),
+            ('meeting', 'Meeting'),
+        ],
+        string='Visit Type',
+        default='doctor',
         required=True,
         tracking=True,
+        help='Choose whether this record targets a doctor, a pharmacy, or '
+             'an internal meeting. The form shows only the relevant fields '
+             'for the chosen type. Internal meetings cannot be completed or '
+             'turned into an opportunity.',
+    )
+    doctor_name = fields.Char(
+        string='Doctor / Pharmacist Name',
+        tracking=True,
+    )
+    meeting_name = fields.Char(
+        string='Meeting Name',
+        tracking=True,
+    )
+    meeting_link = fields.Char(
+        string='Meeting Link',
+        tracking=True,
+        help='Paste the online meeting URL (Google Meet, Zoom, Teams…).',
+    )
+    meeting_event_id = fields.Many2one(
+        'calendar.event',
+        string='Calendar Meeting',
+        ondelete='set null',
+        copy=False,
+        help='The calendar event booked for this internal meeting.',
     )
     phone = fields.Char(
         string='Phone',
         tracking=True,
     )
-    specialty = fields.Char(
+    specialty_id = fields.Many2one(
+        'sales.doctor.specialty',
         string='Specialty',
         tracking=True,
+        help='The medical specialty of the doctor being visited.',
     )
     pharmacy_name = fields.Char(
         string='Pharmacy Name',
@@ -439,6 +617,20 @@ class SalesPlanLine(models.Model):
         string='Opportunity',
         tracking=True,
     )
+
+    # ------------------------------------------------------------
+    # Display name — pick the right label per visit type so meeting /
+    # pharmacy records are never shown as "Unnamed".
+    # ------------------------------------------------------------
+    @api.depends('visit_type', 'doctor_name', 'pharmacy_name', 'meeting_name')
+    def _compute_display_name(self):
+        for line in self:
+            if line.visit_type == 'meeting':
+                line.display_name = line.meeting_name or _('Meeting')
+            elif line.visit_type == 'pharmacy':
+                line.display_name = line.pharmacy_name or _('Pharmacy')
+            else:
+                line.display_name = line.doctor_name or _('Doctor')
 
     # ------------------------------------------------------------
     # Helper: keep all 3 kanban columns visible
@@ -534,10 +726,21 @@ class SalesPlanLine(models.Model):
         records._sync_coords_to_partner()
         # Schedule visit activity on the plan for lines that have a date
         records.filtered(lambda r: r.visit_date)._update_visit_activity()
+        # Book meetings on the calendar
+        records._sync_meeting_calendar_event()
         # Post creation message in chatter
         for rec in records:
-            rec.message_post(
-                body=_(
+            if rec.visit_type == 'meeting':
+                body = _(
+                    'Meeting created: %(name)s\n'
+                    'Link: %(link)s\n'
+                    'Date: %(date)s',
+                    name=rec.meeting_name or 'N/A',
+                    link=rec.meeting_link or 'N/A',
+                    date=rec.visit_date or 'N/A',
+                )
+            else:
+                body = _(
                     'Visit created for %(doctor)s\n'
                     'Phone: %(phone)s\n'
                     'Pharmacy: %(pharmacy)s\n'
@@ -547,7 +750,7 @@ class SalesPlanLine(models.Model):
                     pharmacy=rec.pharmacy_name or 'N/A',
                     date=rec.visit_date or 'N/A',
                 )
-            )
+            rec.message_post(body=body)
         return records
 
     def write(self, vals):
@@ -574,11 +777,16 @@ class SalesPlanLine(models.Model):
             vals.get('visit_stage') == 'repeat_visit'
             and not self.env.context.get('_convert_to_repeat')
         )
+        meeting_updated = date_updated or bool(
+            {'visit_type', 'meeting_name', 'meeting_link'} & set(vals)
+        )
         res = super().write(vals)
         if coords_updated or url_updated:
             self._sync_coords_to_partner()
         if date_updated:
             self._update_visit_activity()
+        if meeting_updated:
+            self._sync_meeting_calendar_event()
         if converted_via_drag:
             self.filtered(lambda r: r.visit_stage == 'repeat_visit').message_post(
                 body=_(
@@ -702,13 +910,22 @@ class SalesPlanLine(models.Model):
             if not line.visit_date or not line.plan_id:
                 continue
 
-            # Create a fresh activity on the visit line
-            line.activity_schedule(
-                activity_type_id=activity_type.id,
-                user_id=line.plan_id.user_id.id,
-                date_deadline=line.visit_date,
-                summary=_('Scheduled Visit: %(doctor)s', doctor=line.doctor_name),
-                note=_(
+            # Meeting lines get a meeting-named activity, others a visit one
+            if line.visit_type == 'meeting':
+                summary = _('Meeting: %(name)s',
+                            name=line.meeting_name or _('Untitled'))
+                note = _(
+                    'Meeting: %(name)s\n'
+                    'Link: %(link)s\n'
+                    'Date: %(date)s',
+                    name=line.meeting_name or 'N/A',
+                    link=line.meeting_link or 'N/A',
+                    date=line.visit_date,
+                )
+            else:
+                summary = _('Scheduled Visit: %(doctor)s',
+                            doctor=line.doctor_name)
+                note = _(
                     'Doctor: %(doctor)s\n'
                     'Pharmacy: %(pharmacy)s\n'
                     'Phone: %(phone)s\n'
@@ -717,12 +934,77 @@ class SalesPlanLine(models.Model):
                     pharmacy=line.pharmacy_name or 'N/A',
                     phone=line.phone or 'N/A',
                     date=line.visit_date,
-                ),
+                )
+
+            # Create a fresh activity on the visit line
+            line.activity_schedule(
+                activity_type_id=activity_type.id,
+                user_id=line.plan_id.user_id.id,
+                date_deadline=line.visit_date,
+                summary=summary,
+                note=note,
             )
 
     # ------------------------------------------------------------
+    # Calendar booking for internal meetings
+    # ------------------------------------------------------------
+    def _sync_meeting_calendar_event(self):
+        """Create / update / remove the calendar.event that books an
+        internal meeting.  Only 'meeting' lines with a date get an event;
+        switching a line away from 'meeting' (or clearing its date) drops
+        the booking so the calendar stays clean."""
+        Event = self.env['calendar.event']
+        for line in self:
+            keep = line.visit_type == 'meeting' and line.visit_date
+            if not keep:
+                if line.meeting_event_id:
+                    line.meeting_event_id.unlink()
+                continue
+
+            start = fields.Datetime.to_datetime(line.visit_date)
+            attendees = line.plan_id.user_id.partner_id
+            if line.plan_id.manager_id:
+                attendees |= line.plan_id.manager_id.partner_id
+            vals = {
+                'name': line.meeting_name or _('Internal Meeting'),
+                'start': start,
+                'stop': start,
+                'allday': True,
+                'user_id': line.plan_id.user_id.id or self.env.uid,
+                'partner_ids': [(6, 0, attendees.ids)],
+                'videocall_location': line.meeting_link or False,
+                'description': _(
+                    'Internal meeting scheduled from Sales Visit Plan "%(plan)s".',
+                    plan=line.plan_id.name,
+                ),
+            }
+            if line.meeting_event_id:
+                line.meeting_event_id.write(vals)
+            else:
+                line.meeting_event_id = Event.create(vals)
+
+    def unlink(self):
+        # Remove any calendar bookings tied to these lines first
+        self.mapped('meeting_event_id').unlink()
+        return super().unlink()
+
+    # ------------------------------------------------------------
+    _MEETING_BLOCK_MSG = (
+        'This is an internal meeting — not a doctor/pharmacy visit or a '
+        'potential opportunity. It cannot be marked as completed or turned '
+        'into a CRM lead.'
+    )
+
+    @api.constrains('visit_stage', 'visit_type')
+    def _check_meeting_not_completed(self):
+        for line in self:
+            if line.visit_type == 'meeting' and line.visit_stage == 'completed':
+                raise ValidationError(_(self._MEETING_BLOCK_MSG))
+
     def action_mark_completed(self):
         self.ensure_one()
+        if self.visit_type == 'meeting':
+            raise ValidationError(_(self._MEETING_BLOCK_MSG))
         self.visit_stage = 'completed'
         # Auto-create contact + CRM lead
         self._create_partner_and_lead()
@@ -735,10 +1017,14 @@ class SalesPlanLine(models.Model):
 
         # Create CRM lead
         lead = self.env['crm.lead'].create({
-            'name': '%s - %s' % (self.doctor_name, self.specialty or 'Visit'),
+            'name': '%s - %s' % (
+                self.doctor_name or self.pharmacy_name or _('Visit'),
+                self.specialty_id.name or 'Visit',
+            ),
             'partner_id': partner.id,
             'phone': self.phone,
             'type': 'opportunity',
+            'visit_type': self.visit_type,
             'description': '%s\nPharmacy: %s\nVisit Date: %s\nGifts: %s\nNotes: %s' % (
                 self.doctor_name,
                 self.pharmacy_name or 'N/A',
@@ -798,6 +1084,39 @@ class SalesPlanLine(models.Model):
         capture-phase click listener.  This exists only to satisfy the
         view validator (button type="object" requires a server method)."""
         return {'type': 'ir.actions.act_window_close'}
+
+
+class SalesDoctorSpecialty(models.Model):
+    _name = 'sales.doctor.specialty'
+    _description = 'Doctor Specialty'
+    _order = 'name'
+
+    name = fields.Char(
+        string='Specialty',
+        required=True,
+        translate=True,
+    )
+    active = fields.Boolean(default=True)
+
+    _name_uniq = models.Constraint(
+        'unique(name)',
+        'This specialty already exists.',
+    )
+
+
+class CrmLead(models.Model):
+    _inherit = 'crm.lead'
+
+    visit_type = fields.Selection(
+        selection=[
+            ('doctor', 'Doctor'),
+            ('pharmacy', 'Pharmacy'),
+        ],
+        string='Visit Type',
+        help='Set from the Sales Visit Plan when the visit is marked as '
+             'completed. Shows whether this opportunity came from a doctor '
+             'or a pharmacy visit.',
+    )
 
 
 class SalesVisitLineConvertWizard(models.TransientModel):

@@ -1,0 +1,176 @@
+// ============================================================================
+//  Sales Visit Plan — visual identity for the Doctor / Pharmacy distinction
+//  One signature: a two-tone "identity chip" reused across every kanban,
+//  plus a segmented toggle that turns the form's type radio into the hero.
+// ============================================================================
+
+// --- Design tokens -----------------------------------------------------------
+:root {
+    --svp-doctor-tint:   #eef2ff;
+    --svp-doctor-line:   #c7d2fe;
+    --svp-doctor-ink:    #3730a3;
+    --svp-doctor-solid:  #4263eb;
+
+    --svp-pharm-tint:    #e6fcf5;
+    --svp-pharm-line:    #96f2d7;
+    --svp-pharm-ink:     #087f5b;
+    --svp-pharm-solid:   #0ca678;
+
+    --svp-meet-tint:     #f3f0ff;
+    --svp-meet-line:     #d0bfff;
+    --svp-meet-ink:      #6741d9;
+    --svp-meet-solid:    #7048e8;
+
+    --svp-track:         #f1f3f5;
+    --svp-hairline:      #e9ecef;
+}
+
+// ---------------------------------------------------------------------------
+//  1. Identity chip — the shared signature (kanban cards, CRM leads)
+// ---------------------------------------------------------------------------
+.o_svp_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 11px 2px 3px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1;
+    white-space: nowrap;
+
+    // Leading medallion holding the icon
+    .o_svp_chip__dot {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 19px;
+        height: 19px;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 10px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.25);
+    }
+
+    &.o_svp_chip--doctor {
+        background: var(--svp-doctor-tint);
+        border-color: var(--svp-doctor-line);
+        color: var(--svp-doctor-ink);
+        .o_svp_chip__dot {
+            background: linear-gradient(135deg, #5c7cfa, var(--svp-doctor-solid));
+        }
+    }
+
+    &.o_svp_chip--pharmacy {
+        background: var(--svp-pharm-tint);
+        border-color: var(--svp-pharm-line);
+        color: var(--svp-pharm-ink);
+        .o_svp_chip__dot {
+            background: linear-gradient(135deg, #20c997, var(--svp-pharm-solid));
+        }
+    }
+
+    &.o_svp_chip--meeting {
+        background: var(--svp-meet-tint);
+        border-color: var(--svp-meet-line);
+        color: var(--svp-meet-ink);
+        .o_svp_chip__dot {
+            background: linear-gradient(135deg, #9775fa, var(--svp-meet-solid));
+        }
+    }
+}
+
+// A slim colour rail on the leading edge of a visit-line kanban card,
+// so the whole card reads as "doctor" or "pharmacy" at a glance.
+.o_svp_line_card {
+    position: relative;
+    border-inline-start: 3px solid var(--svp-hairline);
+    padding-inline-start: 9px !important;
+    transition: border-color 0.15s ease;
+
+    &.o_svp_line_card--doctor   { border-inline-start-color: var(--svp-doctor-solid); }
+    &.o_svp_line_card--pharmacy { border-inline-start-color: var(--svp-pharm-solid); }
+    &.o_svp_line_card--meeting  { border-inline-start-color: var(--svp-meet-solid); }
+}
+
+// ---------------------------------------------------------------------------
+//  2. Segmented toggle — the hero control in the visit-line form
+// ---------------------------------------------------------------------------
+.o_svp_type_toggle {
+    // The field wrapper becomes the grey track
+    .o_field_radio {
+        display: inline-block;
+        padding: 4px;
+        background: var(--svp-track);
+        border: 1px solid var(--svp-hairline);
+        border-radius: 14px;
+    }
+
+    // Odoo renders the radiogroup as a <div class="o_horizontal"> — make it the row
+    .o_horizontal {
+        display: flex;
+        gap: 4px;
+    }
+
+    // Hide the native radio dot — the whole label becomes the target
+    .o_radio_input { display: none; }
+
+    // .o_radio_item is a bootstrap .form-check — strip its input gutter
+    .o_radio_item.form-check {
+        margin: 0;
+        padding: 0;
+        min-height: 0;
+    }
+
+    label.o_form_label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        padding: 9px 22px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        color: #868e96;
+        transition: all 0.16s ease;
+
+        &::before {
+            font-family: "FontAwesome";
+            font-size: 15px;
+        }
+    }
+
+    // Icons per lane (1st = Doctor, 2nd = Pharmacy, 3rd = Meeting)
+    .o_radio_item:nth-child(1) label.o_form_label::before { content: "\f0f0"; } // user-md
+    .o_radio_item:nth-child(2) label.o_form_label::before { content: "\f0fa"; } // medkit
+    .o_radio_item:nth-child(3) label.o_form_label::before { content: "\f073"; } // calendar
+
+    .o_radio_item:hover label.o_form_label { color: #495057; }
+
+    // Selected lane lights up in its own colour
+    .o_radio_item:nth-child(1):has(.o_radio_input:checked) label.o_form_label {
+        background: #fff;
+        color: var(--svp-doctor-ink);
+        box-shadow: 0 2px 6px rgba(66, 99, 235, 0.18);
+    }
+    .o_radio_item:nth-child(2):has(.o_radio_input:checked) label.o_form_label {
+        background: #fff;
+        color: var(--svp-pharm-ink);
+        box-shadow: 0 2px 6px rgba(12, 166, 120, 0.18);
+    }
+    .o_radio_item:nth-child(3):has(.o_radio_input:checked) label.o_form_label {
+        background: #fff;
+        color: var(--svp-meet-ink);
+        box-shadow: 0 2px 6px rgba(112, 72, 232, 0.18);
+    }
+}
+
+// Respect reduced-motion preferences
+@media (prefers-reduced-motion: reduce) {
+    .o_svp_line_card,
+    .o_svp_type_toggle label.o_form_label { transition: none; }
+}

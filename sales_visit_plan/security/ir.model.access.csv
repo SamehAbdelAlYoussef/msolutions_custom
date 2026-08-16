@@ -4,3 +4,6 @@ access_sales_plan_manager,sales.plan.manager,model_sales_plan,sales_visit_plan.g
 access_sales_plan_line_user,sales.plan.line.user,model_sales_plan_line,base.group_user,1,1,1,1
 access_sales_plan_line_manager,sales.plan.line.manager,model_sales_plan_line,sales_visit_plan.group_sales_manager,1,1,1,1
 access_sales_visit_line_convert_wizard,sales.visit.line.convert.wizard,model_sales_visit_line_convert_wizard,base.group_user,1,1,1,1
+access_sales_doctor_specialty_user,sales.doctor.specialty.user,model_sales_doctor_specialty,base.group_user,1,0,0,0
+access_sales_doctor_specialty_manager,sales.doctor.specialty.manager,model_sales_doctor_specialty,sales_visit_plan.group_sales_manager,1,1,1,1
+access_sales_visit_kpi_wizard,sales.visit.kpi.wizard,model_sales_visit_kpi_wizard,sales_visit_plan.group_sales_manager,1,1,1,1

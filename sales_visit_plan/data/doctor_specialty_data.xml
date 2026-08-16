@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============================================================
+             Seed list of doctor specialties (editable by managers).
+             Loaded as data so the Specialty picklist is always populated,
+             even on databases created without demo data.
+             ============================================================ -->
+        <record id="spec_cardiology" model="sales.doctor.specialty">
+            <field name="name">Cardiology</field>
+        </record>
+        <record id="spec_pediatrics" model="sales.doctor.specialty">
+            <field name="name">Pediatrics</field>
+        </record>
+        <record id="spec_internal_medicine" model="sales.doctor.specialty">
+            <field name="name">Internal Medicine</field>
+        </record>
+        <record id="spec_dermatology" model="sales.doctor.specialty">
+            <field name="name">Dermatology</field>
+        </record>
+        <record id="spec_orthopedics" model="sales.doctor.specialty">
+            <field name="name">Orthopedics</field>
+        </record>
+        <record id="spec_ent" model="sales.doctor.specialty">
+            <field name="name">ENT (Otolaryngology)</field>
+        </record>
+        <record id="spec_neurology" model="sales.doctor.specialty">
+            <field name="name">Neurology</field>
+        </record>
+        <record id="spec_gynecology" model="sales.doctor.specialty">
+            <field name="name">Gynecology &amp; Obstetrics</field>
+        </record>
+        <record id="spec_ophthalmology" model="sales.doctor.specialty">
+            <field name="name">Ophthalmology</field>
+        </record>
+        <record id="spec_urology" model="sales.doctor.specialty">
+            <field name="name">Urology</field>
+        </record>
+        <record id="spec_psychiatry" model="sales.doctor.specialty">
+            <field name="name">Psychiatry</field>
+        </record>
+        <record id="spec_general_surgery" model="sales.doctor.specialty">
+            <field name="name">General Surgery</field>
+        </record>
+        <record id="spec_gastroenterology" model="sales.doctor.specialty">
+            <field name="name">Gastroenterology</field>
+        </record>
+        <record id="spec_endocrinology" model="sales.doctor.specialty">
+            <field name="name">Endocrinology &amp; Diabetes</field>
+        </record>
+        <record id="spec_oncology" model="sales.doctor.specialty">
+            <field name="name">Oncology</field>
+        </record>
+        <record id="spec_pulmonology" model="sales.doctor.specialty">
+            <field name="name">Pulmonology (Chest)</field>
+        </record>
+        <record id="spec_nephrology" model="sales.doctor.specialty">
+            <field name="name">Nephrology</field>
+        </record>
+        <record id="spec_rheumatology" model="sales.doctor.specialty">
+            <field name="name">Rheumatology</field>
+        </record>
+        <record id="spec_dentistry" model="sales.doctor.specialty">
+            <field name="name">Dentistry</field>
+        </record>
+        <record id="spec_family_medicine" model="sales.doctor.specialty">
+            <field name="name">Family Medicine</field>
+        </record>
+        <record id="spec_anesthesiology" model="sales.doctor.specialty">
+            <field name="name">Anesthesiology</field>
+        </record>
+        <record id="spec_radiology" model="sales.doctor.specialty">
+            <field name="name">Radiology</field>
+        </record>
+        <record id="spec_hematology" model="sales.doctor.specialty">
+            <field name="name">Hematology</field>
+        </record>
+        <record id="spec_vascular_surgery" model="sales.doctor.specialty">
+            <field name="name">Vascular Surgery</field>
+        </record>
+        <record id="spec_plastic_surgery" model="sales.doctor.specialty">
+            <field name="name">Plastic Surgery</field>
+        </record>
+
+    </data>
+</odoo>

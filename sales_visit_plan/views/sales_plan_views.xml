@@ -10,9 +10,13 @@
         <field name="model">sales.plan.line</field>
         <field name="arch" type="xml">
             <list string="Visit Lines" editable="bottom">
+                <field name="plan_id" required="1"
+                       column_invisible="context.get('default_plan_id')"
+                       options="{'no_create': True}"/>
+                <field name="visit_type" optional="show"/>
                 <field name="doctor_name"/>
                 <field name="phone" optional="show"/>
-                <field name="specialty" optional="show"/>
+                <field name="specialty_id" optional="show"/>
                 <field name="pharmacy_name" optional="show"/>
                 <field name="location_details" widget="html" optional="show"/>
                 <field name="visit_stage" widget="badge" optional="show"/>
@@ -36,11 +40,40 @@
 
                 <templates>
                     <t t-name="card">
-                        <div class="oe_kanban_global_click">
+                        <field name="visit_type" invisible="1"/>
+                        <div class="oe_kanban_global_click o_svp_line_card"
+                             t-attf-class="o_svp_line_card--{{ record.visit_type.raw_value }}">
+                            <!-- Visit type identity chip (top of card) -->
+                            <div class="mb-2">
+                                <span t-if="record.visit_type.raw_value == 'doctor'"
+                                      class="o_svp_chip o_svp_chip--doctor">
+                                    <span class="o_svp_chip__dot"><i class="fa fa-user-md" title="Doctor"/></span>
+                                    Doctor
+                                </span>
+                                <span t-if="record.visit_type.raw_value == 'pharmacy'"
+                                      class="o_svp_chip o_svp_chip--pharmacy">
+                                    <span class="o_svp_chip__dot"><i class="fa fa-medkit" title="Pharmacy"/></span>
+                                    Pharmacy
+                                </span>
+                                <span t-if="record.visit_type.raw_value == 'meeting'"
+                                      class="o_svp_chip o_svp_chip--meeting">
+                                    <span class="o_svp_chip__dot"><i class="fa fa-calendar" title="Meeting"/></span>
+                                    Meeting
+                                </span>
+                            </div>
+
                             <!-- Card header -->
                             <div class="o_kanban_card_header">
                                 <div class="o_kanban_card_header_title">
-                                    <field name="doctor_name"/>
+                                    <t t-if="record.visit_type.raw_value == 'pharmacy'">
+                                        <field name="pharmacy_name"/>
+                                    </t>
+                                    <t t-elif="record.visit_type.raw_value == 'meeting'">
+                                        <field name="meeting_name"/>
+                                    </t>
+                                    <t t-else="">
+                                        <field name="doctor_name"/>
+                                    </t>
                                 </div>
                             </div>
 
@@ -49,8 +82,8 @@
                                 <div t-if="record.phone.raw_value" class="text-muted mb-1">
                                     <i class="fa fa-phone me-1" title="Phone"/> <field name="phone"/>
                                 </div>
-                                <div t-if="record.specialty.raw_value" class="text-muted mb-1">
-                                    <i class="fa fa-stethoscope me-1" title="Specialty"/> <field name="specialty"/>
+                                <div t-if="record.specialty_id.raw_value" class="text-muted mb-1">
+                                    <i class="fa fa-stethoscope me-1" title="Specialty"/> <field name="specialty_id"/>
                                 </div>
                                 <div t-if="record.pharmacy_name.raw_value" class="text-muted mb-1">
                                     <i class="fa fa-medkit me-1" title="Pharmacy"/> <field name="pharmacy_name"/>
@@ -73,6 +106,8 @@
                                        decoration-success="visit_stage == 'completed'"
                                        decoration-info="visit_stage == 'first_visit'"
                                        decoration-warning="visit_stage == 'repeat_visit'"/>
+                                <!-- Activity indicator (red clock when overdue) -->
+                                <field name="activity_ids" widget="kanban_activity"/>
                                 <t t-if="record.visit_stage.raw_value == 'first_visit'">
                                     <button type="object"
                                             name="action_convert_to_repeat"
@@ -87,14 +122,27 @@
                 <!-- Fallback form for inline creation from the embedded kanban -->
                 <form>
                     <group>
-                        <field name="doctor_name"/>
-                        <field name="phone"/>
-                        <field name="specialty"/>
-                        <field name="pharmacy_name"/>
+                        <field name="visit_type" widget="radio"
+                               options="{'horizontal': true}"/>
+                        <field name="doctor_name" string="Doctor Name"
+                               invisible="visit_type != 'doctor'"
+                               required="visit_type == 'doctor'"/>
+                        <field name="specialty_id" options="{'no_create': True}"
+                               invisible="visit_type != 'doctor'"/>
+                        <field name="pharmacy_name" string="Pharmacy Name"
+                               invisible="visit_type != 'pharmacy'"
+                               required="visit_type == 'pharmacy'"/>
+                        <field name="meeting_name" string="اسم الميتنج"
+                               invisible="visit_type != 'meeting'"
+                               required="visit_type == 'meeting'"/>
+                        <field name="meeting_link" string="رابط الميتنج" widget="url"
+                               invisible="visit_type != 'meeting'"/>
+                        <field name="phone" invisible="visit_type == 'meeting'"/>
                         <field name="visit_stage"/>
                         <field name="visit_date"/>
-                        <field name="gift_ids" widget="many2many_tags"/>
-                        <field name="gift_notes"/>
+                        <field name="gift_ids" widget="many2many_tags"
+                               invisible="visit_type == 'meeting'"/>
+                        <field name="gift_notes" invisible="visit_type == 'meeting'"/>
                     </group>
                 </form>
             </kanban>
@@ -114,7 +162,7 @@
                             type="object"
                             string="Mark as Completed"
                             class="btn-primary"
-                            invisible="visit_stage == 'completed'"/>
+                            invisible="visit_stage == 'completed' or visit_type == 'meeting'"/>
                     <button name="action_mark_planned"
                             type="object"
                             string="Reopen as Planned"
@@ -124,20 +172,19 @@
                             type="object"
                             string="Convert to Repeat"
                             class="btn-warning"
-                            invisible="visit_stage != 'first_visit'"/>
+                            invisible="visit_stage != 'first_visit' or visit_type == 'meeting'"/>
                     <button name="onClickGetLocation"
                             type="object"
                             string="📍 Get My Location"
                             class="btn-outline-primary"
                             title="Use your device GPS to capture the current location"
-                            invisible="visit_stage == 'completed'"/>
+                            invisible="visit_stage == 'completed' or visit_type == 'meeting'"/>
                     <field name="visit_stage" widget="statusbar"
                            statusbar_visible="first_visit,repeat_visit,completed"
                            clickable="1"/>
                 </header>
                 <sheet>
                     <!-- Warning banner when parent plan is waiting for approval -->
-                    <field name="plan_id" invisible="1"/>
                     <field name="plan_locked" invisible="1"/>
                     <div class="alert alert-warning text-center" role="alert"
                          invisible="not plan_locked">
@@ -173,20 +220,63 @@
                         </div>
                     </button>
                 </div>
+                    <!-- Visit type selector — the hero control, pinned top-right -->
+                    <div class="o_svp_type_toggle d-flex justify-content-end my-3">
+                        <field name="visit_type" widget="radio"
+                               options="{'horizontal': true}"
+                               readonly="plan_locked"
+                               nolabel="1"/>
+                    </div>
                     <group>
-                        <field name="doctor_name" readonly="plan_locked"/>
-                        <field name="phone" readonly="plan_locked"/>
-                        <field name="specialty" readonly="plan_locked"/>
-                        <field name="pharmacy_name" readonly="plan_locked"/>
-                        <field name="visit_date" readonly="plan_locked"/>
+                        <!-- Plan: pickable when opened standalone, hidden when
+                             created from within a plan (context sets it) -->
+                        <field name="plan_id"
+                               options="{'no_create': True}"
+                               readonly="plan_locked"
+                               invisible="context.get('default_plan_id')"/>
+                        <!-- Doctor fields -->
+                        <field name="doctor_name" string="Doctor Name"
+                               readonly="plan_locked"
+                               invisible="visit_type != 'doctor'"
+                               required="visit_type == 'doctor'"/>
+                        <field name="specialty_id" readonly="plan_locked"
+                               options="{'no_create': True}"
+                               invisible="visit_type != 'doctor'"/>
+                        <!-- Pharmacy fields -->
+                        <field name="pharmacy_name" string="Pharmacy Name"
+                               readonly="plan_locked"
+                               invisible="visit_type != 'pharmacy'"
+                               required="visit_type == 'pharmacy'"/>
+                        <!-- Meeting fields -->
+                        <field name="meeting_name" string="اسم الميتنج"
+                               readonly="plan_locked"
+                               invisible="visit_type != 'meeting'"
+                               required="visit_type == 'meeting'"/>
+                        <field name="meeting_link" string="رابط الميتنج"
+                               widget="url" readonly="plan_locked"
+                               placeholder="https://meet.google.com/..."
+                               invisible="visit_type != 'meeting'"/>
+                        <!-- Phone (doctor / pharmacy only) -->
+                        <field name="phone" readonly="plan_locked"
+                               invisible="visit_type == 'meeting'"/>
+                        <!-- Date: label changes for meetings -->
+                        <field name="visit_date" string="Scheduled Visit Date"
+                               readonly="plan_locked"
+                               invisible="visit_type == 'meeting'"/>
+                        <field name="visit_date" string="موعد الميتنج"
+                               readonly="plan_locked"
+                               invisible="visit_type != 'meeting'"/>
+                        <!-- Location (doctor / pharmacy only) -->
                         <field name="location_url" widget="url" readonly="plan_locked"
-                               placeholder="https://maps.google.com/?q=..."/>
+                               placeholder="https://maps.google.com/?q=..."
+                               invisible="visit_type == 'meeting'"/>
                         <field name="location_details" widget="html" readonly="plan_locked"
-                               placeholder="Detailed address will appear here..."/>
+                               placeholder="Detailed address will appear here..."
+                               invisible="visit_type == 'meeting'"/>
                         <field name="partner_latitude" invisible="1"/>
                         <field name="partner_longitude" invisible="1"/>
                     </group>
-                    <group string="Gifts">
+                    <group string="Gifts" invisible="visit_type == 'meeting'">
                         <field name="gift_ids" widget="many2many_tags" readonly="plan_locked"/>
                         <field name="gift_notes" readonly="plan_locked"/>
                     </group>
@@ -311,6 +401,13 @@
                                            decoration-info="state == 'new'"/>
                                 </div>
                             </button>
+
+                            <!-- Activity indicator: shows whether this plan has
+                                 pending activities; the clock turns red when
+                                 an activity is overdue -->
+                            <div class="d-flex align-items-center mt-1">
+                                <field name="activity_ids" widget="kanban_activity"/>
+                            </div>
 
                             <!-- Approve button for managers (outside main click area) -->
                             <t t-if="record.state.raw_value == 'to_approve'">
@@ -567,6 +664,57 @@
                             string="Confirm &amp; Convert" class="btn-warning"/>
                 </footer>
             </form>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Inherit CRM Lead Kanban: show Doctor / Pharmacy badge on top
+         (for leads created from a completed sales visit)
+         ================================================================ -->
+    <record id="crm_lead_kanban_visit_type" model="ir.ui.view">
+        <field name="name">crm.lead.kanban.visit.type</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_lead_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="visit_type" invisible="1"/>
+                <div class="mb-1" t-if="record.visit_type.raw_value">
+                    <span t-if="record.visit_type.raw_value == 'doctor'"
+                          class="o_svp_chip o_svp_chip--doctor">
+                        <span class="o_svp_chip__dot"><i class="fa fa-user-md" title="Doctor"/></span>
+                        Doctor
+                    </span>
+                    <span t-if="record.visit_type.raw_value == 'pharmacy'"
+                          class="o_svp_chip o_svp_chip--pharmacy">
+                        <span class="o_svp_chip__dot"><i class="fa fa-medkit" title="Pharmacy"/></span>
+                        Pharmacy
+                    </span>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Same badge on the Leads/Pipeline kanban (crm_case_kanban_view_leads) -->
+    <record id="crm_case_kanban_view_leads_visit_type" model="ir.ui.view">
+        <field name="name">crm.lead.kanban.lead.visit.type</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="visit_type" invisible="1"/>
+                <div class="mb-1" t-if="record.visit_type.raw_value">
+                    <span t-if="record.visit_type.raw_value == 'doctor'"
+                          class="o_svp_chip o_svp_chip--doctor">
+                        <span class="o_svp_chip__dot"><i class="fa fa-user-md" title="Doctor"/></span>
+                        Doctor
+                    </span>
+                    <span t-if="record.visit_type.raw_value == 'pharmacy'"
+                          class="o_svp_chip o_svp_chip--pharmacy">
+                        <span class="o_svp_chip__dot"><i class="fa fa-medkit" title="Pharmacy"/></span>
+                        Pharmacy
+                    </span>
+                </div>
+            </xpath>
         </field>
     </record>
 

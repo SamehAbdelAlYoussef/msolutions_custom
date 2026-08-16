@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="sales_visit_kpi_wizard_form" model="ir.ui.view">
+        <field name="name">sales.visit.kpi.wizard.form</field>
+        <field name="model">sales.visit.kpi.wizard</field>
+        <field name="arch" type="xml">
+            <form string="KPI Report">
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fa fa-file-excel-o me-2"/>
+                        Set the filters then click "Download Excel".
+                        Leave the fields empty to include all salespersons
+                        and all periods.
+                    </div>
+                    <group>
+                        <group string="Period">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group string="Salespersons">
+                            <field name="user_ids" widget="many2many_tags"
+                                   placeholder="Empty = all salespersons"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_generate_xlsx" type="object"
+                            string="Download Excel" class="btn-primary"/>
+                    <button special="cancel" string="Cancel"
+                            class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="sales_visit_kpi_wizard_action" model="ir.actions.act_window">
+        <field name="name">KPI Report (Excel)</field>
+        <field name="res_model">sales.visit.kpi.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_sales_visit_kpi"
+              name="KPI Report"
+              parent="menu_sales_visit_root"
+              action="sales_visit_kpi_wizard_action"
+              groups="sales_visit_plan.group_sales_manager"
+              sequence="30"/>
+
+</odoo>

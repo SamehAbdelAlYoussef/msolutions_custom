@@ -24,11 +24,11 @@
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
-        <!-- Managers see plans assigned to them (+ their own plans) -->
+        <!-- Managers oversee the whole team: full access to all plans -->
         <record id="ir_rule_sales_plan_manager" model="ir.rule">
-            <field name="name">Manager: assigned plans + own plans</field>
+            <field name="name">Manager: all plans</field>
             <field name="model_id" ref="model_sales_plan"/>
-            <field name="domain_force">['|', ('manager_id', '=', user.id), ('user_id', '=', user.id)]</field>
+            <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_sales_manager'))]"/>
         </record>
 
@@ -42,11 +42,11 @@
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
-        <!-- Managers see lines of assigned plans + own plans -->
+        <!-- Managers oversee the whole team: full access to all visit lines -->
         <record id="ir_rule_sales_plan_line_manager" model="ir.rule">
-            <field name="name">Manager: assigned plan lines + own plan lines</field>
+            <field name="name">Manager: all plan lines</field>
             <field name="model_id" ref="model_sales_plan_line"/>
-            <field name="domain_force">['|', ('plan_id.manager_id', '=', user.id), ('plan_id.user_id', '=', user.id)]</field>
+            <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_sales_manager'))]"/>
         </record>
 

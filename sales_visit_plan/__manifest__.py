@@ -25,15 +25,19 @@
         - Copy-ready for distribution with safe defaults.
     """,
     'author': 'Msoulatioons',
-    'depends': ['base', 'mail', 'product', 'crm'],
+    'depends': ['base', 'mail', 'product', 'crm', 'calendar'],
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
+        'data/doctor_specialty_data.xml',
         'data/email_templates.xml',
+        'data/cron_data.xml',
         'views/sales_plan_views.xml',
+        'wizard/kpi_report_wizard_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
+            'sales_visit_plan/static/src/scss/visit_type.scss',
             'sales_visit_plan/static/src/js/get_location.js',
             'sales_visit_plan/static/src/js/kanban_drag_wizard.js',
         ],
