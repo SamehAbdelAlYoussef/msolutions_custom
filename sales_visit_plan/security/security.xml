@@ -50,5 +50,49 @@
             <field name="groups" eval="[(4, ref('group_sales_manager'))]"/>
         </record>
 
+        <!-- === sales.requisition rules === -->
+
+        <!-- Users see requisitions they created OR are an approver on -->
+        <record id="ir_rule_requisition_user" model="ir.rule">
+            <field name="name">Requisition: own or awaiting my approval</field>
+            <field name="model_id" ref="model_sales_requisition"/>
+            <field name="domain_force">['|', ('user_id', '=', user.id), ('approval_line_ids.approver_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        <record id="ir_rule_requisition_manager" model="ir.rule">
+            <field name="name">Requisition: manager sees all</field>
+            <field name="model_id" ref="model_sales_requisition"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_sales_manager'))]"/>
+        </record>
+
+        <!-- === sales.requisition.approval rules === -->
+        <record id="ir_rule_requisition_approval_user" model="ir.rule">
+            <field name="name">Approval step: own requisition or my step</field>
+            <field name="model_id" ref="model_sales_requisition_approval"/>
+            <field name="domain_force">['|', ('requisition_id.user_id', '=', user.id), ('approver_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        <record id="ir_rule_requisition_approval_manager" model="ir.rule">
+            <field name="name">Approval step: manager sees all</field>
+            <field name="model_id" ref="model_sales_requisition_approval"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_sales_manager'))]"/>
+        </record>
+
+        <!-- === sales.requisition.line rules === -->
+        <record id="ir_rule_requisition_line_user" model="ir.rule">
+            <field name="name">Requisition line: own or awaiting my approval</field>
+            <field name="model_id" ref="model_sales_requisition_line"/>
+            <field name="domain_force">['|', ('requisition_id.user_id', '=', user.id), ('requisition_id.approval_line_ids.approver_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        <record id="ir_rule_requisition_line_manager" model="ir.rule">
+            <field name="name">Requisition line: manager sees all</field>
+            <field name="model_id" ref="model_sales_requisition_line"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_sales_manager'))]"/>
+        </record>
+
     </data>
 </odoo>

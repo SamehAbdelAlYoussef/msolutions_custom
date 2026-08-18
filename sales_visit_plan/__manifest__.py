@@ -32,7 +32,9 @@
         'data/doctor_specialty_data.xml',
         'data/email_templates.xml',
         'data/cron_data.xml',
+        'data/requisition_data.xml',
         'views/sales_plan_views.xml',
+        'views/requisition_views.xml',
         'wizard/kpi_report_wizard_views.xml',
     ],
     'assets': {
