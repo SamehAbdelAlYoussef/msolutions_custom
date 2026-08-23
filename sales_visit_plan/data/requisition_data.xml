@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Reference sequence: REQ/00001 -->
+        <record id="seq_sales_requisition" model="ir.sequence">
+            <field name="name">Sales Requisition</field>
+            <field name="code">sales.requisition</field>
+            <field name="prefix">REQ/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- ============================================================
+             Default approval chain. Edit these (Sales Visit Plans →
+             Configuration → Approval Stages) to match your real
+             departments and set the right approver for each. The active
+             stages, in sequence order, are copied onto every new
+             requisition.
+             ============================================================ -->
+        <record id="req_stage_sales_manager" model="sales.requisition.stage">
+            <field name="sequence">10</field>
+            <field name="name">Sales Manager</field>
+            <field name="approver_id" ref="base.user_admin"/>
+        </record>
+
+        <record id="req_stage_marketing" model="sales.requisition.stage">
+            <field name="sequence">20</field>
+            <field name="name">Marketing Department</field>
+            <field name="approver_id" ref="base.user_admin"/>
+        </record>
+
+        <record id="req_stage_finance" model="sales.requisition.stage">
+            <field name="sequence">30</field>
+            <field name="name">Finance Department</field>
+            <field name="approver_id" ref="base.user_admin"/>
+        </record>
+
+    </data>
+</odoo>

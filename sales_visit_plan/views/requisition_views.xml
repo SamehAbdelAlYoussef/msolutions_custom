@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         Approval Stage (template) views
+         ================================================================ -->
+    <record id="requisition_stage_view_list" model="ir.ui.view">
+        <field name="name">sales.requisition.stage.list</field>
+        <field name="model">sales.requisition.stage</field>
+        <field name="arch" type="xml">
+            <list string="Approval Stages" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="approver_id"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="requisition_stage_view_form" model="ir.ui.view">
+        <field name="name">sales.requisition.stage.form</field>
+        <field name="model">sales.requisition.stage</field>
+        <field name="arch" type="xml">
+            <form string="Approval Stage">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="approver_id"/>
+                        <field name="sequence"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="requisition_stage_action" model="ir.actions.act_window">
+        <field name="name">Approval Stages</field>
+        <field name="res_model">sales.requisition.stage</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Define your approval chain</p>
+            <p>Each stage is a department/step with a single default approver.
+               The active stages, in order, are copied onto every new
+               requisition.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Requisition form
+         ================================================================ -->
+    <record id="requisition_view_form" model="ir.ui.view">
+        <field name="name">sales.requisition.form</field>
+        <field name="model">sales.requisition</field>
+        <field name="arch" type="xml">
+            <form string="Sales Requisition">
+                <header>
+                    <button name="action_submit" type="object"
+                            string="Submit for Approval" class="btn-primary"
+                            invisible="state != 'draft'"
+                            confirm="Once submitted the requisition starts its approval chain and can no longer be edited. Continue?"/>
+                    <button name="action_approve" type="object"
+                            string="Approve Step" class="btn-success"
+                            invisible="not can_approve"
+                            confirm="Approve the current step?"/>
+                    <button name="action_reject" type="object"
+                            string="Reject" class="btn-danger"
+                            invisible="not can_approve"
+                            confirm="Reject this requisition?"/>
+                    <button name="action_reset_to_draft" type="object"
+                            string="Reset to Draft" class="btn-secondary"
+                            invisible="state not in ('rejected', 'to_approve')"
+                            groups="sales_visit_plan.group_sales_manager"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,to_approve,approved"/>
+                </header>
+                <sheet>
+                    <field name="can_approve" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="user_id" readonly="1"/>
+                            <field name="request_type" readonly="state != 'draft'"/>
+                            <field name="doctor_name" readonly="state != 'draft'"/>
+                            <field name="partner_id" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="date_request" readonly="state != 'draft'"/>
+                            <field name="plan_id" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   readonly="state != 'draft'"/>
+                            <field name="current_approver_id" readonly="1"
+                                   invisible="state != 'to_approve'"/>
+                            <field name="product_qty_total"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Requested Products" name="products">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Approval Chain" name="approvals">
+                            <!-- The default active chain is filled in
+                                 automatically on create. Only Sales Managers
+                                 may tweak it (and only while in Draft). -->
+                            <button name="action_reset_chain" type="object"
+                                    string="Reset to default chain"
+                                    class="btn-link" icon="fa-refresh"
+                                    invisible="state != 'draft'"
+                                    groups="sales_visit_plan.group_sales_manager"/>
+
+                            <!-- Manager view: editable in Draft -->
+                            <field name="approval_line_ids"
+                                   groups="sales_visit_plan.group_sales_manager"
+                                   readonly="state != 'draft'">
+                                <list editable="bottom" default_order="sequence, id">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="approver_id"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'approved'"
+                                           decoration-danger="state == 'rejected'"
+                                           decoration-warning="state == 'to_approve'"
+                                           decoration-muted="state == 'pending'"
+                                           readonly="1"/>
+                                    <field name="approved_by_id" readonly="1" optional="show"/>
+                                    <field name="approved_date" readonly="1" optional="show"/>
+                                    <button name="action_approve" type="object"
+                                            string="Approve" class="btn-success btn-sm"
+                                            icon="fa-check"
+                                            invisible="state != 'to_approve'"/>
+                                    <button name="action_reject" type="object"
+                                            string="Reject" class="btn-danger btn-sm"
+                                            icon="fa-times"
+                                            invisible="state != 'to_approve'"/>
+                                </list>
+                            </field>
+
+                            <!-- Normal-user view: always read-only. The
+                                 approve/reject buttons still work for the
+                                 assigned approver of the active step. -->
+                            <field name="approval_line_ids"
+                                   groups="!sales_visit_plan.group_sales_manager"
+                                   readonly="1">
+                                <list create="false" delete="false"
+                                      default_order="sequence, id">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="approver_id"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'approved'"
+                                           decoration-danger="state == 'rejected'"
+                                           decoration-warning="state == 'to_approve'"
+                                           decoration-muted="state == 'pending'"/>
+                                    <field name="approved_by_id" optional="show"/>
+                                    <field name="approved_date" optional="show"/>
+                                    <button name="action_approve" type="object"
+                                            string="Approve" class="btn-success btn-sm"
+                                            icon="fa-check"
+                                            invisible="state != 'to_approve'"/>
+                                    <button name="action_reject" type="object"
+                                            string="Reject" class="btn-danger btn-sm"
+                                            icon="fa-times"
+                                            invisible="state != 'to_approve'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Justification" name="justification">
+                            <field name="description" nolabel="1"
+                                   placeholder="Explain why this requisition is needed..."
+                                   readonly="state != 'draft'"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Requisition list / kanban / search
+         ================================================================ -->
+    <record id="requisition_view_list" model="ir.ui.view">
+        <field name="name">sales.requisition.list</field>
+        <field name="model">sales.requisition</field>
+        <field name="arch" type="xml">
+            <list string="Requisitions"
+                  decoration-muted="state == 'rejected'"
+                  decoration-success="state == 'approved'">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="request_type"/>
+                <field name="doctor_name" optional="show"/>
+                <field name="date_request"/>
+                <field name="current_approver_id" optional="show"/>
+                <field name="product_qty_total" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-warning="state == 'to_approve'"
+                       decoration-info="state == 'draft'"
+                       decoration-danger="state == 'rejected'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="requisition_view_kanban" model="ir.ui.view">
+        <field name="name">sales.requisition.kanban</field>
+        <field name="model">sales.requisition</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column"
+                    group_create="false" sample="1">
+                <progressbar field="state"
+                             colors='{"draft": "info", "to_approve": "warning", "approved": "success", "rejected": "danger"}'/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <field name="name"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_content">
+                                <div class="mb-1">
+                                    <i class="fa fa-user me-1" title="Requester"/>
+                                    <field name="user_id"/>
+                                </div>
+                                <div t-if="record.doctor_name.raw_value" class="text-muted mb-1">
+                                    <i class="fa fa-user-md me-1" title="Beneficiary"/>
+                                    <field name="doctor_name"/>
+                                </div>
+                                <div t-if="record.current_approver_id.raw_value" class="text-muted small">
+                                    <i class="fa fa-hourglass-half me-1" title="Current approver"/>
+                                    <field name="current_approver_id"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_footer">
+                                <field name="state" widget="label_selection"
+                                       options="{'classes': {'draft': 'info', 'to_approve': 'warning', 'approved': 'success', 'rejected': 'danger'}}"/>
+                                <field name="activity_ids" widget="kanban_activity"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="requisition_view_search" model="ir.ui.view">
+        <field name="name">sales.requisition.search</field>
+        <field name="model">sales.requisition</field>
+        <field name="arch" type="xml">
+            <search string="Search Requisitions">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="doctor_name"/>
+                <separator/>
+                <filter string="My Requisitions" name="my_reqs"
+                        domain="[('user_id', '=', uid)]"/>
+                <filter string="Awaiting My Approval" name="awaiting_me"
+                        domain="[('approval_line_ids.approver_id', '=', uid), ('approval_line_ids.state', '=', 'to_approve')]"/>
+                <separator/>
+                <filter string="Draft" name="f_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Under Approval" name="f_to_approve" domain="[('state', '=', 'to_approve')]"/>
+                <filter string="Approved" name="f_approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="Rejected" name="f_rejected" domain="[('state', '=', 'rejected')]"/>
+                <separator/>
+                <filter string="Requester" name="group_user" context="{'group_by': 'user_id'}"/>
+                <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                <filter string="Type" name="group_type" context="{'group_by': 'request_type'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="requisition_action" model="ir.actions.act_window">
+        <field name="name">Requisitions</field>
+        <field name="res_model">sales.requisition</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="requisition_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create your first requisition</p>
+            <p>Request gifts for a doctor or authorization to dispense
+               products, then send it through the approval chain.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         Menus — under the existing Sales Visit Plans app root
+         ================================================================ -->
+    <menuitem id="menu_sales_requisition"
+              name="Requisitions"
+              parent="menu_sales_visit_root"
+              action="requisition_action"
+              sequence="15"/>
+
+    <menuitem id="menu_sales_visit_config"
+              name="Configuration"
+              parent="menu_sales_visit_root"
+              sequence="90"
+              groups="sales_visit_plan.group_sales_manager"/>
+
+    <menuitem id="menu_sales_requisition_stages"
+              name="Approval Stages"
+              parent="menu_sales_visit_config"
+              action="requisition_stage_action"
+              sequence="10"/>
+
+</odoo>
