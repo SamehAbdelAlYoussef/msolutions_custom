@@ -89,7 +89,7 @@
     <!-- sequence 1: the control plane should be the first thing an
          administrator sees. web_icon renders it in the apps grid. -->
     <menuitem id="menu_saas_root" name="SaaS" sequence="1"
-              web_icon="msolutions_saas,static/description/icon.png"
+              web_icon="msolutions_saas,static/description/icon.svg"
               groups="msolutions_saas.group_saas_developer"/>
     <menuitem id="menu_saas_dashboard" name="Tenants" sequence="10"
               parent="menu_saas_root" action="action_saas_dashboard"/>
