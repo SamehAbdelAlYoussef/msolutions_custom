@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The dashboard the task asked for. -->
+    <record id="action_saas_dashboard" model="ir.actions.client">
+        <field name="name">Tenants</field>
+        <field name="tag">msolutions_saas.dashboard</field>
+    </record>
+
+    <!-- Plain views kept alongside it: when provisioning fails, the raw record
+         is the fastest way to read the traceback and retry. -->
+    <record id="view_saas_tenant_list" model="ir.ui.view">
+        <field name="name">saas.tenant.list</field>
+        <field name="model">saas.tenant</field>
+        <field name="arch" type="xml">
+            <list string="Tenants">
+                <field name="name"/>
+                <field name="company_name"/>
+                <field name="url" widget="url"/>
+                <field name="create_date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-danger="state == 'error'"
+                       decoration-info="state in ('provisioning', 'terminating')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_saas_tenant_form" model="ir.ui.view">
+        <field name="name">saas.tenant.form</field>
+        <field name="model">saas.tenant</field>
+        <field name="arch" type="xml">
+            <form string="Tenant">
+                <header>
+                    <button name="action_provision" type="object" string="Create"
+                            class="btn-primary"
+                            invisible="state not in ('draft', 'error')"/>
+                    <button name="action_open_url" type="object" string="Open"
+                            invisible="state != 'active'"/>
+                    <button name="action_drop" type="object" string="Drop"
+                            class="btn-danger"
+                            confirm="This permanently deletes the database and its filestore. There is no backup. Continue?"
+                            invisible="state not in ('active', 'error')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,provisioning,active"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="acme"
+                                   readonly="state != 'draft'"/></h1>
+                        <field name="url" widget="url" readonly="1"
+                               invisible="not name"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_name"/>
+                        </group>
+                        <group>
+                            <field name="admin_login" readonly="state != 'draft'"/>
+                            <field name="admin_password" readonly="1"
+                                   invisible="not admin_password"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-danger" role="alert"
+                         invisible="state != 'error'">
+                        <field name="error_message" readonly="1" nolabel="1"/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_saas_tenant_records" model="ir.actions.act_window">
+        <field name="name">Tenant Records</field>
+        <field name="res_model">saas.tenant</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- sequence 1: the control plane should be the first thing an
+         administrator sees. web_icon renders it in the apps grid. -->
+    <menuitem id="menu_saas_root" name="SaaS" sequence="1"
+              web_icon="msolutions_saas,static/description/icon.png"
+              groups="msolutions_saas.group_saas_manager"/>
+    <menuitem id="menu_saas_dashboard" name="Tenants" sequence="10"
+              parent="menu_saas_root" action="action_saas_dashboard"/>
+    <menuitem id="menu_saas_records" name="Tenant Records" sequence="20"
+              parent="menu_saas_root" action="action_saas_tenant_records"/>
+
+</odoo>
