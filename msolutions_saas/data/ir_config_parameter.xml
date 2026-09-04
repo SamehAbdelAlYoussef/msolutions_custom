@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: changing the domain later must survive a module upgrade. -->
+    <data noupdate="1">
+        <record id="param_base_domain" model="ir.config_parameter">
+            <field name="key">msolutions_saas.base_domain</field>
+            <field name="value">msolutions-eg.com</field>
+        </record>
+
+        <!-- Split from the domain so a development instance can say http and
+             localhost instead of advertising a production URL that 404s. -->
+        <record id="param_base_scheme" model="ir.config_parameter">
+            <field name="key">msolutions_saas.base_scheme</field>
+            <field name="value">https</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Odoo 19 removed res.groups.category_id; core groups now carry only
+         name / comment / implied_ids / user_ids. -->
+    <record id="group_saas_manager" model="res.groups">
+        <field name="name">SaaS Manager</field>
+        <field name="comment">Can create and drop tenant databases.</field>
+        <field name="implied_ids" eval="[Command.link(ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Administrators get it automatically, so nobody has to hand out the
+         group before the menu appears. -->
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids"
+               eval="[Command.link(ref('msolutions_saas.group_saas_manager'))]"/>
+    </record>
+
+</odoo>
