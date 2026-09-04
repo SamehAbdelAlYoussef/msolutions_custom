@@ -14,7 +14,6 @@ class SaasConfig(models.Model):
         "config_id",
         "module_id",
         string="Default Apps",
-        domain="[('application', '=', True)]",
         help="Apps installed automatically in every new tenant database. "
              "Can be overridden per tenant in the Apps tab.",
     )
