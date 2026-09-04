@@ -438,6 +438,14 @@ class SaasTenant(models.Model):
                 self._drop_database_raw()
             self._provision_database()
             self._provision_odoo()
+            # Install extra modules BEFORE granting web ownership.
+            # Objects created by the extra-module subprocess are owned by
+            # odoo_provision. Granting ownership after all installs ensures
+            # odoo_web can SELECT/INSERT on every table including those added
+            # by sales, accounting, discuss, etc. Granting before caused a
+            # 500 on any tenant with extra modules (permission denied on
+            # discuss_channel, account_move, and ~400 other objects).
+            self._install_extra_modules()
             self._grant_web_ownership()
             self.write({
                 "state": "active",
@@ -446,7 +454,6 @@ class SaasTenant(models.Model):
             })
             self._log("provision_ok")
             _logger.info("SaaS: tenant %s is active", self.name)
-            self._install_extra_modules()
         except Exception as exc:  # noqa: BLE001 - recorded on the record
             _logger.exception("SaaS: provisioning tenant %s failed", self.name)
             self.write({"state": "error", "error_message": str(exc)})
