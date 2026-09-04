@@ -16,9 +16,10 @@ jobs:
         with:
           host:     ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          key:  ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          key:      ${{ secrets.SSH_PRIVATE_KEY }}
+          port:     22
           script: |
-            cd ${{ secrets.CUSTOM_PATH }}
+            cd /opt/odoo/msolutions_custom
             git pull origin main
-            sudo systemctl restart ${{ secrets.ODOO_SERVICE }}
+            cd /opt/odoo
+            docker-compose restart odoo_web odoo_gevent odoo_worker
