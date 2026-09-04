@@ -13,9 +13,12 @@ class SaasConfig(models.Model):
         "saas_config_default_module_rel",
         "config_id",
         "module_id",
-        string="Default Apps",
-        help="Apps installed automatically in every new tenant database. "
-             "Can be overridden per tenant in the Apps tab.",
+        string="Default Modules",
+        # No application=True filter: technical modules (themes, web addons,
+        # e.g. ica_web_responsive) must be selectable, not just app-level modules.
+        domain="[('state', 'in', ['installed', 'uninstalled', 'to install'])]",
+        help="Modules installed automatically in every new tenant database. "
+             "Includes apps AND technical modules (themes, web modules, etc.).",
     )
 
     @api.model

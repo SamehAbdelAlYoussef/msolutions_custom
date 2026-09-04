@@ -1,3 +1,11 @@
+// Full-width inside the form field wrapper
+.o_field_widget.o_field_saas_logs {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    grid-column: 1 / -1;
+}
+
 $lg-navy:   #0D2B45;
 $lg-teal:   #00A693;
 $lg-amber:  #D97706;

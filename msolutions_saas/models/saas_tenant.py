@@ -118,8 +118,8 @@ class SaasTenant(models.Model):
         "saas_tenant_module_rel",
         "tenant_id",
         "module_id",
-        string="Apps to Install",
-        domain="[('application', '=', True)]",
+        string="Modules to Install",
+        domain="[('state', 'in', ['installed', 'uninstalled', 'to install'])]",
         default=lambda self: self.env["saas.config"]._get().default_module_ids,
         help="Installed automatically when the tenant is provisioned. "
              "Edit before clicking Create; cannot be changed after provisioning.",
