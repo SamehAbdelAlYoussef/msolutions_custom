@@ -147,8 +147,48 @@ class SaasTenant(models.Model):
     # User actions
     # ------------------------------------------------------------------
 
+    # ------------------------------------------------------------------
+    # Security helpers
+    # ------------------------------------------------------------------
+
+    @api.model
+    def _check_developer_group(self):
+        """Raise if the calling user is not in group_saas_developer.
+
+        Called at the entry of every @api.model method reachable over RPC.
+        The access CSV and ir.rule are the primary gates; this is the third
+        layer so that a CSV bypass (e.g. a sudo() in a third-party module
+        that touches this model) does not silently give a plain user access.
+        """
+        if not self.env.user.has_group("msolutions_saas.group_saas_developer"):
+            raise UserError(_(
+                "Access denied: the SaaS Developer role is required.",
+            ))
+
+    def _log(self, action, detail=None):
+        """Write one immutable audit entry for this tenant.
+
+        Uses sudo() so cron calls (uid=1) write the log without needing the
+        developer group. user_id is captured from the *original* env uid
+        before sudo() replaces it with the superuser, so user-triggered
+        actions record the authenticated user, not uid=1.
+        """
+        self.ensure_one()
+        self.env["saas.audit.log"].sudo().create({
+            "tenant_id": self.id,
+            "tenant_name": self.name,
+            "user_id": self.env.uid,
+            "action": action,
+            "detail": detail or False,
+        })
+
+    # ------------------------------------------------------------------
+    # User actions
+    # ------------------------------------------------------------------
+
     def action_provision(self):
         """Queue the tenant for creation. The cron does the work."""
+        self._check_developer_group()
         self._assert_control_plane()
         for tenant in self:
             if tenant.state not in ("draft", "error"):
@@ -168,6 +208,8 @@ class SaasTenant(models.Model):
             "state_since": fields.Datetime.now(),
         })
         self._trigger_cron()
+        for tenant in self:
+            tenant._log("provision_queued")
         return True
 
     def action_drop(self):
@@ -176,6 +218,7 @@ class SaasTenant(models.Model):
         The confirmation lives in the client action; by the time this runs the
         user has already typed the tenant name back.
         """
+        self._check_developer_group()
         self._assert_control_plane()
         for tenant in self:
             if tenant.state not in ("active", "error"):
@@ -189,6 +232,8 @@ class SaasTenant(models.Model):
             "state_since": fields.Datetime.now(),
         })
         self._trigger_cron()
+        for tenant in self:
+            tenant._log("drop_queued")
         return True
 
     def action_retry(self):
@@ -204,6 +249,7 @@ class SaasTenant(models.Model):
         Retry is refused for an ever-active tenant: re-provisioning drops the
         database, and a tenant that was ever live holds real customer data.
         """
+        self._check_developer_group()
         self._assert_control_plane()
         self.ensure_one()
         if self.state != "error":
@@ -224,9 +270,11 @@ class SaasTenant(models.Model):
             "state_since": fields.Datetime.now(),
         })
         self._trigger_cron()
+        self._log("retry_queued")
         return True
 
     def action_open_url(self):
+        self._check_developer_group()
         self.ensure_one()
         return {"type": "ir.actions.act_url", "url": self.url, "target": "new"}
 
@@ -360,10 +408,12 @@ class SaasTenant(models.Model):
                 "ever_active": True,
                 "error_message": False,
             })
+            self._log("provision_ok")
             _logger.info("SaaS: tenant %s is active", self.name)
         except Exception as exc:  # noqa: BLE001 - recorded on the record
             _logger.exception("SaaS: provisioning tenant %s failed", self.name)
             self.write({"state": "error", "error_message": str(exc)})
+            self._log("provision_failed", detail=str(exc)[:2000])
         # The database was created outside this transaction, so the record must
         # be committed even on failure -- otherwise a rollback loses the only
         # pointer to a database that now exists.
@@ -375,10 +425,12 @@ class SaasTenant(models.Model):
         try:
             self._drop_database()
             self.write({"state": "terminated", "error_message": False})
+            self._log("drop_ok")
             _logger.info("SaaS: tenant %s terminated", self.name)
         except Exception as exc:  # noqa: BLE001 - recorded on the record
             _logger.exception("SaaS: dropping tenant %s failed", self.name)
             self.write({"state": "error", "error_message": str(exc)})
+            self._log("drop_failed", detail=str(exc)[:2000])
         self.env.cr.commit()
 
     # ------------------------------------------------------------------
