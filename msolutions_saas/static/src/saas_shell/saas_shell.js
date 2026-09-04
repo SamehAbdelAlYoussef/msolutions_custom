@@ -102,5 +102,4 @@ class SaasShellField extends Component {
 registry.category("fields").add("saas_shell", {
     component: SaasShellField,
     supportedTypes: ["integer"],
-    readonly: true,
 });

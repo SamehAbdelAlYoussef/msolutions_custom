@@ -29,18 +29,20 @@ class TestSaasSecurity(TransactionCase):
         self.addCleanup(p.stop)
 
         dev_group = self.env.ref("msolutions_saas.group_saas_developer")
-        user_group = self.env.ref("base.group_user")
 
+        # In Odoo 19, groups_id cannot be set during res.users.create —
+        # the field is populated via sel_groups_* computed fields.
+        # Assign groups in a separate write() call instead.
         self.plain_user = self.env["res.users"].create({
             "name": "Plain User",
             "login": "plain_sec@test.com",
-            "groups_id": [(6, 0, [user_group.id])],
         })
         self.dev_user = self.env["res.users"].create({
             "name": "Developer User",
             "login": "dev_sec@test.com",
-            "groups_id": [(6, 0, [user_group.id, dev_group.id])],
         })
+        # Odoo 19: field is group_ids (not groups_id)
+        self.dev_user.write({"group_ids": [(4, dev_group.id)]})
 
     # ------------------------------------------------------------------
     # Access control — @api.model RPC methods

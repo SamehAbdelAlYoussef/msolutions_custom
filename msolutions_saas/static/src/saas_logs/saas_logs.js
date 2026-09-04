@@ -59,5 +59,4 @@ class SaasLogsField extends Component {
 registry.category("fields").add("saas_logs", {
     component: SaasLogsField,
     supportedTypes: ["integer"],
-    readonly: true,
 });

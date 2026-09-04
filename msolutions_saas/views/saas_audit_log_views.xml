@@ -23,21 +23,14 @@
         <field name="name">saas.audit.log.search</field>
         <field name="model">saas.audit.log</field>
         <field name="arch" type="xml">
-            <search string="Search Audit Log">
-
-                <field name="tenant_name" string="Tenant"/>
-                <field name="user_id" string="User"/>
-                <field name="detail" string="Detail"/>
-
+            <search>
                 <filter name="filter_success" string="Succeeded"
                         domain="[('action', 'in', ['provision_ok', 'drop_ok'])]"/>
                 <filter name="filter_failed" string="Failed"
                         domain="[('action', 'in', ['provision_failed', 'drop_failed'])]"/>
                 <filter name="filter_queued" string="Queued"
                         domain="[('action', 'in', ['provision_queued', 'drop_queued', 'retry_queued'])]"/>
-
                 <separator/>
-
                 <filter name="filter_provision" string="Provisioning"
                         domain="[('action', 'in', ['provision_queued', 'provision_ok', 'provision_failed'])]"/>
                 <filter name="filter_drop" string="Drops"
@@ -46,18 +39,15 @@
                         domain="[('action', '=', 'retry_queued')]"/>
                 <filter name="filter_shell" string="Shell Queries"
                         domain="[('action', '=', 'shell_query')]"/>
-
-                <group expand="0" string="Group By">
-                    <filter name="group_tenant" string="Tenant"
-                            context="{'group_by': 'tenant_name'}"/>
-                    <filter name="group_user" string="User"
-                            context="{'group_by': 'user_id'}"/>
-                    <filter name="group_action" string="Action"
-                            context="{'group_by': 'action'}"/>
-                    <filter name="group_date" string="Date"
-                            context="{'group_by': 'create_date:day'}"/>
-                </group>
-
+                <separator/>
+                <filter name="group_tenant" string="By Tenant"
+                        context="{'group_by': 'tenant_name'}"/>
+                <filter name="group_user" string="By User"
+                        context="{'group_by': 'user_id'}"/>
+                <filter name="group_action" string="By Action"
+                        context="{'group_by': 'action'}"/>
+                <filter name="group_date" string="By Date"
+                        context="{'group_by': 'create_date:day'}"/>
             </search>
         </field>
     </record>
