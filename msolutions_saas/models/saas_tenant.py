@@ -638,6 +638,41 @@ class SaasTenant(models.Model):
             shutil.rmtree(filestore, ignore_errors=True)
 
 
+    def unlink(self):
+        """Delete tenant records, dropping the real database first.
+
+        Keeps the ORM record and the PostgreSQL database in sync so deleting
+        from the list view does not leave an orphan database behind.
+
+        Two cases:
+          - Database exists: take a safety backup (for ever-active tenants),
+            drop the database and filestore, then delete the record.
+          - Database already gone (orphan record / failed provision that was
+            never initialised): delete the record immediately.
+
+        DROP DATABASE requires the odoo_provision role. On the web tier
+        (odoo_web, no CREATEDB/DROP privilege) this will fail if the database
+        still exists -- use the Drop button in that case so the worker handles
+        it under the correct role. On a single-role local setup it works fine.
+        """
+        self._check_developer_group()
+        self._assert_control_plane()
+        for tenant in self:
+            if tenant._database_exists():
+                try:
+                    tenant._drop_database()
+                except Exception as exc:
+                    raise UserError(_(
+                        "Cannot delete '%(name)s': the database exists but "
+                        "could not be dropped (%(err)s).\n\n"
+                        "Use the Drop button so the worker handles it with "
+                        "the correct database role, then delete the record "
+                        "once it reaches Terminated.",
+                        name=tenant.name, err=str(exc)[:200],
+                    )) from exc
+            tenant._log("drop_ok")
+        return super().unlink()
+
     # ------------------------------------------------------------------
     # Client action data
     # ------------------------------------------------------------------
