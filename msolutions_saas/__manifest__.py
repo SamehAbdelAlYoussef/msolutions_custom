@@ -33,6 +33,7 @@ The work runs in ``ir.cron``, not in the web request, because installing
         'data/ir_cron.xml',
         'views/saas_tenant_views.xml',
         'views/saas_audit_log_views.xml',
+        'views/saas_config_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

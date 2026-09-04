@@ -75,6 +75,23 @@
                          invisible="state != 'error'">
                         <field name="error_message" readonly="1" nolabel="1"/>
                     </div>
+                    <notebook>
+                        <page string="Apps" name="apps">
+                            <!-- Editable only before provisioning; once the
+                                 tenant is active the list has no effect. -->
+                            <div class="alert alert-info mb-3" role="alert"
+                                 invisible="state == 'draft'">
+                                Apps are installed during provisioning.
+                                This list has no effect after the tenant is created.
+                            </div>
+                            <field name="module_ids"
+                                   widget="many2many_tags"
+                                   domain="[('application', '=', True)]"
+                                   options="{'no_create': True, 'no_quick_create': True}"
+                                   readonly="state != 'draft'"
+                                   placeholder="Select apps to install…"/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

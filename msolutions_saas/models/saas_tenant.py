@@ -5,6 +5,7 @@ import secrets
 import shutil
 import subprocess
 import string
+import sys
 from contextlib import closing
 from datetime import timedelta
 
@@ -84,6 +85,21 @@ class SaasTenant(models.Model):
     # re-provision an ever-active tenant, because that drops the database and a
     # live tenant holds real customer data.
     ever_active = fields.Boolean(readonly=True, copy=False, default=False)
+
+    # Apps to install right after base is initialised. Defaults to the global
+    # SaaS configuration so every new tenant starts with the same stack, but
+    # can be trimmed or extended per tenant before provisioning.
+    module_ids = fields.Many2many(
+        "ir.module.module",
+        "saas_tenant_module_rel",
+        "tenant_id",
+        "module_id",
+        string="Apps to Install",
+        domain="[('application', '=', True)]",
+        default=lambda self: self.env["saas.config"]._get().default_module_ids,
+        help="Installed automatically when the tenant is provisioned. "
+             "Edit before clicking Create; cannot be changed after provisioning.",
+    )
 
     # Odoo 19 dropped _sql_constraints -- it is now ignored with a log warning.
     _name_uniq = models.Constraint(
@@ -406,6 +422,7 @@ class SaasTenant(models.Model):
             })
             self._log("provision_ok")
             _logger.info("SaaS: tenant %s is active", self.name)
+            self._install_extra_modules()
         except Exception as exc:  # noqa: BLE001 - recorded on the record
             _logger.exception("SaaS: provisioning tenant %s failed", self.name)
             self.write({"state": "error", "error_message": str(exc)})
@@ -471,6 +488,50 @@ class SaasTenant(models.Model):
         # has to be confirmed rather than assumed.
         self._assert_initialized()
         self.admin_password = password
+
+    def _install_extra_modules(self):
+        """Install the tenant's selected apps after base is initialised.
+
+        Runs odoo-bin in a subprocess so the tenant registry loads and
+        exits in that process, never inside the worker.  A failure is
+        logged and recorded on the record but does NOT set state='error':
+        base is already installed and the tenant is usable; the operator
+        can install the missing apps manually.
+        """
+        self.ensure_one()
+        module_names = self.module_ids.mapped("name")
+        if not module_names:
+            return
+
+        _logger.info(
+            "SaaS: installing extra modules %s for tenant %s",
+            module_names, self.name,
+        )
+        cfg = odoo.tools.config
+        cmd = [
+            sys.executable, sys.argv[0],
+            "-c", cfg.rcfile,
+            "-d", self.name,
+            "-i", ",".join(module_names),
+            "--stop-after-init",
+            "--no-http",
+        ]
+        try:
+            subprocess.run(cmd, check=True, capture_output=True, timeout=600)
+            _logger.info("SaaS: extra modules installed for %s", self.name)
+        except subprocess.CalledProcessError as exc:
+            stderr = (exc.stderr or b"").decode(errors="replace")
+            _logger.error(
+                "SaaS: module installation failed for %s: %s",
+                self.name, stderr[:500],
+            )
+            # Keep state='active' — tenant is alive, apps just didn't land.
+            self.write({
+                "error_message": _(
+                    "Tenant is active but app installation failed.\n%(err)s",
+                    err=stderr[:400] or str(exc),
+                ),
+            })
 
     def _assert_initialized(self):
         self.ensure_one()
