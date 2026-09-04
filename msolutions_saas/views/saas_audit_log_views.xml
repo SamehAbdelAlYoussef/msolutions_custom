@@ -5,8 +5,8 @@
         <field name="name">saas.audit.log.list</field>
         <field name="model">saas.audit.log</field>
         <field name="arch" type="xml">
-            <!-- create/edit/delete disabled: the log is append-only. -->
-            <list string="Audit Log" create="false" edit="false" delete="false">
+            <list string="Audit Log" create="false" edit="false" delete="false"
+                  default_order="create_date desc">
                 <field name="create_date" string="When"/>
                 <field name="user_id" string="Who"/>
                 <field name="tenant_name" string="Tenant"/>
@@ -19,10 +19,78 @@
         </field>
     </record>
 
+    <record id="view_saas_audit_log_search" model="ir.ui.view">
+        <field name="name">saas.audit.log.search</field>
+        <field name="model">saas.audit.log</field>
+        <field name="arch" type="xml">
+            <search string="Search Audit Log">
+
+                <!-- Search fields -->
+                <field name="tenant_name" string="Tenant"/>
+                <field name="user_id" string="User"/>
+                <field name="detail" string="Detail"/>
+
+                <!-- Quick filters by action outcome -->
+                <filter name="filter_success"
+                        string="Succeeded"
+                        domain="[('action', 'in', ('provision_ok', 'drop_ok'))]"/>
+                <filter name="filter_failed"
+                        string="Failed"
+                        domain="[('action', 'in', ('provision_failed', 'drop_failed'))]"/>
+                <filter name="filter_queued"
+                        string="Queued"
+                        domain="[('action', 'in', ('provision_queued', 'drop_queued', 'retry_queued'))]"/>
+
+                <separator/>
+
+                <!-- Filter by action type -->
+                <filter name="filter_provision"
+                        string="Provisioning"
+                        domain="[('action', 'like', 'provision')]"/>
+                <filter name="filter_drop"
+                        string="Drops"
+                        domain="[('action', 'like', 'drop')]"/>
+                <filter name="filter_retry"
+                        string="Retries"
+                        domain="[('action', '=', 'retry_queued')]"/>
+
+                <separator/>
+
+                <!-- Time filters -->
+                <filter name="filter_today"
+                        string="Today"
+                        domain="[('create_date', '>=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)).strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter name="filter_this_week"
+                        string="This Week"
+                        domain="[('create_date', '>=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+
+                <!-- Group by options -->
+                <group expand="0" string="Group By">
+                    <filter name="group_tenant"
+                            string="Tenant"
+                            context="{'group_by': 'tenant_name'}"/>
+                    <filter name="group_user"
+                            string="User"
+                            context="{'group_by': 'user_id'}"/>
+                    <filter name="group_action"
+                            string="Action"
+                            context="{'group_by': 'action'}"/>
+                    <filter name="group_date"
+                            string="Date"
+                            context="{'group_by': 'create_date:day'}"/>
+                </group>
+
+            </search>
+        </field>
+    </record>
+
     <record id="action_saas_audit_log" model="ir.actions.act_window">
         <field name="name">Audit Log</field>
         <field name="res_model">saas.audit.log</field>
         <field name="view_mode">list</field>
+        <field name="search_view_id" ref="view_saas_audit_log_search"/>
+        <!-- Show failures first by default -->
+        <field name="context">{'search_default_filter_failed': 0}</field>
     </record>
 
     <menuitem id="menu_saas_audit_log" name="Audit Log" sequence="30"
