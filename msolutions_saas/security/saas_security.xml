@@ -1,19 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Odoo 19 removed res.groups.category_id; core groups now carry only
-         name / comment / implied_ids / user_ids. -->
+    <!-- Kept for backward compatibility: group_saas_developer implies this,
+         so users in the developer group still satisfy any external reference
+         to group_saas_manager. It is no longer the module's access gate. -->
     <record id="group_saas_manager" model="res.groups">
         <field name="name">SaaS Manager</field>
         <field name="comment">Can create and drop tenant databases.</field>
         <field name="implied_ids" eval="[Command.link(ref('base.group_user'))]"/>
     </record>
 
-    <!-- Administrators get it automatically, so nobody has to hand out the
-         group before the menu appears. -->
+    <!-- Single gating group for the entire module. Every model, menu, action,
+         and method is restricted to this group. Admins get it automatically
+         via group_system below. To grant access to a non-admin, add them to
+         this group in Settings → Users. -->
+    <record id="group_saas_developer" model="res.groups">
+        <field name="name">SaaS Developer</field>
+        <field name="comment">Full access to the SaaS control plane: tenants, audit log, metrics.</field>
+        <field name="implied_ids" eval="[Command.link(ref('msolutions_saas.group_saas_manager'))]"/>
+    </record>
+
+    <!-- Administrators get group_saas_developer automatically. -->
     <record id="base.group_system" model="res.groups">
         <field name="implied_ids"
-               eval="[Command.link(ref('msolutions_saas.group_saas_manager'))]"/>
+               eval="[Command.link(ref('msolutions_saas.group_saas_developer'))]"/>
+    </record>
+
+    <!-- Record rules — defence layer 2 of 3.
+
+         Layer 1: ir.model.access.csv — blocks the ORM for all non-members.
+         Layer 2: ir.rule (here) — record-level filter checked after the ORM
+                  grants access. Protects against cases where a third-party
+                  module uses sudo() to bypass layer 1: the rule still applies
+                  because group rules are evaluated per-request, not per-role.
+         Layer 3: _check_developer_group() in saas_tenant.py — explicit code
+                  check at the entry of every @api.model method reachable over
+                  RPC, so a direct JSON-RPC call cannot skip layers 1 and 2.
+
+         Group rule with [(1,'=',1)]: members of group_saas_developer can see
+         all records in that model. Non-members have no applicable rule and
+         the ORM returns an empty recordset; combined with perm_read=0 in the
+         CSV, they never reach this layer. -->
+
+    <record id="rule_saas_tenant_developer" model="ir.rule">
+        <field name="name">saas.tenant: developers only</field>
+        <field name="model_id" ref="model_saas_tenant"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('msolutions_saas.group_saas_developer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_saas_audit_log_developer" model="ir.rule">
+        <field name="name">saas.audit.log: developers only</field>
+        <field name="model_id" ref="model_saas_audit_log"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('msolutions_saas.group_saas_developer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
     </record>
 
 </odoo>

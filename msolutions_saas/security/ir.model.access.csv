@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_saas_tenant_manager,saas.tenant.manager,model_saas_tenant,group_saas_manager,1,1,1,1
+access_saas_tenant_developer,saas.tenant.developer,model_saas_tenant,group_saas_developer,1,1,1,1
+access_saas_audit_log_developer,saas.audit.log.developer,model_saas_audit_log,group_saas_developer,1,0,1,0

@@ -144,10 +144,6 @@ class SaasTenant(models.Model):
                 ))
 
     # ------------------------------------------------------------------
-    # User actions
-    # ------------------------------------------------------------------
-
-    # ------------------------------------------------------------------
     # Security helpers
     # ------------------------------------------------------------------
 
@@ -649,7 +645,20 @@ class SaasTenant(models.Model):
     @api.model
     def dashboard_data(self):
         """Everything the dashboard needs, in one call."""
+        self._check_developer_group()
         tenants = self.search([])
+
+        # Show each password exactly once: collect it now, clear the field,
+        # return it in this response. The next poll finds admin_password empty.
+        # If two requests race at exactly the same moment, at worst the password
+        # is shown in both responses -- acceptable given the control-plane
+        # context. The record never holds the password beyond the first call.
+        to_clear = tenants.filtered(lambda t: t.admin_password)
+        password_map = {t.id: t.admin_password for t in to_clear}
+        if to_clear:
+            # write() is overridden on saas.audit.log, not here; this is fine.
+            to_clear.write({"admin_password": False})
+
         return {
             "base_domain": self._base_domain(),
             "tenants": [
@@ -660,7 +669,7 @@ class SaasTenant(models.Model):
                     "state": t.state,
                     "url": t.url,
                     "admin_login": t.admin_login,
-                    "admin_password": t.admin_password or "",
+                    "admin_password": password_map.get(t.id, ""),
                     "error_message": t.error_message or "",
                 }
                 for t in tenants
@@ -670,6 +679,7 @@ class SaasTenant(models.Model):
     @api.model
     def create_tenant(self, name, company_name=None):
         """Create the record and queue it, in one call from the dashboard."""
+        self._check_developer_group()
         tenant = self.create({
             "name": (name or "").strip().lower(),
             "company_name": company_name or False,

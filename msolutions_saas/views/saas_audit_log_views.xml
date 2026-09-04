@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_saas_audit_log_list" model="ir.ui.view">
+        <field name="name">saas.audit.log.list</field>
+        <field name="model">saas.audit.log</field>
+        <field name="arch" type="xml">
+            <!-- create/edit/delete disabled: the log is append-only. -->
+            <list string="Audit Log" create="false" edit="false" delete="false">
+                <field name="create_date" string="When"/>
+                <field name="user_id" string="Who"/>
+                <field name="tenant_name" string="Tenant"/>
+                <field name="action" widget="badge"
+                       decoration-success="action in ('provision_ok', 'drop_ok')"
+                       decoration-danger="action in ('provision_failed', 'drop_failed')"
+                       decoration-info="action in ('provision_queued', 'drop_queued', 'retry_queued')"/>
+                <field name="detail" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_saas_audit_log" model="ir.actions.act_window">
+        <field name="name">Audit Log</field>
+        <field name="res_model">saas.audit.log</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <menuitem id="menu_saas_audit_log" name="Audit Log" sequence="30"
+              parent="msolutions_saas.menu_saas_root"
+              action="action_saas_audit_log"
+              groups="msolutions_saas.group_saas_developer"/>
+
+</odoo>

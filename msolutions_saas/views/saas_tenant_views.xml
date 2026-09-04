@@ -90,7 +90,7 @@
          administrator sees. web_icon renders it in the apps grid. -->
     <menuitem id="menu_saas_root" name="SaaS" sequence="1"
               web_icon="msolutions_saas,static/description/icon.png"
-              groups="msolutions_saas.group_saas_manager"/>
+              groups="msolutions_saas.group_saas_developer"/>
     <menuitem id="menu_saas_dashboard" name="Tenants" sequence="10"
               parent="menu_saas_root" action="action_saas_dashboard"/>
     <menuitem id="menu_saas_records" name="Tenant Records" sequence="20"
