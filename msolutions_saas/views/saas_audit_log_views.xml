@@ -47,7 +47,7 @@
                 <filter name="filter_shell" string="Shell Queries"
                         domain="[('action', '=', 'shell_query')]"/>
 
-                <group expand="0" string="Group By">
+                <group>
                     <filter name="group_tenant" string="Tenant"
                             context="{'group_by': 'tenant_name'}"/>
                     <filter name="group_user" string="User"
