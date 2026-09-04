@@ -1,17 +1,62 @@
-// ── Search + filter toolbar ──────────────────────────────────────────
-// Palette reuses the module's navy/teal brand tokens.
+// ── Brand tokens ─────────────────────────────────────────────────────
+$saas-navy:      #0D2B45;
+$saas-teal:      #00A693;
+$saas-teal-bg:   rgba(#00A693, 0.07);
+$saas-canvas:    #F2F4F7;   // page background — not white
+$saas-white:     #FFFFFF;
+$saas-border:    #E2E6EC;
+$saas-muted:     #6B7280;
 
-$saas-teal:   #00A693;
-$saas-navy:   #0D2B45;
-$saas-border: #E4E8EE;
-$saas-muted:  #6B7280;
+// State accent colours (left border of card)
+$saas-active:    #00A693;
+$saas-error:     #DC2626;
+$saas-pending:   #D97706;
+$saas-draft:     #94A3B8;
+$saas-dead:      #9CA3AF;   // terminated
 
-.o_saas_toolbar {
-    border-bottom: 1px solid $saas-border;
-    padding-bottom: 1rem;
+// ── Shell ────────────────────────────────────────────────────────────
+
+.o_saas_dashboard {
+    background: $saas-canvas;
+    padding: 2rem 2.5rem;
+
+    // Override Odoo's default white page background
+    &.o_action { background: $saas-canvas; }
 }
 
-// Search input with inset icon
+// ── Header ───────────────────────────────────────────────────────────
+
+.o_saas_dashboard > .d-flex:first-child h2 {
+    font-size: 1.625rem;
+    font-weight: 800;
+    color: $saas-navy;
+    letter-spacing: -0.025em;
+}
+
+// Teal "New Tenant" button — overrides Bootstrap primary
+.o_saas_dashboard .btn-primary {
+    background: $saas-teal;
+    border-color: $saas-teal;
+
+    &:hover, &:focus { background: darken($saas-teal, 8%); border-color: darken($saas-teal, 8%); }
+}
+
+// ── Toolbar ──────────────────────────────────────────────────────────
+
+.o_saas_toolbar {
+    background: $saas-white;
+    border: 1px solid $saas-border;
+    border-radius: 12px;
+    padding: 0.625rem 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    box-shadow: 0 1px 4px rgba($saas-navy, 0.05);
+}
+
+// Search input
 .o_saas_search_wrap {
     min-width: 220px;
 
@@ -29,28 +74,36 @@ $saas-muted:  #6B7280;
         padding-inline-start: 2rem;
         border-radius: 8px;
         border-color: $saas-border;
+        background: $saas-canvas;
+        font-size: 0.875rem;
 
         &:focus {
+            background: $saas-white;
             border-color: $saas-teal;
-            box-shadow: 0 0 0 2px rgba($saas-teal, 0.15);
+            box-shadow: 0 0 0 3px rgba($saas-teal, 0.12);
         }
 
-        // Hide the browser's native × in webkit (we clear via the filter reset link)
         &::-webkit-search-cancel-button { display: none; }
     }
 }
 
-// Filter pill buttons
-.o_saas_filter_pills {
+// Divider between search and pills
+.o_saas_toolbar_divider {
+    width: 1px;
+    height: 20px;
+    background: $saas-border;
     flex-shrink: 0;
 }
+
+// Filter pills
+.o_saas_filter_pills { display: flex; gap: 0.375rem; }
 
 .o_saas_pill {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     border-radius: 100px;
-    padding: 0.25rem 0.75rem;
+    padding: 0.25rem 0.8rem;
     font-size: 0.8125rem;
     font-weight: 500;
     transition: background 0.15s, color 0.15s, border-color 0.15s;
@@ -59,11 +112,7 @@ $saas-muted:  #6B7280;
         background: transparent;
         border: 1px solid $saas-border;
         color: $saas-muted;
-
-        &:hover {
-            border-color: darken($saas-border, 10%);
-            color: $saas-navy;
-        }
+        &:hover { border-color: $saas-navy; color: $saas-navy; }
     }
 
     &.o_saas_pill_active {
@@ -73,25 +122,176 @@ $saas-muted:  #6B7280;
     }
 }
 
-// Coloured dot inside the pill (Active = teal, Not Active = muted)
 .o_saas_pill_dot {
     display: inline-block;
-    width: 7px;
-    height: 7px;
+    width: 7px; height: 7px;
     border-radius: 50%;
     flex-shrink: 0;
 
     &.o_saas_dot_active   { background: $saas-teal; }
     &.o_saas_dot_inactive { background: $saas-muted; }
 
-    // Invert dots when pill is selected (dark background)
-    .o_saas_pill_active &.o_saas_dot_active   { background: lighten($saas-teal, 20%); }
-    .o_saas_pill_active &.o_saas_dot_inactive { background: rgba(#fff, 0.55); }
+    .o_saas_pill_active &.o_saas_dot_active   { background: lighten($saas-teal, 18%); }
+    .o_saas_pill_active &.o_saas_dot_inactive { background: rgba(#fff, 0.5); }
 }
 
-// Small count badge inside the pill
 .o_saas_pill_count {
     font-size: 0.6875rem;
     font-variant-numeric: tabular-nums;
     opacity: 0.7;
+}
+
+// ── Cards grid ───────────────────────────────────────────────────────
+
+// Make the row sit on the canvas (not white)
+.o_saas_dashboard .row { --bs-gutter-x: 1.25rem; --bs-gutter-y: 1.25rem; }
+
+// Base card reset
+.o_saas_card {
+    background: $saas-white;
+    border: 1px solid $saas-border;
+    border-radius: 12px;
+    border-left: 4px solid $saas-draft;   // overridden per state
+    overflow: hidden;
+    transition: box-shadow 0.18s, transform 0.18s;
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+        box-shadow: 0 6px 20px rgba($saas-navy, 0.1);
+        transform: translateY(-2px);
+    }
+
+    // ── State left-border colours ──
+    &.o_saas_card_active     { border-left-color: $saas-active; }
+    &.o_saas_card_error      { border-left-color: $saas-error; }
+    &.o_saas_card_pending    { border-left-color: $saas-pending; }
+    &.o_saas_card_terminated { border-left-color: $saas-dead; }
+    &.o_saas_card_draft      { border-left-color: $saas-draft; }
+
+    // Dim terminated cards slightly
+    &.o_saas_card_terminated { opacity: 0.72; }
+}
+
+.o_saas_card_body {
+    padding: 1.125rem 1.25rem 0.75rem;
+    flex: 1;
+}
+
+.o_saas_card_name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $saas-navy;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    margin-bottom: 0.125rem;
+}
+
+.o_saas_card_company {
+    font-size: 0.8125rem;
+    color: $saas-muted;
+    margin-bottom: 0.5rem;
+}
+
+.o_saas_card_url {
+    font-size: 0.75rem;
+    color: $saas-teal;
+    text-decoration: none;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:hover { text-decoration: underline; }
+}
+
+// State badge (replaces Bootstrap badge colours)
+.o_saas_state_badge {
+    display: inline-block;
+    border-radius: 100px;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &.o_saas_badge_active     { background: rgba($saas-active, 0.1);  color: darken($saas-active, 8%); }
+    &.o_saas_badge_error      { background: rgba($saas-error, 0.1);   color: $saas-error; }
+    &.o_saas_badge_pending    { background: rgba($saas-pending, 0.1); color: darken($saas-pending, 10%); }
+    &.o_saas_badge_terminated { background: rgba($saas-dead, 0.12);   color: darken($saas-dead, 20%); }
+    &.o_saas_badge_draft      { background: rgba($saas-draft, 0.12);  color: darken($saas-draft, 20%); }
+}
+
+// Password reveal block (first-time credentials)
+.o_saas_card_creds {
+    margin-top: 0.75rem;
+    background: rgba($saas-teal, 0.06);
+    border: 1px solid rgba($saas-teal, 0.2);
+    border-radius: 8px;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+
+    code {
+        background: rgba($saas-teal, 0.1);
+        color: darken($saas-teal, 12%);
+        border-radius: 4px;
+        padding: 0.1rem 0.3rem;
+        font-size: 0.8125rem;
+    }
+}
+
+// Error block inside card
+.o_saas_card_error_msg {
+    margin-top: 0.75rem;
+    background: rgba($saas-error, 0.05);
+    border: 1px solid rgba($saas-error, 0.2);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    color: $saas-error;
+}
+
+// Card footer
+.o_saas_card_footer {
+    padding: 0.625rem 1.25rem;
+    border-top: 1px solid $saas-border;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    background: rgba($saas-canvas, 0.6);
+
+    .btn-sm { font-size: 0.75rem; border-radius: 7px; padding: 0.25rem 0.65rem; }
+
+    .btn-secondary {
+        background: transparent;
+        border-color: $saas-border;
+        color: $saas-navy;
+        &:hover { background: $saas-canvas; }
+    }
+
+    .btn-link.text-danger { font-size: 0.75rem; }
+}
+
+// ── Empty states ─────────────────────────────────────────────────────
+
+.o_saas_empty {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: $saas-muted;
+
+    .fa { color: $saas-teal; opacity: 0.25; display: block; margin-bottom: 1rem; }
+    p { font-size: 0.9375rem; }
+}
+
+// ── Pending spinner line ──────────────────────────────────────────────
+
+.o_saas_dashboard .text-muted.small.mt-3 { color: $saas-muted !important; }
+
+// ── Responsive ───────────────────────────────────────────────────────
+@media (max-width: 640px) {
+    .o_saas_dashboard { padding: 1rem; }
+    .o_saas_toolbar { flex-direction: column; align-items: stretch; }
+    .o_saas_search_wrap { min-width: 0; }
 }

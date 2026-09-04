@@ -500,7 +500,10 @@ class SaasTenant(models.Model):
     def _provision_odoo(self):
         """Install ``base`` and set the admin credentials."""
         self.ensure_one()
-        password = "".join(secrets.choice(PASSWORD_ALPHABET) for _i in range(16))
+        # Fixed credentials: password = "admin", login = admin_login (default "admin").
+        # The dashboard shows them once so the operator can hand them to the
+        # customer; the customer is expected to change the password on first login.
+        password = "admin"
         odoo_db._initialize_db(
             self.name,
             demo=False,

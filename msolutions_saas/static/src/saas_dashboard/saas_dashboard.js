@@ -150,15 +150,34 @@ export class SaasDashboard extends Component {
         }[tenant.state];
     }
 
-    stateClass(tenant) {
+    /** CSS class on the card wrapper — drives the left accent border colour. */
+    cardClass(tenant) {
         return {
-            draft: "text-bg-secondary",
-            provisioning: "text-bg-info",
-            active: "text-bg-success",
-            error: "text-bg-danger",
-            terminating: "text-bg-info",
-            terminated: "text-bg-dark",
-        }[tenant.state];
+            "o_saas_card": true,
+            "h-100": true,
+            "o_saas_card_active":     tenant.state === "active",
+            "o_saas_card_error":      tenant.state === "error",
+            "o_saas_card_pending":    ["provisioning", "terminating"].includes(tenant.state),
+            "o_saas_card_terminated": tenant.state === "terminated",
+            "o_saas_card_draft":      tenant.state === "draft",
+        };
+    }
+
+    /** CSS class on the state badge pill. */
+    badgeClass(tenant) {
+        return {
+            "o_saas_state_badge": true,
+            "o_saas_badge_active":     tenant.state === "active",
+            "o_saas_badge_error":      tenant.state === "error",
+            "o_saas_badge_pending":    ["provisioning", "terminating"].includes(tenant.state),
+            "o_saas_badge_terminated": tenant.state === "terminated",
+            "o_saas_badge_draft":      tenant.state === "draft",
+        };
+    }
+
+    // Keep old stateClass for any remaining references
+    stateClass(tenant) {
+        return this.badgeClass(tenant);
     }
 
     // ----------------------------------------------------------------
