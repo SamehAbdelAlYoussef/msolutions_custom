@@ -1,0 +1,24 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Pull & Restart Odoo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH → git pull → restart service
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:     ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key:      ${{ secrets.SSH_PRIVATE_KEY }}
+          port:     ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ secrets.CUSTOM_PATH }}
+            git pull origin main
+            sudo systemctl restart ${{ secrets.ODOO_SERVICE }}
