@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_visit_dashboard" model="ir.actions.client">
+        <field name="name">Dashboard</field>
+        <field name="tag">sales_visit_plan.dashboard</field>
+    </record>
+
+    <!-- sequence=5: Dashboard is the first item the user sees when opening the app. -->
+    <menuitem id="menu_visit_dashboard"
+              name="Dashboard"
+              parent="menu_sales_visit_root"
+              action="action_visit_dashboard"
+              sequence="5"/>
+
+</odoo>

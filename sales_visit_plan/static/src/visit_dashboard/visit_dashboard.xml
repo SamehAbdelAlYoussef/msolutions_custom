@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="sales_visit_plan.VisitDashboard">
+    <div class="o_svp_dashboard o_action h-100 overflow-auto">
+
+        <!-- Loading -->
+        <t t-if="state.loading">
+            <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                <i class="fa fa-circle-o-notch fa-spin me-2"/>Loading…
+            </div>
+        </t>
+
+        <t t-else="">
+            <!-- ── Header ──────────────────────────────────────────── -->
+            <div class="o_svp_header">
+                <div>
+                    <h1 class="o_svp_greeting">
+                        <span class="o_svp_greeting_prefix">Good morning,</span>
+                        <t t-esc="state.data.user_name"/>
+                    </h1>
+                    <p class="o_svp_date" t-esc="todayFormatted"/>
+                </div>
+                <button class="btn btn-primary o_svp_new_btn" t-on-click="onNewPlan">
+                    <i class="fa fa-plus me-1"/>New Plan
+                </button>
+            </div>
+
+            <!-- ── Stats strip ─────────────────────────────────────── -->
+            <div class="o_svp_stats">
+                <div class="o_svp_stat_card" t-on-click="goToPlans">
+                    <div class="o_svp_stat_value" t-esc="state.data.my_plan_count"/>
+                    <div class="o_svp_stat_label">My Plans</div>
+                </div>
+                <div class="o_svp_stat_card o_svp_stat_teal" t-on-click="goToVisitLines">
+                    <div class="o_svp_stat_value" t-esc="state.data.visits_today"/>
+                    <div class="o_svp_stat_label">Today's Visits</div>
+                </div>
+                <div class="o_svp_stat_card o_svp_stat_teal">
+                    <div class="o_svp_stat_value" t-esc="state.data.completed_today"/>
+                    <div class="o_svp_stat_label">Completed</div>
+                </div>
+                <t t-if="state.data.pending_my_approval > 0">
+                    <div class="o_svp_stat_card o_svp_stat_amber">
+                        <div class="o_svp_stat_value" t-esc="state.data.pending_my_approval"/>
+                        <div class="o_svp_stat_label">Need My Approval</div>
+                    </div>
+                </t>
+            </div>
+
+            <!-- ── Body: timeline + sidebar ───────────────────────── -->
+            <div class="o_svp_body">
+
+                <!-- Timeline -->
+                <div class="o_svp_timeline_wrap">
+                    <div class="o_svp_section_heading">Today's Schedule</div>
+
+                    <t t-if="state.data.today_lines.length === 0">
+                        <div class="o_svp_timeline_empty">
+                            <i class="fa fa-calendar-o o_svp_empty_icon"/>
+                            <p>No visits scheduled for today.</p>
+                            <button class="btn btn-sm btn-outline-secondary mt-2"
+                                    t-on-click="goToVisitLines">
+                                View All Visits
+                            </button>
+                        </div>
+                    </t>
+
+                    <div t-else="" class="o_svp_timeline">
+                        <t t-foreach="state.data.today_lines" t-as="line" t-key="line.id">
+                            <div class="o_svp_station"
+                                 t-att-class="stationClass(line)"
+                                 t-on-click="() => this.openVisit(line)">
+                                <div class="o_svp_station_card">
+                                    <div class="o_svp_station_top">
+                                        <span class="o_svp_type_chip"
+                                              t-att-class="chipClass(line)"
+                                              t-esc="typeLabel(line)"/>
+                                        <t t-if="line.visit_stage === 'completed'">
+                                            <span class="o_svp_done_badge">✓ Done</span>
+                                        </t>
+                                    </div>
+                                    <p class="o_svp_contact_name"
+                                       t-esc="line.contact_name || '(unnamed)'"/>
+                                    <t t-if="line.specialty">
+                                        <p class="o_svp_specialty" t-esc="line.specialty"/>
+                                    </t>
+                                    <div class="o_svp_stage_row">
+                                        <span class="o_svp_stage_dot"/>
+                                        <span class="o_svp_stage_label" t-esc="stageLabel(line)"/>
+                                        <t t-if="line.phone">
+                                            <span class="o_svp_phone">
+                                                <i class="fa fa-phone me-1"/>
+                                                <t t-esc="line.phone"/>
+                                            </span>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="o_svp_sidebar">
+
+                    <!-- Pending approvals -->
+                    <div class="o_svp_panel o_svp_approvals_panel">
+                        <div class="o_svp_section_heading">Waiting for My Approval</div>
+
+                        <t t-if="state.data.pending_approval.length === 0">
+                            <div class="o_svp_panel_empty">
+                                <i class="fa fa-check-circle me-1"/>All clear
+                            </div>
+                        </t>
+
+                        <t t-else="">
+                            <div t-foreach="state.data.pending_approval"
+                                 t-as="plan" t-key="plan.id"
+                                 class="o_svp_approval_row">
+                                <div class="o_svp_approval_info">
+                                    <p class="o_svp_approval_name" t-esc="plan.name"/>
+                                    <p class="o_svp_approval_meta">
+                                        <t t-esc="plan.user_name"/>
+                                        <t t-if="plan.region">
+                                            · <t t-esc="plan.region"/>
+                                        </t>
+                                        · <t t-esc="plan.visit_count"/> visits
+                                    </p>
+                                </div>
+                                <button class="o_svp_review_btn"
+                                        t-on-click="() => this.openPlan(plan.id)">
+                                    Review
+                                </button>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- Quick access (dark panel — the aesthetic risk) -->
+                    <div class="o_svp_panel o_svp_quicklinks_panel">
+                        <div class="o_svp_section_heading">Quick Access</div>
+                        <div class="o_svp_quicklink" t-on-click="goToPlans">
+                            <span class="o_svp_ql_icon"><i class="fa fa-calendar"/></span>
+                            All Plans
+                        </div>
+                        <div class="o_svp_quicklink" t-on-click="goToVisitLines">
+                            <span class="o_svp_ql_icon"><i class="fa fa-map-marker"/></span>
+                            Visit Lines
+                        </div>
+                        <div class="o_svp_quicklink" t-on-click="goToRequisitions">
+                            <span class="o_svp_ql_icon"><i class="fa fa-file-text-o"/></span>
+                            Requisitions
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </t>
+
+    </div>
+</t>
+
+</templates>

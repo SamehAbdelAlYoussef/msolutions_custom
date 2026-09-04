@@ -35,6 +35,7 @@
         'data/requisition_data.xml',
         'views/sales_plan_views.xml',
         'views/requisition_views.xml',
+        'views/visit_dashboard_views.xml',
         'wizard/kpi_report_wizard_views.xml',
     ],
     'assets': {
@@ -42,6 +43,9 @@
             'sales_visit_plan/static/src/scss/visit_type.scss',
             'sales_visit_plan/static/src/js/get_location.js',
             'sales_visit_plan/static/src/js/kanban_drag_wizard.js',
+            'sales_visit_plan/static/src/visit_dashboard/visit_dashboard.scss',
+            'sales_visit_plan/static/src/visit_dashboard/visit_dashboard.js',
+            'sales_visit_plan/static/src/visit_dashboard/visit_dashboard.xml',
         ],
     },
     'demo': [

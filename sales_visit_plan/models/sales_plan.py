@@ -481,6 +481,69 @@ class SalesPlan(models.Model):
             }).send()
 
 
+    # ------------------------------------------------------------------
+    # Dashboard
+    # ------------------------------------------------------------------
+
+    @api.model
+    def _dashboard_data(self):
+        """Single RPC call for the visit dashboard.
+
+        Returns today's schedule for the current user as a field rep, plus
+        any plans waiting for their approval as a manager.  Everything is
+        aggregated here so the OWL component makes exactly one round trip.
+        """
+        today = fields.Date.today()
+        uid = self.env.uid
+        Line = self.env["sales.plan.line"]
+
+        today_lines = Line.search(
+            [("plan_id.user_id", "=", uid), ("visit_date", "=", today)],
+            order="id asc",
+        )
+        pending_approval = self.search(
+            [("manager_id", "=", uid), ("state", "=", "to_approve")],
+            order="create_date desc",
+        )
+
+        completed_today = sum(
+            1 for l in today_lines if l.visit_stage == "completed"
+        )
+
+        return {
+            "user_name": self.env.user.name.split()[0],
+            "today_iso": str(today),
+            "my_plan_count": self.search_count([("user_id", "=", uid)]),
+            "visits_today": len(today_lines),
+            "completed_today": completed_today,
+            "pending_my_approval": len(pending_approval),
+            "today_lines": [
+                {
+                    "id": l.id,
+                    "visit_type": l.visit_type,
+                    "contact_name": (
+                        l.doctor_name or l.pharmacy_name or l.meeting_name or ""
+                    ),
+                    "specialty": l.specialty_id.name if l.specialty_id else "",
+                    "phone": l.phone or "",
+                    "visit_stage": l.visit_stage,
+                    "plan_id": l.plan_id.id,
+                }
+                for l in today_lines
+            ],
+            "pending_approval": [
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "user_name": p.user_id.name,
+                    "visit_count": p.visit_count,
+                    "region": p.region or "",
+                }
+                for p in pending_approval
+            ],
+        }
+
+
 class SalesPlanLine(models.Model):
     _name = 'sales.plan.line'
     _inherit = ['mail.thread', 'mail.activity.mixin']
