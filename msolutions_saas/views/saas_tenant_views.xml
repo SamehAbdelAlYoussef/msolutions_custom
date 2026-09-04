@@ -76,6 +76,17 @@
                         <field name="error_message" readonly="1" nolabel="1"/>
                     </div>
                     <notebook>
+                        <page string="Shell" name="shell">
+                            <!-- saas_shell widget anchors on the record id.
+                                 readonly=1 prevents the form from trying to
+                                 write the integer id back to the server. -->
+                            <field name="id" widget="saas_shell"
+                                   nolabel="1" readonly="1"/>
+                        </page>
+                        <page string="Logs" name="logs">
+                            <field name="id" widget="saas_logs"
+                                   nolabel="1" readonly="1"/>
+                        </page>
                         <page string="Apps" name="apps">
                             <!-- Editable only before provisioning; once the
                                  tenant is active the list has no effect. -->

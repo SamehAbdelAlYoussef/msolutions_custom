@@ -38,6 +38,8 @@ The work runs in ``ir.cron``, not in the web request, because installing
     'assets': {
         'web.assets_backend': [
             'msolutions_saas/static/src/saas_dashboard/**/*',
+            'msolutions_saas/static/src/saas_shell/**/*',
+            'msolutions_saas/static/src/saas_logs/**/*',
         ],
     },
     'installable': True,

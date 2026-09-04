@@ -18,6 +18,30 @@ from odoo.service import db as odoo_db
 
 _logger = logging.getLogger(__name__)
 
+
+def _serialize_row(row):
+    """Convert a psycopg row to a JSON-safe list."""
+    import datetime
+    from decimal import Decimal
+    import uuid as _uuid
+    out = []
+    for v in row:
+        if v is None:
+            out.append(None)
+        elif isinstance(v, (datetime.datetime, datetime.date, datetime.time)):
+            out.append(str(v))
+        elif isinstance(v, Decimal):
+            out.append(float(v))
+        elif isinstance(v, _uuid.UUID):
+            out.append(str(v))
+        elif isinstance(v, memoryview):
+            out.append(f"<binary {len(v)} B>")
+        elif isinstance(v, (list, dict, tuple)):
+            out.append(str(v))
+        else:
+            out.append(v)
+    return out
+
 # A tenant name is both a PostgreSQL database name and a DNS label, so it has to
 # satisfy the stricter of the two. Leading digits are excluded because an
 # unquoted identifier starting with a digit is a nuisance in psql sessions.
@@ -733,6 +757,147 @@ class SaasTenant(models.Model):
                     )) from exc
             tenant._log("drop_ok")
         return super().unlink()
+
+    # ------------------------------------------------------------------
+    # Shell
+    # ------------------------------------------------------------------
+
+    def shell_execute(self, query):
+        """Execute a SQL statement against the tenant database.
+
+        Restricted to group_saas_developer. Every execution — successful or
+        not — is written to the audit log (who ran what, when, on which
+        tenant). Statement timeout is 30 s; result set is capped at 500 rows.
+        """
+        self._check_developer_group()
+        self.ensure_one()
+
+        if not query or not query.strip():
+            return {"columns": [], "rows": [], "rowcount": 0}
+
+        ROW_LIMIT = 500
+
+        # Log the attempt before running so the trace exists even if the
+        # connection itself fails.
+        self._log("shell_query", detail=query[:1000])
+
+        try:
+            connection = odoo.sql_db.db_connect(self.name)
+            with closing(connection.cursor()) as cr:
+                cr.execute("SET statement_timeout = '30s'")
+                cr.execute(query)
+                if cr.description:
+                    columns = [d[0] for d in cr.description]
+                    rows = cr.fetchmany(ROW_LIMIT)
+                    return {
+                        "columns": columns,
+                        "rows": [_serialize_row(r) for r in rows],
+                        "rowcount": cr.rowcount,
+                        "truncated": len(rows) == ROW_LIMIT,
+                    }
+                return {"columns": [], "rows": [], "rowcount": cr.rowcount}
+        except Exception as exc:
+            raise UserError(str(exc)) from exc
+
+    # ------------------------------------------------------------------
+    # DB activity / logs
+    # ------------------------------------------------------------------
+
+    def get_db_activity(self):
+        """Return live PostgreSQL monitoring data for this tenant.
+
+        Queries pg_stat_activity, pg_stat_database, pg_locks, and
+        pg_stat_statements (if the extension is installed) — all via raw
+        psycopg to the postgres database, never through the tenant ORM.
+        """
+        self._check_developer_group()
+        self.ensure_one()
+
+        result = {}
+        try:
+            conn = odoo.sql_db.db_connect("postgres")
+            with closing(conn.cursor()) as cr:
+
+                # Active sessions
+                cr.execute("""
+                    SELECT pid,
+                           usename,
+                           application_name,
+                           state,
+                           left(query, 300) AS query,
+                           EXTRACT(EPOCH FROM (now() - query_start))::int
+                               AS duration_sec,
+                           wait_event_type,
+                           wait_event
+                    FROM pg_stat_activity
+                    WHERE datname = %s
+                    ORDER BY query_start DESC NULLS LAST
+                """, (self.name,))
+                result["activity"] = {
+                    "columns": [d[0] for d in cr.description],
+                    "rows": [list(r) for r in cr.fetchall()],
+                }
+
+                # Database-level stats
+                cr.execute("""
+                    SELECT pg_size_pretty(pg_database_size(%s))  AS db_size,
+                           numbackends                             AS connections,
+                           xact_commit,
+                           xact_rollback,
+                           blks_hit,
+                           blks_read,
+                           CASE WHEN blks_hit + blks_read > 0
+                                THEN ROUND(
+                                    100.0 * blks_hit / (blks_hit + blks_read), 1)
+                                ELSE 0
+                           END AS cache_hit_pct
+                    FROM pg_stat_database
+                    WHERE datname = %s
+                """, (self.name, self.name))
+                row = cr.fetchone()
+                if row:
+                    result["stats"] = dict(
+                        zip([d[0] for d in cr.description], row)
+                    )
+
+                # Blocking locks
+                cr.execute("""
+                    SELECT pid,
+                           usename,
+                           pg_blocking_pids(pid) AS blocked_by,
+                           left(query, 200)       AS query
+                    FROM pg_stat_activity
+                    WHERE datname = %s
+                      AND cardinality(pg_blocking_pids(pid)) > 0
+                """, (self.name,))
+                result["locks"] = [list(r) for r in cr.fetchall()]
+
+                # pg_stat_statements (optional extension)
+                try:
+                    cr.execute("""
+                        SELECT left(s.query, 200)               AS query,
+                               s.calls,
+                               ROUND(s.total_exec_time::numeric, 1) AS total_ms,
+                               ROUND(s.mean_exec_time::numeric, 1)  AS avg_ms,
+                               s.rows
+                        FROM pg_stat_statements s
+                        JOIN pg_database d ON d.oid = s.dbid
+                        WHERE d.datname = %s
+                        ORDER BY s.total_exec_time DESC
+                        LIMIT 15
+                    """, (self.name,))
+                    result["slow_queries"] = {
+                        "available": True,
+                        "columns": [d[0] for d in cr.description],
+                        "rows": [list(r) for r in cr.fetchall()],
+                    }
+                except Exception:
+                    result["slow_queries"] = {"available": False}
+
+        except Exception as exc:
+            result["error"] = str(exc)
+
+        return result
 
     # ------------------------------------------------------------------
     # Client action data

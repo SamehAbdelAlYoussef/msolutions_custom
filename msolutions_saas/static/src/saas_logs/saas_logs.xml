@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="msolutions_saas.SaasLogs">
+    <div class="o_saas_logs">
+
+        <t t-if="state.loading">
+            <div class="o_saas_logs_loading">
+                <i class="fa fa-circle-o-notch fa-spin me-2"/>Loading activity…
+            </div>
+        </t>
+
+        <t t-elif="state.error">
+            <div class="o_saas_logs_error">
+                <i class="fa fa-exclamation-triangle me-2"/>
+                <t t-esc="state.error"/>
+            </div>
+        </t>
+
+        <t t-elif="state.data">
+
+            <!-- ── Stats strip ─────────────────────────────────── -->
+            <div class="o_saas_logs_stats" t-if="state.data.stats">
+                <div class="o_saas_logs_stat">
+                    <div class="o_saas_logs_stat_val" t-esc="state.data.stats.db_size"/>
+                    <div class="o_saas_logs_stat_lbl">DB Size</div>
+                </div>
+                <div class="o_saas_logs_stat">
+                    <div class="o_saas_logs_stat_val" t-esc="state.data.stats.connections"/>
+                    <div class="o_saas_logs_stat_lbl">Connections</div>
+                </div>
+                <div class="o_saas_logs_stat">
+                    <div class="o_saas_logs_stat_val">
+                        <t t-esc="state.data.stats.cache_hit_pct"/>%
+                    </div>
+                    <div class="o_saas_logs_stat_lbl">Cache Hit</div>
+                </div>
+                <div class="o_saas_logs_stat">
+                    <div class="o_saas_logs_stat_val"
+                         t-esc="state.data.stats.xact_commit + state.data.stats.xact_rollback"/>
+                    <div class="o_saas_logs_stat_lbl">Total Txn</div>
+                </div>
+                <div class="ms-auto">
+                    <button class="btn btn-sm o_saas_logs_refresh_btn" t-on-click="load">
+                        <i class="fa fa-refresh me-1"/>Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- ── Blocking locks banner ───────────────────────── -->
+            <div t-if="state.data.locks and state.data.locks.length"
+                 class="o_saas_logs_locks_banner">
+                <i class="fa fa-lock me-1"/>
+                <strong><t t-esc="state.data.locks.length"/> blocking lock(s) detected</strong>
+                — check the Locks tab.
+            </div>
+
+            <!-- ── Tab bar ────────────────────────────────────── -->
+            <div class="o_saas_logs_tabbar">
+                <button class="o_saas_logs_tab"
+                        t-att-class="state.activeTab === 'activity' ? 'o_saas_logs_tab_active' : ''"
+                        t-on-click="() => this.setTab('activity')">
+                    Active Sessions
+                    <span class="o_saas_logs_tab_count"
+                          t-esc="state.data.activity ? state.data.activity.rows.length : 0"/>
+                </button>
+                <button class="o_saas_logs_tab"
+                        t-att-class="state.activeTab === 'slow' ? 'o_saas_logs_tab_active' : ''"
+                        t-on-click="() => this.setTab('slow')">
+                    Slow Queries
+                    <t t-if="!state.data.slow_queries.available">
+                        <span class="o_saas_logs_tab_badge_off">off</span>
+                    </t>
+                </button>
+                <button class="o_saas_logs_tab"
+                        t-att-class="state.activeTab === 'locks' ? 'o_saas_logs_tab_active' : ''"
+                        t-on-click="() => this.setTab('locks')">
+                    Locks
+                    <t t-if="state.data.locks and state.data.locks.length">
+                        <span class="o_saas_logs_tab_badge_warn"
+                              t-esc="state.data.locks.length"/>
+                    </t>
+                </button>
+            </div>
+
+            <!-- ── Active Sessions ────────────────────────────── -->
+            <div t-if="state.activeTab === 'activity'" class="o_saas_logs_panel">
+                <t t-if="!state.data.activity or !state.data.activity.rows.length">
+                    <div class="o_saas_logs_empty">No active connections right now.</div>
+                </t>
+                <t t-else="">
+                    <div class="o_saas_logs_scroll">
+                        <table class="o_saas_logs_table">
+                            <thead>
+                                <tr>
+                                    <th>PID</th>
+                                    <th>User</th>
+                                    <th>State</th>
+                                    <th>Duration</th>
+                                    <th>Wait</th>
+                                    <th>Query</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="state.data.activity.rows" t-as="row" t-key="row_index">
+                                    <!-- pid -->
+                                    <td class="o_saas_logs_pid" t-esc="row[0]"/>
+                                    <!-- usename -->
+                                    <td t-esc="row[1]"/>
+                                    <!-- state -->
+                                    <td>
+                                        <span class="o_saas_logs_state_pill"
+                                              t-att-class="stateClass(row[3])"
+                                              t-esc="row[3] || '—'"/>
+                                    </td>
+                                    <!-- duration_sec -->
+                                    <td class="o_saas_logs_dur" t-esc="formatDuration(row[5])"/>
+                                    <!-- wait_event -->
+                                    <td class="text-muted small">
+                                        <t t-if="row[7]">
+                                            <t t-esc="row[6]"/>/<t t-esc="row[7]"/>
+                                        </t>
+                                        <t t-else="">—</t>
+                                    </td>
+                                    <!-- query -->
+                                    <td class="o_saas_logs_query" t-att-title="row[4]"
+                                        t-esc="row[4]"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </div>
+
+            <!-- ── Slow Queries ───────────────────────────────── -->
+            <div t-if="state.activeTab === 'slow'" class="o_saas_logs_panel">
+                <t t-if="!state.data.slow_queries.available">
+                    <div class="o_saas_logs_empty">
+                        <i class="fa fa-info-circle me-1"/>
+                        <code>pg_stat_statements</code> extension is not enabled on this server.
+                        <div class="mt-1 small text-muted">
+                            Enable it with: <code>CREATE EXTENSION pg_stat_statements;</code>
+                        </div>
+                    </div>
+                </t>
+                <t t-elif="!state.data.slow_queries.rows.length">
+                    <div class="o_saas_logs_empty">No query statistics yet.</div>
+                </t>
+                <t t-else="">
+                    <div class="o_saas_logs_scroll">
+                        <table class="o_saas_logs_table">
+                            <thead>
+                                <tr>
+                                    <th>Query</th>
+                                    <th>Calls</th>
+                                    <th>Total ms</th>
+                                    <th>Avg ms</th>
+                                    <th>Rows</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="state.data.slow_queries.rows" t-as="row" t-key="row_index">
+                                    <td class="o_saas_logs_query" t-att-title="row[0]" t-esc="row[0]"/>
+                                    <td class="o_saas_logs_num" t-esc="row[1]"/>
+                                    <td class="o_saas_logs_num" t-esc="row[2]"/>
+                                    <td class="o_saas_logs_num" t-esc="row[3]"/>
+                                    <td class="o_saas_logs_num" t-esc="row[4]"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </div>
+
+            <!-- ── Locks ─────────────────────────────────────── -->
+            <div t-if="state.activeTab === 'locks'" class="o_saas_logs_panel">
+                <t t-if="!state.data.locks or !state.data.locks.length">
+                    <div class="o_saas_logs_empty">
+                        <i class="fa fa-check-circle me-1 text-success"/>No blocking locks.
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="o_saas_logs_scroll">
+                        <table class="o_saas_logs_table">
+                            <thead>
+                                <tr>
+                                    <th>PID</th>
+                                    <th>User</th>
+                                    <th>Blocked by PIDs</th>
+                                    <th>Query</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="state.data.locks" t-as="row" t-key="row_index"
+                                    class="o_saas_logs_lock_row">
+                                    <td t-esc="row[0]"/>
+                                    <td t-esc="row[1]"/>
+                                    <td t-esc="row[2]"/>
+                                    <td class="o_saas_logs_query" t-esc="row[3]"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </div>
+
+        </t>
+    </div>
+</t>
+
+</templates>

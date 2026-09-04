@@ -34,6 +34,7 @@ class SaasAuditLog(models.Model):
             ("drop_ok", "Dropped"),
             ("drop_failed", "Drop Failed"),
             ("retry_queued", "Retry Queued"),
+            ("shell_query", "Shell Query"),
         ],
         string="Action",
         required=True,

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="msolutions_saas.SaasShell">
+    <div class="o_saas_shell">
+
+        <!-- ── Header bar ─────────────────────────────────────────── -->
+        <div class="o_saas_shell_bar">
+            <span class="o_saas_shell_brand">
+                <span class="o_saas_shell_dot o_saas_shell_dot_r"/>
+                <span class="o_saas_shell_dot o_saas_shell_dot_y"/>
+                <span class="o_saas_shell_dot o_saas_shell_dot_g"/>
+                MSolutions Shell
+            </span>
+            <span class="text-muted small" t-if="props.record.data.name">
+                — <t t-esc="props.record.data.name"/>
+            </span>
+            <div class="ms-auto d-flex gap-2 align-items-center">
+                <span t-if="state.result || state.error"
+                      class="o_saas_shell_status"
+                      t-att-class="state.error ? 'text-danger' : 'text-success'">
+                    <t t-if="state.error">✗ Error</t>
+                    <t t-elif="state.result"><t t-esc="statusLine"/></t>
+                </span>
+                <button t-if="state.result || state.error"
+                        class="btn btn-sm o_saas_shell_clear_btn"
+                        t-on-click="clearResult">Clear</button>
+            </div>
+        </div>
+
+        <!-- ── Editor ────────────────────────────────────────────── -->
+        <div class="o_saas_shell_editor_wrap">
+            <div class="o_saas_shell_prompt">›</div>
+            <textarea
+                class="o_saas_shell_editor"
+                placeholder="-- SQL query  (Ctrl+Enter to run)"
+                spellcheck="false"
+                autocomplete="off"
+                autocorrect="off"
+                t-att-value="state.query"
+                t-on-input="onInput"
+                t-on-keydown="onKeydown"
+            />
+        </div>
+
+        <!-- ── Actions ───────────────────────────────────────────── -->
+        <div class="o_saas_shell_actions">
+            <button class="btn btn-sm o_saas_shell_run_btn"
+                    t-att-disabled="state.running || !state.query.trim()"
+                    t-on-click="run">
+                <t t-if="state.running">
+                    <i class="fa fa-circle-o-notch fa-spin me-1"/>Running…
+                </t>
+                <t t-else="">
+                    <i class="fa fa-play me-1"/>Run
+                    <kbd class="o_saas_shell_hint">Ctrl+↵</kbd>
+                </t>
+            </button>
+            <span class="text-muted small o_saas_shell_history_hint"
+                  t-if="state.history.length">
+                ↑↓ history (<t t-esc="state.history.length"/>)
+            </span>
+        </div>
+
+        <!-- ── Error ─────────────────────────────────────────────── -->
+        <div t-if="state.error" class="o_saas_shell_error">
+            <i class="fa fa-exclamation-triangle me-2"/>
+            <pre t-esc="state.error"/>
+        </div>
+
+        <!-- ── Results table ─────────────────────────────────────── -->
+        <div t-if="state.result and state.result.columns.length" class="o_saas_shell_results">
+            <div class="o_saas_shell_results_scroll">
+                <table class="o_saas_shell_table">
+                    <thead>
+                        <tr>
+                            <th t-foreach="state.result.columns" t-as="col" t-key="col"
+                                t-esc="col"/>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="state.result.rows" t-as="row" t-key="row_index">
+                            <td t-foreach="row" t-as="cell" t-key="cell_index">
+                                <t t-if="cell === null">
+                                    <span class="o_saas_shell_null">NULL</span>
+                                </t>
+                                <t t-else="" t-esc="cell"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div t-if="state.result.truncated" class="o_saas_shell_truncated">
+                Result truncated — add LIMIT to your query to see more.
+            </div>
+        </div>
+
+        <!-- ── DML result (no columns) ───────────────────────────── -->
+        <div t-if="state.result and !state.result.columns.length and !state.error"
+             class="o_saas_shell_dml_ok">
+            <i class="fa fa-check me-1"/>
+            <t t-esc="statusLine"/>
+        </div>
+
+    </div>
+</t>
+
+</templates>

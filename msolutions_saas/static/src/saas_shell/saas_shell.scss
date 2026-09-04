@@ -1,0 +1,237 @@
+// MSolutions Shell — dark terminal aesthetic
+// The dark background is the deliberate contrast: all other panels in this
+// module are white; the shell reads immediately as a different mode.
+
+$sh-bg:        #0D1117;   // GitHub dark — readable, not pitch-black
+$sh-bg-light:  #161B22;
+$sh-border:    #30363D;
+$sh-text:      #E6EDF3;
+$sh-muted:     #7D8590;
+$sh-teal:      #00A693;
+$sh-green:     #3FB950;
+$sh-red:       #F85149;
+$sh-yellow:    #D29922;
+$sh-mono:      "JetBrains Mono", "Fira Code", "Cascadia Code", "Courier New", monospace;
+
+.o_saas_shell {
+    background: $sh-bg;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid $sh-border;
+    font-family: $sh-mono;
+    font-size: 0.8125rem;
+    color: $sh-text;
+}
+
+// ── Header / title bar ─────────────────────────────────────────────
+
+.o_saas_shell_bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: $sh-bg-light;
+    border-bottom: 1px solid $sh-border;
+    padding: 0.5rem 1rem;
+    user-select: none;
+}
+
+.o_saas_shell_brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: $sh-text;
+    letter-spacing: 0.04em;
+}
+
+// Traffic-light dots (macOS window chrome reference)
+.o_saas_shell_dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    &.o_saas_shell_dot_r { background: $sh-red; }
+    &.o_saas_shell_dot_y { background: $sh-yellow; }
+    &.o_saas_shell_dot_g { background: $sh-green; }
+}
+
+.o_saas_shell_status {
+    font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.o_saas_shell_clear_btn {
+    font-size: 0.6875rem;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid $sh-border;
+    background: transparent;
+    color: $sh-muted;
+    border-radius: 5px;
+
+    &:hover { background: $sh-border; color: $sh-text; }
+}
+
+// ── Editor ─────────────────────────────────────────────────────────
+
+.o_saas_shell_editor_wrap {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+    border-bottom: 1px solid $sh-border;
+}
+
+.o_saas_shell_prompt {
+    color: $sh-teal;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.o_saas_shell_editor {
+    flex: 1;
+    min-height: 120px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: $sh-text;
+    font-family: $sh-mono;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    resize: vertical;
+    caret-color: $sh-teal;
+
+    &::placeholder { color: $sh-muted; }
+}
+
+// ── Action row ─────────────────────────────────────────────────────
+
+.o_saas_shell_actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: $sh-bg-light;
+    border-bottom: 1px solid $sh-border;
+}
+
+.o_saas_shell_run_btn {
+    background: $sh-teal;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.3rem 0.85rem;
+    font-family: $sh-mono;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: background 0.15s;
+
+    &:hover:not(:disabled) { background: darken($sh-teal, 8%); }
+    &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+.o_saas_shell_hint {
+    background: rgba(#fff, 0.1);
+    border: none;
+    border-radius: 3px;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.625rem;
+    color: rgba(#fff, 0.7);
+    margin-inline-start: 0.25rem;
+    vertical-align: middle;
+}
+
+.o_saas_shell_history_hint {
+    color: $sh-muted;
+    font-size: 0.6875rem;
+}
+
+// ── Error ──────────────────────────────────────────────────────────
+
+.o_saas_shell_error {
+    padding: 0.75rem 1rem;
+    color: $sh-red;
+    border-bottom: 1px solid $sh-border;
+
+    pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: $sh-mono;
+        font-size: 0.8125rem;
+        display: inline;
+    }
+}
+
+// ── Results table ──────────────────────────────────────────────────
+
+.o_saas_shell_results {
+    max-height: 400px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.o_saas_shell_results_scroll {
+    overflow: auto;
+    flex: 1;
+}
+
+.o_saas_shell_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+
+    thead th {
+        background: $sh-bg-light;
+        color: $sh-teal;
+        font-weight: 600;
+        padding: 0.4rem 0.75rem;
+        text-align: left;
+        white-space: nowrap;
+        position: sticky;
+        top: 0;
+        border-bottom: 1px solid $sh-border;
+        font-variant-numeric: tabular-nums;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid rgba($sh-border, 0.5);
+
+        &:hover { background: rgba(#fff, 0.03); }
+    }
+
+    tbody td {
+        padding: 0.35rem 0.75rem;
+        color: $sh-text;
+        white-space: pre;
+        max-width: 400px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+.o_saas_shell_null {
+    color: $sh-muted;
+    font-style: italic;
+    font-size: 0.6875rem;
+}
+
+.o_saas_shell_truncated {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.6875rem;
+    color: $sh-yellow;
+    background: $sh-bg-light;
+    border-top: 1px solid $sh-border;
+    text-align: center;
+}
+
+.o_saas_shell_dml_ok {
+    padding: 0.6rem 1rem;
+    color: $sh-green;
+    font-size: 0.8125rem;
+}
