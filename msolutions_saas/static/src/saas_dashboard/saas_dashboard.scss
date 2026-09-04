@@ -1,0 +1,97 @@
+// ── Search + filter toolbar ──────────────────────────────────────────
+// Palette reuses the module's navy/teal brand tokens.
+
+$saas-teal:   #00A693;
+$saas-navy:   #0D2B45;
+$saas-border: #E4E8EE;
+$saas-muted:  #6B7280;
+
+.o_saas_toolbar {
+    border-bottom: 1px solid $saas-border;
+    padding-bottom: 1rem;
+}
+
+// Search input with inset icon
+.o_saas_search_wrap {
+    min-width: 220px;
+
+    .o_saas_search_icon {
+        position: absolute;
+        inset-inline-start: 0.65rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $saas-muted;
+        font-size: 0.8125rem;
+        pointer-events: none;
+    }
+
+    .o_saas_search {
+        padding-inline-start: 2rem;
+        border-radius: 8px;
+        border-color: $saas-border;
+
+        &:focus {
+            border-color: $saas-teal;
+            box-shadow: 0 0 0 2px rgba($saas-teal, 0.15);
+        }
+
+        // Hide the browser's native × in webkit (we clear via the filter reset link)
+        &::-webkit-search-cancel-button { display: none; }
+    }
+}
+
+// Filter pill buttons
+.o_saas_filter_pills {
+    flex-shrink: 0;
+}
+
+.o_saas_pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 100px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+    &.o_saas_pill_idle {
+        background: transparent;
+        border: 1px solid $saas-border;
+        color: $saas-muted;
+
+        &:hover {
+            border-color: darken($saas-border, 10%);
+            color: $saas-navy;
+        }
+    }
+
+    &.o_saas_pill_active {
+        background: $saas-navy;
+        border: 1px solid $saas-navy;
+        color: #fff;
+    }
+}
+
+// Coloured dot inside the pill (Active = teal, Not Active = muted)
+.o_saas_pill_dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    &.o_saas_dot_active   { background: $saas-teal; }
+    &.o_saas_dot_inactive { background: $saas-muted; }
+
+    // Invert dots when pill is selected (dark background)
+    .o_saas_pill_active &.o_saas_dot_active   { background: lighten($saas-teal, 20%); }
+    .o_saas_pill_active &.o_saas_dot_inactive { background: rgba(#fff, 0.55); }
+}
+
+// Small count badge inside the pill
+.o_saas_pill_count {
+    font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.7;
+}

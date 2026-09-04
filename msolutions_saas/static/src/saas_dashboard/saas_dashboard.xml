@@ -4,23 +4,85 @@
     <t t-name="msolutions_saas.SaasDashboard">
         <div class="o_saas_dashboard o_action h-100 overflow-auto p-4">
 
-            <div class="d-flex align-items-center mb-4">
+            <!-- ── Header row ───────────────────────────────────────── -->
+            <div class="d-flex align-items-center mb-3">
                 <h2 class="mb-0 me-auto">Tenants</h2>
                 <button class="btn btn-primary" t-on-click="onNewTenant">
                     <i class="fa fa-plus me-1"/>New Tenant
                 </button>
             </div>
 
+            <!-- ── Search + filter bar ──────────────────────────────── -->
+            <div class="o_saas_toolbar d-flex align-items-center gap-2 mb-4 flex-wrap">
+
+                <!-- Search input -->
+                <div class="o_saas_search_wrap position-relative">
+                    <i class="fa fa-search o_saas_search_icon"/>
+                    <input type="search"
+                           class="o_saas_search form-control form-control-sm"
+                           placeholder="Search by name or company…"
+                           autocomplete="off"
+                           t-att-value="state.query"
+                           t-on-input="onSearch"/>
+                </div>
+
+                <!-- Filter pills -->
+                <div class="o_saas_filter_pills d-flex gap-1">
+                    <button class="o_saas_pill btn btn-sm"
+                            t-att-class="state.filter === 'all' ? 'o_saas_pill_active' : 'o_saas_pill_idle'"
+                            t-on-click="() => this.setFilter('all')">
+                        All
+                        <span class="o_saas_pill_count" t-esc="state.tenants.length"/>
+                    </button>
+                    <button class="o_saas_pill btn btn-sm"
+                            t-att-class="state.filter === 'active' ? 'o_saas_pill_active' : 'o_saas_pill_idle'"
+                            t-on-click="() => this.setFilter('active')">
+                        <span class="o_saas_pill_dot o_saas_dot_active"/>
+                        Active
+                        <span class="o_saas_pill_count"
+                              t-esc="state.tenants.filter(t => t.state === 'active').length"/>
+                    </button>
+                    <button class="o_saas_pill btn btn-sm"
+                            t-att-class="state.filter === 'inactive' ? 'o_saas_pill_active' : 'o_saas_pill_idle'"
+                            t-on-click="() => this.setFilter('inactive')">
+                        <span class="o_saas_pill_dot o_saas_dot_inactive"/>
+                        Not Active
+                        <span class="o_saas_pill_count"
+                              t-esc="state.tenants.filter(t => t.state !== 'active').length"/>
+                    </button>
+                </div>
+
+                <!-- Result count (shown only while filtered) -->
+                <span t-if="isFiltered"
+                      class="text-muted small ms-1">
+                    <t t-esc="visibleTenants.length"/> of <t t-esc="state.tenants.length"/>
+                </span>
+
+            </div>
+
+            <!-- ── Body ─────────────────────────────────────────────── -->
             <div t-if="state.loading" class="text-muted">Loading…</div>
 
+            <!-- No tenants at all -->
             <div t-elif="!state.tenants.length"
                  class="o_saas_empty text-center text-muted py-5">
                 <i class="fa fa-server fa-3x mb-3 d-block opacity-50"/>
                 <p class="mb-0">No tenants yet.</p>
             </div>
 
+            <!-- No match after search / filter -->
+            <div t-elif="!visibleTenants.length"
+                 class="o_saas_empty text-center text-muted py-5">
+                <i class="fa fa-filter fa-3x mb-3 d-block opacity-50"/>
+                <p class="mb-1">No tenants match your search.</p>
+                <button class="btn btn-sm btn-link p-0"
+                        t-on-click="() => { this.state.query = ''; this.state.filter = 'all'; }">
+                    Clear filters
+                </button>
+            </div>
+
             <div t-else="" class="row g-3">
-                <div t-foreach="state.tenants" t-as="tenant" t-key="tenant.id"
+                <div t-foreach="visibleTenants" t-as="tenant" t-key="tenant.id"
                      class="col-12 col-md-6 col-xl-4">
                     <div class="card h-100">
                         <div class="card-body">

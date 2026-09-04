@@ -61,7 +61,13 @@ export class SaasDashboard extends Component {
         this.orm = useService("orm");
         this.dialog = useService("dialog");
         this.notification = useService("notification");
-        this.state = useState({ tenants: [], baseDomain: "", loading: true });
+        this.state = useState({
+            tenants: [],
+            baseDomain: "",
+            loading: true,
+            query: "",
+            filter: "all",   // "all" | "active" | "inactive"
+        });
 
         onWillStart(() => this.load());
         onMounted(() => {
@@ -83,6 +89,51 @@ export class SaasDashboard extends Component {
             this.load();
         }
     }
+
+    // ----------------------------------------------------------------
+    // Search + filter (client-side — all tenants are already in memory)
+    // ----------------------------------------------------------------
+
+    get visibleTenants() {
+        let list = this.state.tenants;
+
+        if (this.state.filter === "active") {
+            list = list.filter((t) => t.state === "active");
+        } else if (this.state.filter === "inactive") {
+            list = list.filter((t) => t.state !== "active");
+        }
+
+        const q = this.state.query.trim().toLowerCase();
+        if (q) {
+            list = list.filter(
+                (t) =>
+                    t.name.toLowerCase().includes(q) ||
+                    (t.company_name && t.company_name.toLowerCase().includes(q))
+            );
+        }
+
+        return list;
+    }
+
+    get isFiltered() {
+        return this.state.filter !== "all" || this.state.query.trim() !== "";
+    }
+
+    onSearch(ev) {
+        this.state.query = ev.target.value;
+    }
+
+    clearSearch() {
+        this.state.query = "";
+    }
+
+    setFilter(f) {
+        this.state.filter = f;
+    }
+
+    // ----------------------------------------------------------------
+    // Display helpers
+    // ----------------------------------------------------------------
 
     get hasPending() {
         return this.state.tenants.some((t) => PENDING_STATES.includes(t.state));
@@ -109,6 +160,10 @@ export class SaasDashboard extends Component {
             terminated: "text-bg-dark",
         }[tenant.state];
     }
+
+    // ----------------------------------------------------------------
+    // Actions
+    // ----------------------------------------------------------------
 
     onNewTenant() {
         this.dialog.add(NewTenantDialog, {
