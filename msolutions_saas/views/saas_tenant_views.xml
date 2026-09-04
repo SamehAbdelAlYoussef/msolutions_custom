@@ -97,10 +97,9 @@
                             </div>
                             <field name="module_ids"
                                    widget="many2many_tags"
-                                   domain="[('application', '=', True)]"
                                    options="{'no_create': True, 'no_quick_create': True}"
                                    readonly="state != 'draft'"
-                                   placeholder="Select apps to install…"/>
+                                   placeholder="Select modules to install…"/>
                         </page>
                     </notebook>
                 </sheet>
