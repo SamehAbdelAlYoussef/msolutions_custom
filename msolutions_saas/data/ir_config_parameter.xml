@@ -13,5 +13,13 @@
             <field name="key">msolutions_saas.base_scheme</field>
             <field name="value">https</field>
         </record>
+
+        <!-- Minutes a tenant may sit in provisioning/terminating before the
+             watchdog gives up on it and moves it to error. Provisioning takes
+             about a minute; 15 leaves generous headroom. Tunable per instance. -->
+        <record id="param_stuck_timeout" model="ir.config_parameter">
+            <field name="key">msolutions_saas.stuck_timeout_minutes</field>
+            <field name="value">15</field>
+        </record>
     </data>
 </odoo>

@@ -3,8 +3,10 @@ import os
 import re
 import secrets
 import shutil
+import subprocess
 import string
 from contextlib import closing
+from datetime import timedelta
 
 import psycopg2
 
@@ -73,6 +75,16 @@ class SaasTenant(models.Model):
     url = fields.Char(compute="_compute_url")
     error_message = fields.Text(readonly=True, copy=False)
 
+    # When the tenant entered its current transient state. Set on the way into
+    # 'provisioning'/'terminating'; the watchdog uses it to time out a run that
+    # never finished (a worker that died mid-provision would otherwise leave the
+    # record stuck forever).
+    state_since = fields.Datetime(string="In State Since", readonly=True, copy=False)
+    # Set once the tenant has fully provisioned at least once. Retry refuses to
+    # re-provision an ever-active tenant, because that drops the database and a
+    # live tenant holds real customer data.
+    ever_active = fields.Boolean(readonly=True, copy=False, default=False)
+
     # Odoo 19 dropped _sql_constraints -- it is now ignored with a log warning.
     _name_uniq = models.Constraint(
         "UNIQUE (name)",
@@ -121,7 +133,7 @@ class SaasTenant(models.Model):
             if not NAME_RE.match(name):
                 raise ValidationError(_(
                     "'%(name)s' is not a usable tenant name.\n\n"
-                    "Use 4 to 31 characters: lowercase letters and digits only, "
+                    "Use 3 to 31 characters: lowercase letters and digits only, "
                     "starting with a letter.",
                     name=name,
                 ))
@@ -150,7 +162,11 @@ class SaasTenant(models.Model):
                     "Pick another name, or drop that database first.",
                     name=tenant.name,
                 ))
-        self.write({"state": "provisioning", "error_message": False})
+        self.write({
+            "state": "provisioning",
+            "error_message": False,
+            "state_since": fields.Datetime.now(),
+        })
         self._trigger_cron()
         return True
 
@@ -167,7 +183,46 @@ class SaasTenant(models.Model):
                     "Tenant %(name)s is %(state)s and cannot be dropped.",
                     name=tenant.name, state=tenant.state,
                 ))
-        self.write({"state": "terminating", "error_message": False})
+        self.write({
+            "state": "terminating",
+            "error_message": False,
+            "state_since": fields.Datetime.now(),
+        })
+        self._trigger_cron()
+        return True
+
+    def action_retry(self):
+        """Re-queue a failed provision, after the worker cleans up its remnant.
+
+        The cleanup is a DROP of the half-created database, but it does NOT
+        happen here: this action is reachable from the web tier, which connects
+        as odoo_web and has no privilege to drop a database. So retry only flips
+        the record back to 'provisioning'; _run_provision (in the worker, as
+        odoo_provision) drops the leftover before recreating -- otherwise the
+        retry fails with "database already exists".
+
+        Retry is refused for an ever-active tenant: re-provisioning drops the
+        database, and a tenant that was ever live holds real customer data.
+        """
+        self._assert_control_plane()
+        self.ensure_one()
+        if self.state != "error":
+            raise UserError(_(
+                "Tenant %(name)s is %(state)s; only a tenant in error can be "
+                "retried.", name=self.name, state=self.state,
+            ))
+        if self.ever_active:
+            raise UserError(_(
+                "Tenant %(name)s was live and holds customer data. Retry would "
+                "re-provision it from scratch, destroying that data. If you "
+                "really mean to destroy it, use Drop instead.",
+                name=self.name,
+            ))
+        self.write({
+            "state": "provisioning",
+            "error_message": False,
+            "state_since": fields.Datetime.now(),
+        })
         self._trigger_cron()
         return True
 
@@ -219,22 +274,92 @@ class SaasTenant(models.Model):
         picked up by the next run.
         """
         self._assert_control_plane()
-        tenant = self.search([("state", "=", "provisioning")], limit=1)
+        tenant = self._claim_one("provisioning")
         if tenant:
             tenant._run_provision()
             return
 
-        tenant = self.search([("state", "=", "terminating")], limit=1)
+        tenant = self._claim_one("terminating")
         if tenant:
             tenant._run_drop()
+
+    def _claim_one(self, state):
+        """Claim a single tenant in ``state`` for this cron run.
+
+        SELECT ... FOR UPDATE SKIP LOCKED locks the row until the transaction
+        commits (which _run_provision/_run_drop do at the end), so a second
+        cron worker running at the same time skips it instead of double-claiming
+        the same tenant and racing on the same database. max_cron_threads is 1
+        today, but this keeps the invariant if that ever changes.
+        """
+        self.env.cr.execute(
+            "SELECT id FROM saas_tenant WHERE state = %s "
+            "ORDER BY create_date, id FOR UPDATE SKIP LOCKED LIMIT 1",
+            (state,),
+        )
+        row = self.env.cr.fetchone()
+        return self.browse(row[0]) if row else self.browse()
+
+    @api.model
+    def _cron_watchdog(self):
+        """Rescue tenants stuck in a transient state.
+
+        Provisioning and terminating take about a minute. If the worker dies
+        mid-run the record sits in 'provisioning'/'terminating' forever with no
+        one to finish it (this happened: a tenant sat in 'provisioning' for over
+        two hours). After a configurable timeout, move it to 'error' so the
+        operator sees it and can Retry. Runs in the worker like every cron.
+        """
+        self._assert_control_plane()
+        timeout = int(self.env["ir.config_parameter"].sudo().get_param(
+            "msolutions_saas.stuck_timeout_minutes", 15))
+        deadline = fields.Datetime.now() - timedelta(minutes=timeout)
+        stuck = self.search([
+            ("state", "in", ("provisioning", "terminating")),
+            ("state_since", "<", deadline),
+        ])
+        for tenant in stuck:
+            _logger.warning(
+                "SaaS: watchdog timing out tenant %s (stuck in '%s' since %s)",
+                tenant.name, tenant.state, tenant.state_since,
+            )
+            tenant.write({
+                "state": "error",
+                "error_message": _(
+                    "Timed out in '%(prev)s' after %(mins)s minutes -- the "
+                    "worker likely died mid-run. Use Retry to clean up and try "
+                    "again.",
+                    prev=tenant.state, mins=timeout,
+                ),
+            })
+            # Commit per tenant so a failure on a later one does not roll back
+            # the rescue of the earlier ones.
+            self.env.cr.commit()
 
     def _run_provision(self):
         self.ensure_one()
         _logger.info("SaaS: provisioning tenant %s", self.name)
         try:
+            if self._database_exists():
+                # Retry path: a previous failed attempt left a half-created
+                # database. action_retry guarantees this record was never active
+                # (so there is no customer data), and action_provision refuses a
+                # name whose database already exists -- so an existing database
+                # here is always our own remnant. Drop it, or _create_empty_
+                # database fails with "database already exists".
+                _logger.warning(
+                    "SaaS: dropping half-provisioned database %s before retry",
+                    self.name,
+                )
+                self._drop_database_raw()
             self._provision_database()
             self._provision_odoo()
-            self.write({"state": "active", "error_message": False})
+            self._grant_web_ownership()
+            self.write({
+                "state": "active",
+                "ever_active": True,
+                "error_message": False,
+            })
             _logger.info("SaaS: tenant %s is active", self.name)
         except Exception as exc:  # noqa: BLE001 - recorded on the record
             _logger.exception("SaaS: provisioning tenant %s failed", self.name)
@@ -319,16 +444,136 @@ class SaasTenant(models.Model):
                 name=self.name,
             ))
 
-    def _drop_database(self):
-        """Drop the database and its filestore.
 
-        The filestore removal is the part delete_tenant.sh missed -- there are
-        orphaned directories under the data_dir from tenants dropped earlier.
-        """
+    # The worker connects as odoo_provision (CREATEDB); it creates and owns the
+    # tenant database and every object base installs. The web/gevent tiers
+    # connect as odoo_web (NOSUPERUSER, NOCREATEDB), which must run DML/DDL on
+    # those objects but must NOT be able to drop the database. So: hand object
+    # ownership to odoo_web, while the DATABASE stays owned by odoo_provision.
+    # odoo_provision is a member of odoo_web, so it is allowed to reassign to it.
+    _GRANT_WEB_OWNERSHIP_SQL = """
+        DO $r$
+        DECLARE x record;
+        BEGIN
+          FOR x IN SELECT nspname FROM pg_namespace
+                   WHERE nspname NOT LIKE 'pg\\_%' AND nspname<>'information_schema'
+                     AND pg_get_userbyid(nspowner)='odoo_provision'
+          LOOP EXECUTE format('ALTER SCHEMA %I OWNER TO odoo_web', x.nspname); END LOOP;
+          FOR x IN SELECT n.nspname ns, c.relname rel, c.relkind kind
+                   FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+                   WHERE n.nspname NOT LIKE 'pg\\_%' AND n.nspname<>'information_schema'
+                     AND c.relkind IN ('r','p','S','v','m','f')
+                     AND pg_get_userbyid(c.relowner)='odoo_provision'
+                     AND NOT (c.relkind='S' AND EXISTS (SELECT 1 FROM pg_depend d
+                              WHERE d.classid='pg_class'::regclass AND d.objid=c.oid AND d.deptype IN ('a','i')))
+          LOOP EXECUTE format('ALTER %s %I.%I OWNER TO odoo_web',
+                 CASE x.kind WHEN 'S' THEN 'SEQUENCE' WHEN 'v' THEN 'VIEW'
+                             WHEN 'm' THEN 'MATERIALIZED VIEW' WHEN 'f' THEN 'FOREIGN TABLE'
+                             ELSE 'TABLE' END, x.ns, x.rel);
+          END LOOP;
+          FOR x IN SELECT p.oid::regprocedure sig FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+                   WHERE n.nspname NOT LIKE 'pg\\_%' AND n.nspname<>'information_schema'
+                     AND pg_get_userbyid(p.proowner)='odoo_provision'
+          LOOP EXECUTE format('ALTER ROUTINE %s OWNER TO odoo_web', x.sig); END LOOP;
+        END $r$;
+        ALTER SCHEMA public OWNER TO odoo_web;
+    """
+
+    def _grant_web_ownership(self):
+        """Give odoo_web ownership of the new tenant's schema objects."""
+        self.ensure_one()
+        connection = odoo.sql_db.db_connect(self.name)
+        with closing(connection.cursor()) as cr:
+            cr.execute(self._GRANT_WEB_OWNERSHIP_SQL)
+            cr.execute(
+                odoo.tools.SQL("GRANT CONNECT ON DATABASE %s TO odoo_web",
+                               odoo.tools.SQL.identifier(self.name))
+            )
+            cr._cnx.commit()
+        _logger.info("SaaS: granted odoo_web ownership on tenant %s", self.name)
+
+
+    def _backup_before_drop(self):
+        """Take a full DB+filestore backup BEFORE dropping a tenant, using
+        pg_dump directly (Odoo's dump_db is blocked when list_db=False). Raises
+        on any failure so the drop is aborted -- a customer database must never
+        be destroyed without a recoverable copy. Written to the data_dir (on the
+        Odoo host, a different machine than Postgres); the daily job sweeps it to B2."""
+        self.ensure_one()
+        cfg = odoo.tools.config
+        backup_dir = os.path.join(cfg["data_dir"], "pre_drop_backups")
+        os.makedirs(backup_dir, exist_ok=True)
+        ts = fields.Datetime.now().strftime("%Y%m%d_%H%M%S")
+        base = os.path.join(backup_dir, "%s_%s" % (self.name, ts))
+        sql_path = base + ".sql"
+        fs_path = base + ".filestore.tar.gz"
+
+        env = dict(os.environ)
+        if cfg.get("db_password"):
+            env["PGPASSWORD"] = cfg["db_password"]
+        if cfg.get("db_sslmode"):
+            env["PGSSLMODE"] = cfg["db_sslmode"]
+        args = ["pg_dump", "--no-owner", "-Fp", "--file=" + sql_path]
+        if cfg.get("db_host"):
+            args += ["--host", cfg["db_host"]]
+        if cfg.get("db_port"):
+            args += ["--port", str(cfg["db_port"])]
+        if cfg.get("db_user"):
+            args += ["--username", cfg["db_user"]]
+        args.append(self.name)
+
+        try:
+            subprocess.run(args, env=env, check=True, capture_output=True, timeout=1800)
+            filestore = cfg.filestore(self.name)
+            if os.path.exists(filestore):
+                subprocess.run(
+                    ["tar", "czf", fs_path, "-C", os.path.dirname(filestore),
+                     os.path.basename(filestore)],
+                    check=True, capture_output=True, timeout=1800,
+                )
+        except Exception as exc:  # noqa: BLE001
+            for f in (sql_path, fs_path):
+                if os.path.exists(f):
+                    os.remove(f)
+            detail = getattr(exc, "stderr", b"")
+            detail = detail.decode(errors="replace") if isinstance(detail, bytes) else str(exc)
+            raise UserError(_(
+                "Refusing to drop %(name)s: the safety backup failed "
+                "(%(err)s). No data was deleted.",
+                name=self.name, err=detail[:300] or str(exc),
+            )) from exc
+
+        size = os.path.getsize(sql_path)
+        if size < 4096:
+            os.remove(sql_path)
+            raise UserError(_(
+                "Refusing to drop %(name)s: safety backup is implausibly small "
+                "(%(size)d bytes). No data was deleted.",
+                name=self.name, size=size,
+            ))
+        _logger.info("SaaS: pre-drop backup %s (%d bytes) + filestore", sql_path, size)
+        return sql_path
+
+    def _drop_database(self):
+        """Drop a live tenant's database and filestore, after a safety backup."""
         self.ensure_one()
         if not self._database_exists():
             _logger.info("SaaS: database %s already gone", self.name)
             return
+        self._backup_before_drop()
+        self._drop_database_raw()
+
+    def _drop_database_raw(self):
+        """Tear down the registry, DROP DATABASE, and remove the filestore.
+
+        No safety backup here -- the caller decides. _drop_database takes one
+        first (a live tenant holds real data); the retry cleanup of a
+        half-created database does not, because a never-active tenant has
+        nothing to lose. The filestore removal is the part delete_tenant.sh
+        missed -- there are orphaned directories under the data_dir from tenants
+        dropped earlier.
+        """
+        self.ensure_one()
         odoo.modules.registry.Registry.delete(self.name)
         odoo.sql_db.close_db(self.name)
 

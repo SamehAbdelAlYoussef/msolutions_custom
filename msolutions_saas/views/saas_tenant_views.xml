@@ -34,7 +34,15 @@
                 <header>
                     <button name="action_provision" type="object" string="Create"
                             class="btn-primary"
-                            invisible="state not in ('draft', 'error')"/>
+                            invisible="state != 'draft'"/>
+                    <!-- Retry, not Create, for a failed provision. Create calls
+                         action_provision, which refuses when the database already
+                         exists, which is exactly the state a failed provision
+                         leaves behind. -->
+                    <button name="action_retry" type="object" string="Retry"
+                            class="btn-primary"
+                            invisible="state != 'error' or ever_active"
+                            confirm="This drops the half-created database left by the failed attempt and provisions this tenant again from scratch. The tenant was never live, so there is no customer data to lose. Continue?"/>
                     <button name="action_open_url" type="object" string="Open"
                             invisible="state != 'active'"/>
                     <button name="action_drop" type="object" string="Drop"
@@ -43,6 +51,7 @@
                             invisible="state not in ('active', 'error')"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,provisioning,active"/>
+                    <field name="ever_active" invisible="1"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
