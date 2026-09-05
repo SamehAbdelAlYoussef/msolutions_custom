@@ -14,9 +14,12 @@ class SaasConfig(models.Model):
         "config_id",
         "module_id",
         string="Default Modules",
-        # No application=True filter: technical modules (themes, web addons,
-        # e.g. ica_web_responsive) must be selectable, not just app-level modules.
-        domain="[('state', 'in', ['installed', 'uninstalled', 'to install'])]",
+        # installable=True is the manifest flag — it means the module can be
+        # installed on some database. Using state would hide modules that are
+        # 'uninstallable' on the control plane (missing deps) but are perfectly
+        # valid on a full-stack tenant database. No application filter: technical
+        # modules like ica_web_responsive must be selectable too.
+        domain="[('installable', '=', True)]",
         help="Modules installed automatically in every new tenant database. "
              "Includes apps AND technical modules (themes, web modules, etc.).",
     )
