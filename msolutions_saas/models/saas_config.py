@@ -14,12 +14,11 @@ class SaasConfig(models.Model):
         "config_id",
         "module_id",
         string="Default Modules",
-        # installable=True is the manifest flag — it means the module can be
-        # installed on some database. Using state would hide modules that are
-        # 'uninstallable' on the control plane (missing deps) but are perfectly
-        # valid on a full-stack tenant database. No application filter: technical
-        # modules like ica_web_responsive must be selectable too.
-        domain="[('installable', '=', True)]",
+        # No domain: ir.module.module.installable is not a stored field in
+        # this Odoo version, and filtering by state hides modules that are
+        # 'uninstallable' on the control plane but valid on a tenant DB.
+        # The many2many_tags widget has autocomplete search — type a name to find.
+        domain="[]",
         help="Modules installed automatically in every new tenant database. "
              "Includes apps AND technical modules (themes, web modules, etc.).",
     )
