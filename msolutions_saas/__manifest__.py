@@ -1,21 +1,33 @@
 {
     'name': 'MSolutions SaaS',
-    'summary': 'Create and remove Odoo tenants (database + subdomain) from the backend',
+    'summary': 'Multi-tenant Odoo SaaS control plane: instant provisioning, '
+               'storage quotas, usage-based billing and quota enforcement',
     'description': """
-MSolutions SaaS
-===============
+MSolutions SaaS — control plane
+===============================
 
-Replaces ``/opt/scripts/create_tenant.sh`` with a backend screen.
+Run an Odoo multi-tenant SaaS (one database + one subdomain per tenant) from a
+single backend dashboard. See ``CATALOG.md`` for the full feature catalog.
 
-A tenant is one Odoo database served at ``<name>.<base domain>``. Routing is
-already handled by ``dbfilter = ^%d$`` in ``odoo.conf`` plus the wildcard
-certificate, so provisioning a tenant is: create the database, install ``base``,
-set the admin credentials.
+Highlights
+----------
+* **Instant provisioning** — clone a template database in ~1 second (with a
+  from-scratch fallback); new tenants default to a configurable plan.
+* **Tenant management** — auto-discovery of existing databases, complete
+  no-trace deletion, a stuck-provision watchdog, and pre-drop safety backups.
+* **Real storage metering** — live database + filestore usage per tenant, with
+  a usage breakdown chart.
+* **Per-tenant storage quotas** — a used/quota gauge with near-full / full
+  signals; editable per customer.
+* **Usage-based pricing** — monthly invoice = quota (GB) × price per GB.
+* **Quota enforcement** — over-quota tenants are suspended at the reverse proxy
+  and shown a bilingual "storage full / upgrade" page; raising the quota
+  restores access within seconds, and no tenant database is ever touched.
 
-The work runs in ``ir.cron``, not in the web request, because installing
-``base`` takes about a minute.
+All tenant access uses raw psycopg (never a tenant ORM registry); the split
+PostgreSQL roles keep the web tier unable to drop databases.
     """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.15.0.0',
     'category': 'Administration',
     'author': 'Msolutions',
     'license': 'LGPL-3',
@@ -31,7 +43,9 @@ The work runs in ``ir.cron``, not in the web request, because installing
         'security/ir.model.access.csv',
         'data/ir_config_parameter.xml',
         'data/ir_cron.xml',
+        'data/saas_plan_data.xml',
         'views/saas_tenant_views.xml',
+        'views/saas_plan_views.xml',
         'views/saas_audit_log_views.xml',
         'views/saas_config_views.xml',
     ],

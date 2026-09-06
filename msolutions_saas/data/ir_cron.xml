@@ -23,5 +23,18 @@
             <field name="interval_type">minutes</field>
             <field name="active" eval="True"/>
         </record>
+
+        <!-- Catches tenants whose data grew past their quota and suspends them.
+             Manual quota changes enforce immediately (write hook); this timer
+             covers organic growth. -->
+        <record id="cron_enforce_quota" model="ir.cron">
+            <field name="name">SaaS: enforce storage quotas</field>
+            <field name="model_id" ref="model_saas_tenant"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_enforce_quota()</field>
+            <field name="interval_number">5</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+        </record>
     </data>
 </odoo>

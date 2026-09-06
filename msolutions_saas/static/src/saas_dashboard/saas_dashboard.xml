@@ -2,24 +2,48 @@
 <templates xml:space="preserve">
 
     <t t-name="msolutions_saas.SaasDashboard">
-        <div class="o_saas_dashboard o_action h-100 overflow-auto p-4">
+        <div class="o_saas_dashboard o_action h-100 overflow-auto p-4" t-att-dir="dir">
 
             <!-- ── Header ───────────────────────────────────────── -->
-            <div class="d-flex align-items-center mb-3">
-                <h2 class="mb-0 me-auto">Tenants</h2>
+            <div class="d-flex align-items-center mb-3 gap-2">
+                <h2 class="mb-0 me-auto" t-esc="tr('tenants')"/>
                 <button class="btn btn-primary" t-on-click="onNewTenant">
-                    <i class="fa fa-plus me-1"/>New Tenant
+                    <i class="fa fa-plus me-1"/><t t-esc="tr('new_tenant')"/>
                 </button>
+            </div>
+
+            <!-- ── Fleet stats (KPIs) ───────────────────────────── -->
+            <div t-if="!state.loading and state.tenants.length" class="o_saas_stats mb-4">
+                <div class="o_saas_stat">
+                    <div class="o_saas_stat_icon"><i class="fa fa-server"/></div>
+                    <div>
+                        <div class="o_saas_stat_value" t-esc="state.tenants.length"/>
+                        <div class="o_saas_stat_label" t-esc="tr('stat_tenants')"/>
+                    </div>
+                </div>
+                <div class="o_saas_stat">
+                    <div class="o_saas_stat_icon o_saas_stat_icon_green"><i class="fa fa-check-circle"/></div>
+                    <div>
+                        <div class="o_saas_stat_value" t-esc="activeCount"/>
+                        <div class="o_saas_stat_label" t-esc="tr('stat_active')"/>
+                    </div>
+                </div>
+                <div class="o_saas_stat">
+                    <div class="o_saas_stat_icon o_saas_stat_icon_blue"><i class="fa fa-database"/></div>
+                    <div>
+                        <div class="o_saas_stat_value" t-esc="formatBytes(totalStorageBytes)"/>
+                        <div class="o_saas_stat_label" t-esc="tr('stat_storage')"/>
+                    </div>
+                </div>
             </div>
 
             <!-- ── Toolbar: search + filters ────────────────────── -->
             <div class="o_saas_toolbar mb-4">
-
                 <div class="o_saas_search_wrap position-relative">
                     <i class="fa fa-search o_saas_search_icon"/>
                     <input type="search"
                            class="o_saas_search form-control form-control-sm"
-                           placeholder="Search by name or company…"
+                           t-att-placeholder="tr('search_ph')"
                            autocomplete="off"
                            t-att-value="state.query"
                            t-on-input="onSearch"/>
@@ -31,14 +55,14 @@
                     <button class="o_saas_pill btn btn-sm"
                             t-att-class="state.filter === 'all' ? 'o_saas_pill_active' : 'o_saas_pill_idle'"
                             t-on-click="() => this.setFilter('all')">
-                        All
+                        <t t-esc="tr('all')"/>
                         <span class="o_saas_pill_count" t-esc="state.tenants.length"/>
                     </button>
                     <button class="o_saas_pill btn btn-sm"
                             t-att-class="state.filter === 'active' ? 'o_saas_pill_active' : 'o_saas_pill_idle'"
                             t-on-click="() => this.setFilter('active')">
                         <span class="o_saas_pill_dot o_saas_dot_active"/>
-                        Active
+                        <t t-esc="tr('active')"/>
                         <span class="o_saas_pill_count"
                               t-esc="state.tenants.filter(t => t.state === 'active').length"/>
                     </button>
@@ -46,104 +70,97 @@
                             t-att-class="state.filter === 'inactive' ? 'o_saas_pill_active' : 'o_saas_pill_idle'"
                             t-on-click="() => this.setFilter('inactive')">
                         <span class="o_saas_pill_dot o_saas_dot_inactive"/>
-                        Not Active
+                        <t t-esc="tr('not_active')"/>
                         <span class="o_saas_pill_count"
                               t-esc="state.tenants.filter(t => t.state !== 'active').length"/>
                     </button>
                 </div>
 
                 <span t-if="isFiltered" class="text-muted small ms-auto">
-                    <t t-esc="visibleTenants.length"/> of <t t-esc="state.tenants.length"/>
+                    <t t-esc="visibleTenants.length"/> <t t-esc="tr('of')"/> <t t-esc="state.tenants.length"/>
                 </span>
             </div>
 
             <!-- ── Loading ──────────────────────────────────────── -->
-            <div t-if="state.loading" class="text-muted">Loading…</div>
+            <div t-if="state.loading" class="text-muted" t-esc="tr('loading')"/>
 
-            <!-- ── Empty: no tenants at all ─────────────────────── -->
-            <div t-elif="!state.tenants.length"
-                 class="o_saas_empty text-center py-5">
+            <!-- ── Empty: no tenants ────────────────────────────── -->
+            <div t-elif="!state.tenants.length" class="o_saas_empty text-center py-5">
                 <i class="fa fa-server fa-3x mb-3"/>
-                <p>No tenants yet.</p>
+                <p t-esc="tr('no_tenants')"/>
             </div>
 
-            <!-- ── Empty: filter has no results ─────────────────── -->
-            <div t-elif="!visibleTenants.length"
-                 class="o_saas_empty text-center py-5">
+            <!-- ── Empty: no filter match ───────────────────────── -->
+            <div t-elif="!visibleTenants.length" class="o_saas_empty text-center py-5">
                 <i class="fa fa-filter fa-3x mb-3"/>
-                <p class="mb-2">No tenants match your search.</p>
+                <p class="mb-2" t-esc="tr('no_match')"/>
                 <button class="btn btn-sm btn-link p-0"
-                        t-on-click="() => { this.state.query = ''; this.state.filter = 'all'; }">
-                    Clear filters
-                </button>
+                        t-on-click="() => { this.state.query = ''; this.state.filter = 'all'; }"
+                        t-esc="tr('clear_filters')"/>
             </div>
 
-            <!-- ── Cards grid ────────────────────────────────────── -->
+            <!-- ── Cards grid (compact, 4 per row) ──────────────── -->
             <div t-else="" class="row g-3">
                 <div t-foreach="visibleTenants" t-as="tenant" t-key="tenant.id"
-                     class="col-12 col-md-6 col-xl-4">
+                     class="col-6 col-md-4 col-xl-3">
 
                     <div t-att-class="cardClass(tenant)">
+                        <div class="o_saas_card_body o_saas_compact">
 
-                        <!-- Card body -->
-                        <div class="o_saas_card_body">
-                            <div class="d-flex align-items-start gap-2 mb-2">
-                                <div class="me-auto overflow-hidden">
-                                    <div class="o_saas_card_name" t-esc="tenant.name"/>
-                                    <div t-if="tenant.company_name"
-                                         class="o_saas_card_company"
-                                         t-esc="tenant.company_name"/>
-                                </div>
-                                <span t-att-class="badgeClass(tenant)"
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="o_saas_pip"
+                                      t-attf-style="background:{{ statePipColor(tenant) }}"
+                                      t-att-title="stateLabel(tenant)"/>
+                                <div class="o_saas_card_name text-truncate me-auto"
+                                     t-esc="tenant.name"/>
+                                <button class="o_saas_gear"
+                                        t-on-click="() => this.openDetails(tenant)"
+                                        t-att-title="tr('storage_quota')">
+                                    <i class="fa fa-cog"/>
+                                </button>
+                            </div>
+
+                            <div t-if="tenant.suspended" class="o_saas_over_limit mt-2">
+                                <i class="fa fa-ban me-1"/><t t-esc="tr('over_limit')"/>
+                            </div>
+
+                            <div t-if="tenant.company_name"
+                                 class="o_saas_card_company text-truncate"
+                                 t-esc="tenant.company_name"/>
+
+                            <a t-att-href="tenant.url" target="_blank"
+                               class="o_saas_card_url text-truncate d-block"
+                               t-esc="tenant.url"/>
+
+                            <div class="o_saas_compact_meta">
+                                <t t-if="tenant.state === 'active'">
+                                    <span class="o_saas_meta_size">
+                                        <i class="fa fa-hdd-o me-1"/>
+                                        <t t-esc="formatBytes(tenantTotalBytes(tenant))"/>
+                                    </span>
+                                    <span class="o_saas_meta_price">
+                                        ≈ <t t-esc="formatPrice(tenant)"/><t t-esc="tr('per_mo')"/>
+                                    </span>
+                                </t>
+                                <span t-else="" t-att-class="badgeClass(tenant)"
                                       t-esc="stateLabel(tenant)"/>
                             </div>
 
-                            <a t-att-href="tenant.url" target="_blank"
-                               class="o_saas_card_url" t-esc="tenant.url"/>
-
-                            <!-- First-time credentials -->
-                            <div t-if="tenant.state === 'active' and tenant.admin_password"
-                                 class="o_saas_card_creds mt-2">
-                                <div class="small mb-1">
-                                    <strong>Login:</strong>
-                                    <span class="ms-1" t-esc="tenant.admin_login"/>
+                            <div t-if="tenant.state === 'active'" class="o_saas_quota mt-2">
+                                <div class="o_saas_quota_bar">
+                                    <div class="o_saas_quota_fill"
+                                         t-att-style="quotaBarStyle(tenant)"/>
                                 </div>
-                                <div class="small">
-                                    <strong>Password:</strong>
-                                    <code class="ms-1" t-esc="tenant.admin_password"/>
-                                </div>
-                                <div class="text-muted mt-1" style="font-size:0.7rem">
-                                    Hand this over once, then change it.
+                                <div class="o_saas_quota_text">
+                                    <t t-esc="formatBytes(tenantTotalBytes(tenant))"/>
+                                    / <t t-esc="tenant.quota_gb"/> GB
+                                    <span t-if="quotaState(tenant) !== 'ok'"
+                                          t-attf-class="o_saas_quota_flag o_saas_quota_{{ quotaState(tenant) }}">
+                                        <t t-esc="quotaState(tenant) === 'full' ? tr('full') : tr('near_full')"/>
+                                    </span>
                                 </div>
                             </div>
-
-                            <!-- Error message -->
-                            <div t-if="tenant.state === 'error'"
-                                 class="o_saas_card_error_msg mt-2">
-                                <i class="fa fa-exclamation-triangle me-1"/>
-                                <span class="text-truncate d-inline-block" style="max-width:90%"
-                                      t-att-title="tenant.error_message"
-                                      t-esc="tenant.error_message"/>
-                            </div>
                         </div>
-
-                        <!-- Card footer -->
-                        <div class="o_saas_card_footer">
-                            <a t-if="tenant.state === 'active'"
-                               class="btn btn-sm btn-secondary"
-                               t-att-href="tenant.url" target="_blank">
-                                <i class="fa fa-external-link me-1"/>Open
-                            </a>
-                            <button t-if="tenant.state === 'error'"
-                                    class="btn btn-sm btn-secondary"
-                                    t-on-click="() => this.onRetry(tenant)">
-                                <i class="fa fa-refresh me-1"/>Retry
-                            </button>
-                            <button t-if="['active', 'error'].includes(tenant.state)"
-                                    class="btn btn-sm btn-link text-danger ms-auto"
-                                    t-on-click="() => this.onDrop(tenant)">Drop</button>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -151,36 +168,160 @@
             <!-- ── Pending indicator ─────────────────────────────── -->
             <div t-if="hasPending" class="text-muted small mt-3">
                 <i class="fa fa-circle-o-notch fa-spin me-1"/>
-                Work in progress — this page refreshes itself.
+                <t t-esc="tr('work_in_progress')"/>
             </div>
 
         </div>
     </t>
 
-    <t t-name="msolutions_saas.NewTenantDialog">
-        <Dialog title="'New Tenant'" size="'md'">
-            <div class="mb-3">
-                <label class="form-label" for="saas_tenant_name">Tenant name</label>
-                <input id="saas_tenant_name" type="text" class="form-control"
-                       placeholder="acme" autocomplete="off"
-                       t-att-value="state.name" t-on-input="onNameInput"/>
-                <div class="form-text">
-                    Becomes the database name and the subdomain.
-                    <span t-if="preview">→ <code t-esc="preview"/></span>
+    <t t-name="msolutions_saas.TenantUsageChart">
+        <canvas t-ref="canvas"/>
+    </t>
+
+    <t t-name="msolutions_saas.TenantDetailsDialog">
+        <Dialog size="'md'" title="props.tenant.name">
+            <div class="o_saas_details" t-att-dir="dir">
+
+                <div class="text-center mb-3">
+                    <a t-att-href="t.url" target="_blank" class="o_saas_card_url" t-esc="t.url"/>
                 </div>
-                <div t-if="state.error" class="text-danger small mt-1"
-                     t-esc="state.error"/>
+
+                <div t-if="t.state === 'active'" class="row g-3 align-items-center">
+                    <div class="col-5">
+                        <div class="o_saas_usage_chart">
+                            <TenantUsageChart db="dbBytes" files="fsBytes"/>
+                            <div class="o_saas_usage_center">
+                                <div class="o_saas_usage_total" t-esc="fmt(totalBytes)"/>
+                                <div class="o_saas_usage_caption" t-esc="tr('used')"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <table class="o_saas_kv">
+                            <tr>
+                                <td><span class="o_saas_legend_dot" style="background:#2563eb"/><t t-esc="tr('database')"/></td>
+                                <td t-esc="fmt(dbBytes)"/>
+                            </tr>
+                            <tr>
+                                <td><span class="o_saas_legend_dot" style="background:#38bdf8"/><t t-esc="tr('files')"/></td>
+                                <td t-esc="fmt(fsBytes)"/>
+                            </tr>
+                            <tr class="o_saas_kv_total">
+                                <td t-esc="tr('total_storage')"/>
+                                <td t-esc="fmt(totalBytes)"/>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Storage quota -->
+                <div t-if="t.state === 'active'" class="o_saas_quota_block mt-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span t-esc="tr('storage_quota')"/>
+                        <span>
+                            <t t-esc="fmt(totalBytes)"/> / <t t-esc="quotaGb"/> GB
+                            (<t t-esc="quotaPctLabel"/>%)
+                        </span>
+                    </div>
+                    <div class="o_saas_quota_bar">
+                        <div class="o_saas_quota_fill" t-att-style="quotaBarStyle"/>
+                    </div>
+                    <div t-if="quotaState !== 'ok'"
+                         t-attf-class="o_saas_quota_hint o_saas_quota_{{ quotaState }} mt-2">
+                        <i class="fa fa-arrow-circle-up me-1"/>
+                        <t t-esc="quotaState === 'full' ? tr('hint_full') : tr('hint_warn')"/>
+                    </div>
+
+                    <div class="o_saas_quota_edit d-flex align-items-center gap-2 mt-2">
+                        <label class="small text-muted mb-0" t-esc="tr('set_quota')"/>
+                        <input type="number" min="0" step="1"
+                               class="form-control form-control-sm o_saas_quota_input"
+                               t-att-value="state.quota" t-on-input="onQuotaInput"/>
+                        <button class="btn btn-sm btn-primary" t-on-click="saveQuota"
+                                t-att-disabled="state.saving or !quotaDirty">
+                            <t t-esc="state.saving ? tr('saving') : tr('save')"/>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Invoice = quota × rate -->
+                <div t-if="t.state === 'active'" class="o_saas_pricing_box mt-3">
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span t-esc="tr('allocated_quota')"/>
+                        <span><t t-esc="quotaGb"/> GB</span>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted small mt-1">
+                        <span t-esc="tr('rate')"/>
+                        <span><t t-esc="p.per_gb or 0"/> <t t-esc="currency"/> <t t-esc="tr('per_gb_mo')"/></span>
+                    </div>
+                    <hr class="my-2"/>
+                    <div class="d-flex justify-content-between o_saas_price_total">
+                        <span t-esc="tr('invoice_mo')"/>
+                        <span><t t-esc="money(price)"/> <t t-esc="currency"/></span>
+                    </div>
+                </div>
+
+                <!-- credentials -->
+                <div t-if="t.state === 'active' and t.admin_password"
+                     class="o_saas_card_creds mt-3">
+                    <div class="small mb-1">
+                        <strong><t t-esc="tr('login')"/>:</strong>
+                        <span class="ms-1" t-esc="t.admin_login"/>
+                    </div>
+                    <div class="small">
+                        <strong><t t-esc="tr('password')"/>:</strong>
+                        <code class="ms-1" t-esc="t.admin_password"/>
+                    </div>
+                    <div class="text-muted mt-1" style="font-size:0.7rem" t-esc="tr('creds_note')"/>
+                </div>
+
+                <div t-if="t.state === 'error'" class="alert alert-danger mt-3 mb-0">
+                    <i class="fa fa-exclamation-triangle me-1"/>
+                    <span t-esc="t.error_message"/>
+                </div>
             </div>
-            <div class="mb-1">
-                <label class="form-label" for="saas_company_name">Company (optional)</label>
-                <input id="saas_company_name" type="text" class="form-control"
-                       autocomplete="off" t-model="state.companyName"/>
+
+            <t t-set-slot="footer">
+                <button t-if="t.state === 'active'" class="btn btn-primary" t-on-click="doOpen">
+                    <i class="fa fa-external-link me-1"/><t t-esc="tr('open')"/>
+                </button>
+                <button t-if="t.state === 'error'" class="btn btn-secondary" t-on-click="doRetry">
+                    <i class="fa fa-refresh me-1"/><t t-esc="tr('retry')"/>
+                </button>
+                <button t-if="['active','error'].includes(t.state)"
+                        class="btn btn-outline-danger" t-on-click="doDrop">
+                    <i class="fa fa-trash me-1"/><t t-esc="tr('drop')"/>
+                </button>
+                <button class="btn btn-secondary" t-on-click="() => this.props.close()"
+                        t-esc="tr('close')"/>
+            </t>
+        </Dialog>
+    </t>
+
+    <t t-name="msolutions_saas.NewTenantDialog">
+        <Dialog title="tr('new_tenant')" size="'md'">
+            <div t-att-dir="dir">
+                <div class="mb-3">
+                    <label class="form-label" for="saas_tenant_name" t-esc="tr('nt_name')"/>
+                    <input id="saas_tenant_name" type="text" class="form-control"
+                           placeholder="acme" autocomplete="off"
+                           t-att-value="state.name" t-on-input="onNameInput"/>
+                    <div class="form-text">
+                        <t t-esc="tr('nt_name_help')"/>
+                        <span t-if="preview">→ <code t-esc="preview"/></span>
+                    </div>
+                    <div t-if="state.error" class="text-danger small mt-1" t-esc="state.error"/>
+                </div>
+                <div class="mb-1">
+                    <label class="form-label" for="saas_company_name" t-esc="tr('nt_company')"/>
+                    <input id="saas_company_name" type="text" class="form-control"
+                           autocomplete="off" t-model="state.companyName"/>
+                </div>
             </div>
             <t t-set-slot="footer">
-                <button class="btn btn-primary" t-on-click="confirm">Create</button>
-                <button class="btn btn-secondary" t-on-click="() => this.props.close()">
-                    Cancel
-                </button>
+                <button class="btn btn-primary" t-on-click="confirm" t-esc="tr('create')"/>
+                <button class="btn btn-secondary" t-on-click="() => this.props.close()"
+                        t-esc="tr('cancel')"/>
             </t>
         </Dialog>
     </t>

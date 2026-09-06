@@ -6,15 +6,23 @@ import shutil
 import subprocess
 import string
 import sys
+import uuid
 from contextlib import closing
 from datetime import timedelta
 
 import psycopg2
+from passlib.context import CryptContext
 
 import odoo
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.service import db as odoo_db
+
+# Odoo hashes passwords with pbkdf2_sha512; a hash we generate with the same
+# scheme verifies against res.users.login unchanged. Used only on the template
+# path, where the admin password is set by raw SQL (no tenant registry is
+# opened) -- the from-scratch path gets its password from _initialize_db.
+_CRYPT_CONTEXT = CryptContext(schemes=["pbkdf2_sha512"])
 
 _logger = logging.getLogger(__name__)
 
@@ -125,6 +133,41 @@ class SaasTenant(models.Model):
              "Edit before clicking Create; cannot be changed after provisioning.",
     )
 
+    # When set, provisioning clones the plan's template database (seconds)
+    # instead of building the schema from scratch (minutes). If the plan has no
+    # template, or the template is missing, provisioning falls back to a
+    # from-scratch build -- a missing template never breaks a tenant.
+    plan_id = fields.Many2one(
+        "saas.plan",
+        string="Plan",
+        ondelete="restrict",
+        copy=False,
+        default=lambda self: self.env["saas.config"]._get().default_plan_id,
+        help="Provision by cloning this plan's template database. Defaults to "
+             "the configured Default Plan, so tenants created from the "
+             "dashboard clone in seconds. Without a plan (or if its template is "
+             "missing) the tenant is built from scratch.",
+    )
+
+    # Soft storage allowance for this tenant, in GB. Drives the used/quota gauge
+    # and the near-full/full upsell signal on the dashboard. Not enforced by
+    # Postgres -- it is a billing/monitoring quota, not a hard write block.
+    quota_gb = fields.Float(
+        string="Storage Quota (GB)",
+        default=lambda self: self.env["saas.config"]._get().default_quota_gb,
+        help="Storage allowance for this tenant. When usage nears it, that is "
+             "the signal to sell an upgrade (raise this number).",
+    )
+    # Set by the quota enforcer when usage exceeds quota. While True the reverse
+    # proxy serves the 'storage limit reached' page instead of the tenant, so
+    # the customer is locked out until the quota is raised. The tenant database
+    # is untouched -- lifting this restores access immediately.
+    suspended = fields.Boolean(
+        string="Suspended (over quota)", default=False, copy=False,
+        help="Auto-set when storage exceeds the quota; the customer sees an "
+             "upgrade page until you raise the quota.",
+    )
+
     # Odoo 19 dropped _sql_constraints -- it is now ignored with a log warning.
     _name_uniq = models.Constraint(
         "UNIQUE (name)",
@@ -182,6 +225,17 @@ class SaasTenant(models.Model):
                     "'%(name)s' is reserved and cannot be used as a tenant name.",
                     name=name,
                 ))
+
+    @api.onchange("plan_id")
+    def _onchange_plan_id(self):
+        """Mirror the plan's modules onto the tenant.
+
+        On the template path the plan's apps are already baked into the clone,
+        so this is only cosmetic there; on the fallback (template missing) path
+        it is what gets the plan's apps installed from scratch.
+        """
+        if self.plan_id and self.plan_id.module_ids:
+            self.module_ids = self.plan_id.module_ids
 
     # ------------------------------------------------------------------
     # Security helpers
@@ -420,6 +474,61 @@ class SaasTenant(models.Model):
             # the rescue of the earlier ones.
             self.env.cr.commit()
 
+        # Keep the UI honest: import any tenant database that exists on the
+        # server but has no record yet. Wrapped so a discovery failure never
+        # stops the watchdog from doing its primary job.
+        try:
+            if self._discover_tenants():
+                self.env.cr.commit()
+        except Exception:  # noqa: BLE001
+            _logger.exception("SaaS: tenant discovery failed")
+
+    @api.model
+    def _discover_tenants(self):
+        """Ensure every real tenant database on the server has a record.
+
+        Enumerates tenant databases straight from pg_database -- those owned by
+        odoo_provision that are not a template and not the control database --
+        and creates an 'active' record for any not yet tracked (e.g. databases
+        created before this module, or by the old shell script). Metadata only:
+        one query, no per-tenant connection, so it stays cheap at 3 tenants or
+        300. Returns the number of newly tracked tenants.
+        """
+        self._assert_control_plane()
+        control = odoo.tools.config.get("saas_control_db") or self.env.cr.dbname
+        conn = odoo.sql_db.db_connect("postgres")
+        with closing(conn.cursor()) as cr:
+            cr.execute(
+                "SELECT datname FROM pg_database "
+                "WHERE pg_get_userbyid(datdba) = 'odoo_provision' "
+                "AND datistemplate = false AND datallowconn = true "
+                "AND datname <> %s",
+                (control,))
+            server_dbs = {r[0] for r in cr.fetchall()}
+        known = set(self.with_context(active_test=False).search([]).mapped("name"))
+        discovered = 0
+        for name in sorted(server_dbs - known):
+            # Skip anything that is not a tenant-shaped name (this also excludes
+            # tpl_* templates, whose underscore fails NAME_RE) and reserved names.
+            if not NAME_RE.match(name) or name in RESERVED_NAMES:
+                _logger.warning(
+                    "SaaS: server database %s is not importable as a tenant; "
+                    "skipping", name)
+                continue
+            self.create({"name": name, "state": "active", "ever_active": True})
+            discovered += 1
+            _logger.info("SaaS: discovered untracked tenant database %s", name)
+        return discovered
+
+    def action_sync_tenants(self):
+        """'Sync from Server' button: import untracked tenant databases now."""
+        self._check_developer_group()
+        self._assert_control_plane()
+        self._discover_tenants()
+        # Reopen the list so the newly imported tenants show immediately.
+        return self.env["ir.actions.act_window"]._for_xml_id(
+            "msolutions_saas.action_saas_tenant_records")
+
     def _run_provision(self):
         self.ensure_one()
         _logger.info("SaaS: provisioning tenant %s", self.name)
@@ -436,24 +545,38 @@ class SaasTenant(models.Model):
                     self.name,
                 )
                 self._drop_database_raw()
-            self._provision_database()
-            self._provision_odoo()
-            # Install extra modules BEFORE granting web ownership.
-            # Objects created by the extra-module subprocess are owned by
-            # odoo_provision. Granting ownership after all installs ensures
-            # odoo_web can SELECT/INSERT on every table including those added
-            # by sales, accounting, discuss, etc. Granting before caused a
-            # 500 on any tenant with extra modules (permission denied on
-            # discuss_channel, account_move, and ~400 other objects).
+            used_template = self._provision_database()
+            if used_template:
+                # The clone already carries base + the plan's STANDARD apps + an
+                # admin user, all copied from the template. It must NOT be
+                # initialised again; instead it is scrubbed of the template's
+                # identity (uuid, logs, crons, sessions, name, admin password).
+                self._post_copy_cleanup()
+            else:
+                self._provision_odoo()
+            # Both paths: install any requested app the database does NOT already
+            # have. The template gives the standard apps for free (the clone is
+            # instant); anything a tenant wants beyond them is installed here, on
+            # demand, and takes its own time. On the from-scratch path only base
+            # is present, so this installs the full set. It runs BEFORE
+            # _grant_web_ownership: the install subprocess creates objects owned
+            # by odoo_provision, and the grant afterwards hands them to odoo_web
+            # (granting before caused a 500 -- permission denied on the new
+            # tables -- on any tenant with extra modules).
             self._install_extra_modules()
+            # Both paths: a clone inherits objects already owned by odoo_web (a
+            # no-op re-grant) but still needs the database-level CONNECT, which
+            # CREATE DATABASE does not copy. See _grant_web_ownership.
             self._grant_web_ownership()
             self.write({
                 "state": "active",
                 "ever_active": True,
                 "error_message": False,
             })
-            self._log("provision_ok")
-            _logger.info("SaaS: tenant %s is active", self.name)
+            self._log("provision_ok",
+                      detail="template" if used_template else "scratch")
+            _logger.info("SaaS: tenant %s is active (%s)", self.name,
+                         "from template" if used_template else "from scratch")
         except Exception as exc:  # noqa: BLE001 - recorded on the record
             _logger.exception("SaaS: provisioning tenant %s failed", self.name)
             self.write({"state": "error", "error_message": str(exc)})
@@ -465,14 +588,23 @@ class SaasTenant(models.Model):
 
     def _run_drop(self):
         self.ensure_one()
-        _logger.info("SaaS: dropping tenant %s", self.name)
+        name = self.name
+        _logger.info("SaaS: dropping tenant %s", name)
         try:
             self._drop_database()
-            self.write({"state": "terminated", "error_message": False})
+            # No trace: write the audit entry (which snapshots the name), then
+            # remove the RECORD itself -- not just mark it 'terminated'. The
+            # database and filestore are already gone; the record was the last
+            # pointer to the tenant, so deleting it leaves nothing behind.
+            # super().unlink() skips this model's guarded unlink override (which
+            # would try to drop the -- now absent -- database again) and the
+            # developer-group gate (this is the worker, uid=1). The audit log
+            # keeps the history via its tenant_name snapshot.
             self._log("drop_ok")
-            _logger.info("SaaS: tenant %s terminated", self.name)
+            super().unlink()
+            _logger.info("SaaS: tenant %s dropped; record removed (no trace)", name)
         except Exception as exc:  # noqa: BLE001 - recorded on the record
-            _logger.exception("SaaS: dropping tenant %s failed", self.name)
+            _logger.exception("SaaS: dropping tenant %s failed", name)
             self.write({"state": "error", "error_message": str(exc)})
             self._log("drop_failed", detail=str(exc)[:2000])
         self.env.cr.commit()
@@ -487,12 +619,52 @@ class SaasTenant(models.Model):
 
     def _database_exists(self):
         self.ensure_one()
+        return self._database_exists_named(self.name)
+
+    def _database_exists_named(self, dbname):
+        """True if a database of this name exists. Shared by tenant and template
+        existence checks; queries the postgres database, never a registry."""
         connection = odoo.sql_db.db_connect("postgres")
         with closing(connection.cursor()) as cr:
-            cr.execute("SELECT 1 FROM pg_database WHERE datname = %s", (self.name,))
+            cr.execute("SELECT 1 FROM pg_database WHERE datname = %s", (dbname,))
             return bool(cr.fetchone())
 
+    def _template_db(self):
+        """The template database to clone, or None to build from scratch.
+
+        A missing template must never break provisioning: if the plan names a
+        template that does not exist (never built, or dropped), fall back to a
+        from-scratch build rather than failing the tenant.
+        """
+        self.ensure_one()
+        tpl = self.plan_id.template_db if self.plan_id else False
+        if not tpl:
+            return None
+        if not self._database_exists_named(tpl):
+            _logger.warning(
+                "SaaS: plan %s template %s is missing; building %s from scratch",
+                self.plan_id.name, tpl, self.name,
+            )
+            return None
+        return tpl
+
     def _provision_database(self):
+        """Create the tenant database. Return True if a template was cloned.
+
+        Cloning a template copies the schema at file level (seconds) instead of
+        building it from scratch (minutes). Falls back to an empty database when
+        the plan has no usable template.
+        """
+        self.ensure_one()
+        tpl = self._template_db()
+        if tpl:
+            _logger.info("SaaS: cloning tenant %s from template %s", self.name, tpl)
+            self._provision_from_template(tpl)
+            return True
+        self._create_empty_database()
+        return False
+
+    def _create_empty_database(self):
         """Create the empty database.
 
         Uses Odoo's own helper rather than a psql subprocess: it quotes the
@@ -503,6 +675,104 @@ class SaasTenant(models.Model):
         """
         self.ensure_one()
         odoo_db._create_empty_database(self.name)
+
+    def _provision_from_template(self, tpl):
+        """Clone the tenant database and filestore from a template.
+
+        CREATE DATABASE ... TEMPLATE requires zero other sessions on the
+        source; templates are marked ALLOW_CONNECTIONS=false by the rebuild, so
+        there are none, but we terminate defensively first in case a template
+        was left connectable. The database copy carries only ir_attachment
+        *references*, so the template's filestore has to be copied too --
+        without it every tenant would point at the template's files and break
+        the moment the template is rebuilt or removed.
+        """
+        self.ensure_one()
+        pg = odoo.sql_db.db_connect("postgres")
+        with closing(pg.cursor()) as cr:
+            cr._cnx.autocommit = True
+            cr.execute(
+                "SELECT pg_terminate_backend(pid) FROM pg_stat_activity "
+                "WHERE datname = %s AND pid <> pg_backend_pid()", (tpl,))
+            cr.execute(odoo.tools.SQL(
+                "CREATE DATABASE %s TEMPLATE %s",
+                odoo.tools.SQL.identifier(self.name),
+                odoo.tools.SQL.identifier(tpl)))
+        self._copy_filestore(tpl)
+
+    def _copy_filestore(self, tpl):
+        """Copy the template's filestore to the new tenant's own directory."""
+        self.ensure_one()
+        src = odoo.tools.config.filestore(tpl)
+        dst = odoo.tools.config.filestore(self.name)
+        if not os.path.isdir(src):
+            _logger.info("SaaS: template %s has no filestore; nothing to copy", tpl)
+            return
+        if os.path.isdir(dst):
+            shutil.rmtree(dst, ignore_errors=True)
+        shutil.copytree(src, dst)
+        _logger.info("SaaS: copied filestore %s -> %s", src, dst)
+
+    def _post_copy_cleanup(self):
+        """Strip the template's identity from a freshly cloned tenant.
+
+        A file-level clone is byte-identical to the template, so it shares the
+        template's database.uuid, its logs, its cron schedule, its sessions, its
+        company name and its admin password. Each of those has to be reset or
+        the tenant is not really its own database. Runs as odoo_provision over
+        raw psycopg -- the objects are still odoo_provision-owned at this point
+        (the ownership hand-off to odoo_web happens next, in
+        _grant_web_ownership), and no tenant registry is opened.
+        """
+        self.ensure_one()
+        new_uuid = str(uuid.uuid1())
+        # A shared database.secret would let sessions/tokens signed for the
+        # template (or a sibling clone) validate here; rotate it too. This is
+        # also what makes "clear sessions" real -- every existing signed session
+        # becomes invalid the moment the secret changes.
+        new_secret = str(uuid.uuid4())
+        password = "admin"
+        pwd_hash = _CRYPT_CONTEXT.hash(password)
+        company = self.company_name or self.name
+        login = self.admin_login
+
+        conn = odoo.sql_db.db_connect(self.name)
+        with closing(conn.cursor()) as cr:
+            # Identity
+            cr.execute(
+                "UPDATE ir_config_parameter SET value = %s WHERE key = 'database.uuid'",
+                (new_uuid,))
+            cr.execute(
+                "UPDATE ir_config_parameter SET value = %s WHERE key = 'database.secret'",
+                (new_secret,))
+            # Logs and cron schedule inherited from the template
+            cr.execute("TRUNCATE ir_logging")
+            cr.execute("UPDATE ir_cron SET nextcall = (now() AT TIME ZONE 'UTC'), "
+                       "lastcall = NULL")
+            # Sessions / logged-in devices / API keys -- only if the tables are
+            # present in this Odoo build. Belt-and-suspenders with the secret
+            # rotation above.
+            for tbl in ("res_device_log", "res_device", "res_users_apikeys"):
+                cr.execute("SELECT to_regclass(%s)", ("public." + tbl,))
+                if cr.fetchone()[0] is not None:
+                    cr.execute(odoo.tools.SQL(
+                        "DELETE FROM %s", odoo.tools.SQL.identifier(tbl)))
+            # Company identity (res_company row 1 and its partner)
+            cr.execute("UPDATE res_company SET name = %s WHERE id = 1", (company,))
+            cr.execute(
+                "UPDATE res_partner SET name = %s "
+                "WHERE id = (SELECT partner_id FROM res_company WHERE id = 1)",
+                (company,))
+            # Admin credentials (the base admin user is id 2 in a fresh database)
+            cr.execute(
+                "UPDATE res_users SET login = %s, password = %s WHERE id = 2",
+                (login, pwd_hash))
+            cr._cnx.commit()
+
+        self.admin_password = password
+        _logger.info(
+            "SaaS: post-copy cleanup for %s (new uuid/secret, cron reset, "
+            "admin reset)", self.name)
 
     def _provision_odoo(self):
         """Install ``base`` and set the admin credentials."""
@@ -524,17 +794,41 @@ class SaasTenant(models.Model):
         self.admin_password = password
 
     def _install_extra_modules(self):
-        """Install the tenant's selected apps after base is initialised.
+        """Install any requested app the tenant database does not already have.
 
-        Runs odoo-bin in a subprocess so the tenant registry loads and
-        exits in that process, never inside the worker.  A failure is
-        logged and recorded on the record but does NOT set state='error':
-        base is already installed and the tenant is usable; the operator
-        can install the missing apps manually.
+        The desired set is the tenant's own module_ids (which default to the
+        plan's standard apps and can be extended per tenant). Whatever the
+        database already has installed -- everything the template baked in, on
+        the clone path -- is skipped, so a template clone that wants exactly the
+        standard apps installs nothing and stays instant, while a tenant that
+        asked for an app beyond the template installs just that delta, on
+        demand, and it takes its own time.
+
+        Runs odoo-bin in a subprocess so the tenant registry loads and exits in
+        that process, never inside the worker. A failure is logged and recorded
+        on the record but does NOT set state='error': the tenant is already
+        usable; the operator can install the missing apps manually.
         """
         self.ensure_one()
-        module_names = self.module_ids.mapped("name")
+        # On the fallback path (plan set, template missing) fall back to the
+        # plan's modules if the tenant carries none of its own.
+        desired = (self.module_ids or self.plan_id.module_ids).mapped("name")
+        if not desired:
+            return
+
+        # Skip apps the (possibly cloned) database already has -- the template's
+        # standard apps, on the clone path.
+        conn = odoo.sql_db.db_connect(self.name)
+        with closing(conn.cursor()) as cr:
+            cr.execute(
+                "SELECT name FROM ir_module_module "
+                "WHERE state = 'installed' AND name = ANY(%s)", (list(desired),))
+            already = {r[0] for r in cr.fetchall()}
+        module_names = [n for n in desired if n not in already]
         if not module_names:
+            _logger.info(
+                "SaaS: tenant %s already has every requested app (from template)",
+                self.name)
             return
 
         _logger.info(
@@ -913,11 +1207,95 @@ class SaasTenant(models.Model):
     # Client action data
     # ------------------------------------------------------------------
 
+    def _disk_usage(self, tenants):
+        """Real per-tenant disk usage in bytes: database size + filestore size.
+
+        Database size is pg_database_size (the true on-disk size Postgres
+        reports); filestore size is a du over the tenant's filestore directory.
+        One query for every database and one du for every filestore, so it stays
+        cheap at 3 tenants or 300. Never opens a tenant registry. A missing
+        database or filestore reads as 0.
+        """
+        names = [t.name for t in tenants]
+        db = dict.fromkeys(names, 0)
+        fs = dict.fromkeys(names, 0)
+        if not names:
+            return {}
+        try:
+            conn = odoo.sql_db.db_connect("postgres")
+            with closing(conn.cursor()) as cr:
+                cr.execute(
+                    "SELECT datname, pg_database_size(datname) FROM pg_database "
+                    "WHERE datname = ANY(%s)", (names,))
+                for name, size in cr.fetchall():
+                    db[name] = int(size)
+        except Exception:  # noqa: BLE001
+            _logger.exception("SaaS: could not read tenant database sizes")
+        cfg = odoo.tools.config
+        path_to_name = {cfg.filestore(n): n for n in names}
+        existing = [p for p in path_to_name if os.path.isdir(p)]
+        if existing:
+            try:
+                out = subprocess.run(["du", "-sb"] + existing,
+                                     capture_output=True, text=True, timeout=60)
+                for line in out.stdout.splitlines():
+                    parts = line.split("\t")
+                    if len(parts) == 2 and parts[1] in path_to_name:
+                        fs[path_to_name[parts[1]]] = int(parts[0])
+            except Exception:  # noqa: BLE001
+                _logger.exception("SaaS: could not read tenant filestore sizes")
+        return {t.id: {"db": db[t.name], "files": fs[t.name]} for t in tenants}
+
+    # ------------------------------------------------------------------
+    # Quota enforcement (soft suspension via the reverse proxy)
+    # ------------------------------------------------------------------
+
+    def _enforce_quota(self):
+        """Flip 'suspended' from real usage vs quota for the active tenants here.
+
+        usage_bytes > quota_bytes -> suspended (quota 0 suspends on any usage).
+        Auto-clears when usage is back within quota (e.g. the quota was raised).
+        Only the control-plane 'suspended' flag changes -- the tenant database
+        is never touched. update_tenant_list.sh then routes suspended tenants to
+        the upgrade page within a couple of seconds.
+        """
+        active = self.filtered(lambda t: t.state == "active")
+        if not active:
+            return
+        usage = active._disk_usage(active)
+        for tenant in active:
+            u = usage.get(tenant.id, {})
+            total = u.get("db", 0) + u.get("files", 0)
+            over = total > (tenant.quota_gb or 0) * 1e9
+            if tenant.suspended != over:
+                tenant.suspended = over
+                tenant._log("suspended" if over else "unsuspended")
+                _logger.info("SaaS: tenant %s %s (usage vs quota)",
+                             tenant.name, "SUSPENDED" if over else "restored")
+
+    @api.model
+    def _cron_enforce_quota(self):
+        """Catch tenants whose data grew past their quota. Runs on a timer."""
+        self._assert_control_plane()
+        self.search([("state", "=", "active")])._enforce_quota()
+        self.env.cr.commit()
+
+    def write(self, vals):
+        res = super().write(vals)
+        # Changing a quota re-checks enforcement immediately, so setting a small
+        # (or zero) quota suspends the tenant within a couple of seconds, and
+        # raising it restores access -- no waiting for the timer. Guarded on the
+        # key so the enforcer's own suspended-write does not recurse.
+        if "quota_gb" in vals:
+            self._enforce_quota()
+        return res
+
     @api.model
     def dashboard_data(self):
         """Everything the dashboard needs, in one call."""
         self._check_developer_group()
         tenants = self.search([])
+        usage = self._disk_usage(tenants)
 
         # Show each password exactly once: collect it now, clear the field,
         # return it in this response. The next poll finds admin_password empty.
@@ -930,8 +1308,13 @@ class SaasTenant(models.Model):
             # write() is overridden on saas.audit.log, not here; this is fine.
             to_clear.write({"admin_password": False})
 
+        cfg = self.env["saas.config"]._get()
         return {
             "base_domain": self._base_domain(),
+            "pricing": {
+                "currency": cfg.price_currency or "EGP",
+                "per_gb": cfg.price_per_gb or 0.0,
+            },
             "tenants": [
                 {
                     "id": t.id,
@@ -942,6 +1325,10 @@ class SaasTenant(models.Model):
                     "admin_login": t.admin_login,
                     "admin_password": password_map.get(t.id, ""),
                     "error_message": t.error_message or "",
+                    "disk_db_bytes": usage.get(t.id, {}).get("db", 0),
+                    "disk_fs_bytes": usage.get(t.id, {}).get("files", 0),
+                    "quota_gb": t.quota_gb or 0.0,
+                    "suspended": t.suspended,
                 }
                 for t in tenants
             ],

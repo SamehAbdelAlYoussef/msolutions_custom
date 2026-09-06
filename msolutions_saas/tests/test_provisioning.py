@@ -128,3 +128,166 @@ class TestSaasProvisioning(TransactionCase):
             t._run_provision()
         self.assertNotIn("drop", order)
         self.assertEqual(t.state, "active")
+
+    # -- template provisioning ------------------------------------------
+
+    def _plan(self, template_db="tpl_test"):
+        return self.env["saas.plan"].create(
+            {"name": "T", "template_db": template_db})
+
+    def test_run_provision_template_path_scrubs_not_initialises(self):
+        # When _provision_database reports a clone, _run_provision must scrub
+        # the copy (_post_copy_cleanup) and NEVER re-initialise it (base is in
+        # the template). It still calls _install_extra_modules -- which installs
+        # only the delta beyond the template's standard apps -- then grants.
+        t = self._tenant()
+        t.write({"state": "provisioning", "ever_active": False})
+        order = []
+        with patch.object(type(t), "_database_exists", lambda self: False), \
+             patch.object(type(t), "_provision_database",
+                          lambda self: order.append("clone") or True), \
+             patch.object(type(t), "_post_copy_cleanup",
+                          lambda self: order.append("cleanup")), \
+             patch.object(type(t), "_provision_odoo",
+                          lambda self: order.append("init")), \
+             patch.object(type(t), "_install_extra_modules",
+                          lambda self: order.append("modules")), \
+             patch.object(type(t), "_grant_web_ownership",
+                          lambda self: order.append("grant")), \
+             patch.object(self.env.cr, "commit", lambda: None):
+            t._run_provision()
+        # Clone, scrub, install the delta, then hand ownership to odoo_web.
+        # Crucially: NO re-initialisation.
+        self.assertEqual(order, ["clone", "cleanup", "modules", "grant"])
+        self.assertNotIn("init", order)
+        self.assertEqual(t.state, "active")
+        self.assertTrue(t.ever_active)
+
+    def test_install_extra_modules_skips_apps_already_in_clone(self):
+        # The delta logic: an app already installed in the (cloned) database is
+        # not re-installed. With every requested app already present, no
+        # subprocess runs at all.
+        mod = self.env["ir.module.module"].search([], limit=1)
+        t = self._tenant()
+        t.module_ids = mod
+        ran = []
+        # Pretend the clone already has the requested module installed. closing()
+        # calls .close() on the cursor, so the fake must provide it.
+        class _Cur:
+            def execute(self, *a): pass
+            def fetchall(self): return [(mod.name,)]
+            def close(self): pass
+        with patch("odoo.sql_db.db_connect",
+                   lambda name: type("C", (), {"cursor": lambda self: _Cur()})()), \
+             patch("subprocess.run", lambda *a, **k: ran.append(a)):
+            t._install_extra_modules()
+        self.assertEqual(ran, [])  # nothing to install -> no subprocess
+
+    def test_run_provision_scratch_path_installs_modules(self):
+        # When _provision_database reports no clone, the from-scratch path runs
+        # (_provision_odoo + _install_extra_modules) and cleanup does NOT.
+        t = self._tenant()
+        t.write({"state": "provisioning", "ever_active": False})
+        order = []
+        with patch.object(type(t), "_database_exists", lambda self: False), \
+             patch.object(type(t), "_provision_database",
+                          lambda self: order.append("create") or False), \
+             patch.object(type(t), "_post_copy_cleanup",
+                          lambda self: order.append("cleanup")), \
+             patch.object(type(t), "_provision_odoo",
+                          lambda self: order.append("init")), \
+             patch.object(type(t), "_install_extra_modules",
+                          lambda self: order.append("modules")), \
+             patch.object(type(t), "_grant_web_ownership",
+                          lambda self: order.append("grant")), \
+             patch.object(self.env.cr, "commit", lambda: None):
+            t._run_provision()
+        self.assertEqual(order, ["create", "init", "modules", "grant"])
+        self.assertNotIn("cleanup", order)
+        self.assertEqual(t.state, "active")
+
+    def test_template_db_none_without_plan(self):
+        # No plan -> build from scratch.
+        self.assertIsNone(self._tenant()._template_db())
+
+    def test_template_db_falls_back_when_template_missing(self):
+        # A missing template must never break provisioning: fall back to scratch.
+        t = self._tenant()
+        t.plan_id = self._plan("tpl_gone")
+        with patch.object(type(t), "_database_exists_named",
+                          lambda self, name: False):
+            self.assertIsNone(t._template_db())
+
+    def test_template_db_returns_name_when_present(self):
+        t = self._tenant()
+        t.plan_id = self._plan("tpl_here")
+        with patch.object(type(t), "_database_exists_named",
+                          lambda self, name: True):
+            self.assertEqual(t._template_db(), "tpl_here")
+
+    def test_provision_database_true_on_clone_false_on_scratch(self):
+        t = self._tenant()
+        t.plan_id = self._plan("tpl_present")
+        with patch.object(type(t), "_provision_from_template",
+                          lambda self, tpl: None), \
+             patch.object(type(t), "_database_exists_named",
+                          lambda self, name: True):
+            self.assertTrue(t._provision_database())
+        t2 = self._tenant(name="acmetwo")
+        with patch.object(type(t2), "_create_empty_database", lambda self: None):
+            self.assertFalse(t2._provision_database())
+
+    # -- discovery & complete deletion ----------------------------------
+
+    def test_discover_imports_untracked_databases_only(self):
+        # Server reports: a tracked db, an untracked tenant, a template, a
+        # reserved name. Only the untracked tenant-shaped name is imported.
+        self._tenant(name="known1")
+        rows = [("known1",), ("newtenant",), ("tpl_basic",), ("admin",)]
+
+        class _Cur:
+            def execute(self, *a): pass
+            def fetchall(self): return rows
+            def close(self): pass
+        with patch("odoo.sql_db.db_connect",
+                   lambda name: type("C", (), {"cursor": lambda self: _Cur()})()):
+            n = self.Tenant._discover_tenants()
+        self.assertEqual(n, 1)
+        new = self.Tenant.search([("name", "=", "newtenant")])
+        self.assertTrue(new)
+        self.assertEqual(new.state, "active")
+        self.assertTrue(new.ever_active)
+        self.assertFalse(self.Tenant.search([("name", "=", "tpl_basic")]))
+        self.assertFalse(self.Tenant.search([("name", "=", "admin")]))
+
+    def test_run_drop_removes_record_leaving_no_trace(self):
+        # A successful drop must delete the record itself, not park it in
+        # 'terminated' -- no lingering pointer to the tenant.
+        t = self._tenant()
+        t.write({"state": "terminating"})
+        with patch.object(type(t), "_drop_database", lambda self: None), \
+             patch.object(self.env.cr, "commit", lambda: None):
+            t._run_drop()
+        self.assertFalse(t.exists())
+
+    def test_new_tenant_defaults_to_configured_plan(self):
+        # The fix for "create from the view takes a minute": a new tenant picks
+        # up the configured Default Plan, so it clones from a template instead
+        # of building from scratch.
+        plan = self._plan("tpl_default")
+        self.env["saas.config"]._get().default_plan_id = plan
+        self.assertEqual(self.Tenant.create({"name": "acmedef"}).plan_id, plan)
+
+    def test_run_drop_keeps_record_on_failure(self):
+        # If the drop fails, the record must survive (in error) so the operator
+        # can see it and retry -- the opposite of the success path.
+        t = self._tenant()
+        t.write({"state": "terminating"})
+
+        def _boom(self):
+            raise RuntimeError("drop failed")
+        with patch.object(type(t), "_drop_database", _boom), \
+             patch.object(self.env.cr, "commit", lambda: None):
+            t._run_drop()
+        self.assertTrue(t.exists())
+        self.assertEqual(t.state, "error")

@@ -8,8 +8,31 @@
             <form string="SaaS Configuration">
                 <sheet>
                     <div class="oe_title">
-                        <h1>Default Apps</h1>
+                        <h1>Provisioning Defaults</h1>
                     </div>
+                    <group>
+                        <field name="default_plan_id"
+                               options="{'no_create': True}"/>
+                        <field name="default_quota_gb"/>
+                    </group>
+                    <p class="text-muted mb-3">
+                        New tenants use the <strong>Default Plan</strong> and its
+                        template, so they clone in seconds. Pick a plan whose
+                        template is built. Leave empty to build from scratch.
+                    </p>
+                    <hr/>
+                    <h3>Pricing</h3>
+                    <p class="text-muted mb-2">
+                        A tenant's monthly invoice is
+                        <strong>its storage quota (GB) × price per GB</strong>.
+                        Set the rate from your market/cost rate.
+                    </p>
+                    <group>
+                        <field name="price_currency"/>
+                        <field name="price_per_gb"/>
+                    </group>
+                    <hr/>
+                    <h3>Default Apps</h3>
                     <p class="text-muted mb-3">
                         Apps selected here are installed automatically in every
                         new tenant database. You can override the list per tenant
