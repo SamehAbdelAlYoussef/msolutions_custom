@@ -289,9 +289,196 @@ $saas-dead:      #9CA3AF;   // terminated
 
 .o_saas_dashboard .text-muted.small.mt-3 { color: $saas-muted !important; }
 
+// ── Storage usage (doughnut + legend) ────────────────────────────────
+.o_saas_usage {
+    .o_saas_usage_chart {
+        position: relative;
+        width: 116px;
+        height: 116px;
+        margin: 0 auto;
+
+        canvas { display: block; width: 100% !important; height: 100% !important; }
+    }
+    .o_saas_usage_center {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+
+        .o_saas_usage_total { font-weight: 700; font-size: 1.05rem; line-height: 1.1; }
+        .o_saas_usage_caption {
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: $saas-muted;
+        }
+    }
+    .o_saas_usage_legend {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.25rem 1rem;
+        margin-top: 0.55rem;
+        font-size: 0.75rem;
+        color: $saas-muted;
+
+        .o_saas_legend_item { display: inline-flex; align-items: center; gap: 0.35rem; }
+        .o_saas_legend_dot {
+            width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none;
+        }
+        strong { color: inherit; font-weight: 600; }
+    }
+}
+
+// ── Compact card ─────────────────────────────────────────────────────
+.o_saas_compact {
+    padding: 0.7rem 0.8rem;
+
+    .o_saas_pip { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+    .o_saas_card_name { font-weight: 600; font-size: 0.92rem; }
+    .o_saas_card_company { font-size: 0.72rem; color: $saas-muted; margin-top: 0.05rem; }
+    .o_saas_card_url { font-size: 0.72rem; margin-top: 0.15rem; }
+
+    .o_saas_gear {
+        border: 0; background: transparent; color: $saas-muted;
+        padding: 0.15rem 0.35rem; border-radius: 6px; cursor: pointer; line-height: 1;
+
+        &:hover { background: rgba(0, 0, 0, 0.06); color: inherit; }
+    }
+    .o_saas_compact_meta {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 0.4rem; margin-top: 0.55rem; font-size: 0.75rem; flex-wrap: wrap;
+
+        .o_saas_meta_size { color: $saas-muted; }
+        .o_saas_meta_price { font-weight: 700; }
+    }
+}
+
+// ── Details wizard ───────────────────────────────────────────────────
+.o_saas_details {
+    .o_saas_kv {
+        width: 100%; font-size: 0.85rem;
+
+        td { padding: 0.25rem 0; }
+        td:last-child { text-align: end; font-weight: 600; white-space: nowrap; }
+        .o_saas_legend_dot {
+            width: 9px; height: 9px; border-radius: 50%;
+            display: inline-block; margin-inline-end: 0.4rem;
+        }
+        .o_saas_kv_total td { border-top: 1px solid #e2e8f0; padding-top: 0.4rem; font-weight: 700; }
+    }
+    .o_saas_pricing_box {
+        background: rgba(37, 99, 235, 0.05);
+        border: 1px solid rgba(37, 99, 235, 0.15);
+        border-radius: 10px;
+        padding: 0.75rem 0.9rem;
+
+        .o_saas_price_total { font-weight: 700; font-size: 1.05rem; }
+    }
+}
+
+// ── Storage quota gauge ──────────────────────────────────────────────
+.o_saas_quota_bar {
+    height: 6px; border-radius: 999px; background: #e9edf3; overflow: hidden;
+}
+.o_saas_quota_fill { height: 100%; border-radius: 999px; transition: width 0.3s ease; }
+.o_saas_quota_text {
+    font-size: 0.7rem; color: $saas-muted; margin-top: 0.3rem;
+    display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;
+}
+.o_saas_quota_flag {
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.03em;
+    padding: 1px 6px; border-radius: 999px;
+
+    &.o_saas_quota_warn { background: rgba(245, 158, 11, 0.15); color: #b45309; }
+    &.o_saas_quota_full { background: rgba(225, 29, 72, 0.15); color: #be123c; }
+}
+.o_saas_quota_hint {
+    font-size: 0.8rem; padding: 0.5rem 0.7rem; border-radius: 8px;
+
+    &.o_saas_quota_warn { background: rgba(245, 158, 11, 0.1); color: #b45309; }
+    &.o_saas_quota_full { background: rgba(225, 29, 72, 0.1); color: #be123c; }
+}
+
+// ── Fleet stat tiles ─────────────────────────────────────────────────
+.o_saas_stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+.o_saas_stat {
+    display: flex; align-items: center; gap: 0.9rem;
+    background: #fff;
+    border: 1px solid #e7ebf0;
+    border-radius: 14px;
+    padding: 0.95rem 1.1rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+
+    .o_saas_stat_icon {
+        width: 42px; height: 42px; border-radius: 11px; flex: none;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.1rem; background: #eef2ff; color: #4f46e5;
+
+        &.o_saas_stat_icon_green { background: rgba(22, 163, 74, 0.12); color: #16a34a; }
+        &.o_saas_stat_icon_blue { background: rgba(37, 99, 235, 0.12); color: #2563eb; }
+    }
+    .o_saas_stat_value { font-size: 1.35rem; font-weight: 700; line-height: 1.15; }
+    .o_saas_stat_label {
+        font-size: 0.68rem; color: $saas-muted;
+        text-transform: uppercase; letter-spacing: 0.05em;
+    }
+}
+.o_saas_stat_revenue {
+    background: linear-gradient(135deg, #4f46e5, #2563eb);
+    border: none; color: #fff;
+    box-shadow: 0 10px 24px -12px rgba(37, 99, 235, 0.7);
+
+    .o_saas_stat_icon { background: rgba(255, 255, 255, 0.2); color: #fff; }
+    .o_saas_stat_label { color: rgba(255, 255, 255, 0.85); }
+}
+
+// A little lift on hover — makes the grid feel alive.
+.o_saas_card {
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+    &:hover { box-shadow: 0 10px 26px -12px rgba(15, 23, 42, 0.28); transform: translateY(-2px); }
+}
+.o_saas_gear:hover { transform: rotate(30deg); transition: transform 0.2s ease; }
+
+// ── Language toggle ──────────────────────────────────────────────────
+.o_saas_lang {
+    display: inline-flex; border: 1px solid #e2e8f0; border-radius: 999px;
+    overflow: hidden; background: #fff; flex: none;
+
+    button {
+        border: 0; background: transparent; color: $saas-muted;
+        font-weight: 600; font-size: 12px; padding: 6px 12px; cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease;
+    }
+    button.o_saas_lang_on { background: #2563eb; color: #fff; }
+}
+
+// RTL: keep the storage bars / rows reading naturally right-to-left.
+.o_saas_dashboard[dir="rtl"] {
+    .o_saas_compact_meta, .o_saas_quota_text { direction: rtl; }
+}
+
+// Over-limit / suspended banner on the card.
+.o_saas_over_limit {
+    display: flex; align-items: center; justify-content: center;
+    background: #e11d48; color: #fff; font-weight: 700;
+    font-size: 0.68rem; letter-spacing: 0.03em;
+    padding: 4px 8px; border-radius: 8px;
+}
+
 // ── Responsive ───────────────────────────────────────────────────────
+@media (max-width: 1100px) { .o_saas_stats { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px) {
     .o_saas_dashboard { padding: 1rem; }
     .o_saas_toolbar { flex-direction: column; align-items: stretch; }
     .o_saas_search_wrap { min-width: 0; }
+    .o_saas_stats { grid-template-columns: 1fr; }
 }
