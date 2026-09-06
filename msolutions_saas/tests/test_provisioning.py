@@ -128,3 +128,111 @@ class TestSaasProvisioning(TransactionCase):
             t._run_provision()
         self.assertNotIn("drop", order)
         self.assertEqual(t.state, "active")
+
+    # -- template provisioning ------------------------------------------
+
+    def _plan(self, template_db="tpl_test"):
+        return self.env["saas.plan"].create(
+            {"name": "T", "template_db": template_db})
+
+    def test_run_provision_template_path_scrubs_not_initialises(self):
+        # When _provision_database reports a clone, _run_provision must scrub
+        # the copy (_post_copy_cleanup) and NEVER re-initialise it (base is in
+        # the template). It still calls _install_extra_modules -- which installs
+        # only the delta beyond the template's standard apps -- then grants.
+        t = self._tenant()
+        t.write({"state": "provisioning", "ever_active": False})
+        order = []
+        with patch.object(type(t), "_database_exists", lambda self: False), \
+             patch.object(type(t), "_provision_database",
+                          lambda self: order.append("clone") or True), \
+             patch.object(type(t), "_post_copy_cleanup",
+                          lambda self: order.append("cleanup")), \
+             patch.object(type(t), "_provision_odoo",
+                          lambda self: order.append("init")), \
+             patch.object(type(t), "_install_extra_modules",
+                          lambda self: order.append("modules")), \
+             patch.object(type(t), "_grant_web_ownership",
+                          lambda self: order.append("grant")), \
+             patch.object(self.env.cr, "commit", lambda: None):
+            t._run_provision()
+        # Clone, scrub, install the delta, then hand ownership to odoo_web.
+        # Crucially: NO re-initialisation.
+        self.assertEqual(order, ["clone", "cleanup", "modules", "grant"])
+        self.assertNotIn("init", order)
+        self.assertEqual(t.state, "active")
+        self.assertTrue(t.ever_active)
+
+    def test_install_extra_modules_skips_apps_already_in_clone(self):
+        # The delta logic: an app already installed in the (cloned) database is
+        # not re-installed. With every requested app already present, no
+        # subprocess runs at all.
+        mod = self.env["ir.module.module"].search([], limit=1)
+        t = self._tenant()
+        t.module_ids = mod
+        ran = []
+        # Pretend the clone already has the requested module installed. closing()
+        # calls .close() on the cursor, so the fake must provide it.
+        class _Cur:
+            def execute(self, *a): pass
+            def fetchall(self): return [(mod.name,)]
+            def close(self): pass
+        with patch("odoo.sql_db.db_connect",
+                   lambda name: type("C", (), {"cursor": lambda self: _Cur()})()), \
+             patch("subprocess.run", lambda *a, **k: ran.append(a)):
+            t._install_extra_modules()
+        self.assertEqual(ran, [])  # nothing to install -> no subprocess
+
+    def test_run_provision_scratch_path_installs_modules(self):
+        # When _provision_database reports no clone, the from-scratch path runs
+        # (_provision_odoo + _install_extra_modules) and cleanup does NOT.
+        t = self._tenant()
+        t.write({"state": "provisioning", "ever_active": False})
+        order = []
+        with patch.object(type(t), "_database_exists", lambda self: False), \
+             patch.object(type(t), "_provision_database",
+                          lambda self: order.append("create") or False), \
+             patch.object(type(t), "_post_copy_cleanup",
+                          lambda self: order.append("cleanup")), \
+             patch.object(type(t), "_provision_odoo",
+                          lambda self: order.append("init")), \
+             patch.object(type(t), "_install_extra_modules",
+                          lambda self: order.append("modules")), \
+             patch.object(type(t), "_grant_web_ownership",
+                          lambda self: order.append("grant")), \
+             patch.object(self.env.cr, "commit", lambda: None):
+            t._run_provision()
+        self.assertEqual(order, ["create", "init", "modules", "grant"])
+        self.assertNotIn("cleanup", order)
+        self.assertEqual(t.state, "active")
+
+    def test_template_db_none_without_plan(self):
+        # No plan -> build from scratch.
+        self.assertIsNone(self._tenant()._template_db())
+
+    def test_template_db_falls_back_when_template_missing(self):
+        # A missing template must never break provisioning: fall back to scratch.
+        t = self._tenant()
+        t.plan_id = self._plan("tpl_gone")
+        with patch.object(type(t), "_database_exists_named",
+                          lambda self, name: False):
+            self.assertIsNone(t._template_db())
+
+    def test_template_db_returns_name_when_present(self):
+        t = self._tenant()
+        t.plan_id = self._plan("tpl_here")
+        with patch.object(type(t), "_database_exists_named",
+                          lambda self, name: True):
+            self.assertEqual(t._template_db(), "tpl_here")
+
+    def test_provision_database_true_on_clone_false_on_scratch(self):
+        t = self._tenant()
+        t.plan_id = self._plan("tpl_present")
+        with patch.object(type(t), "_provision_from_template",
+                          lambda self, tpl: None), \
+             patch.object(type(t), "_database_exists_named",
+                          lambda self, name: True):
+            self.assertTrue(t._provision_database())
+        t2 = self._tenant(name="acmetwo")
+        with patch.object(type(t2), "_create_empty_database", lambda self: None):
+            self.assertFalse(t2._provision_database())

@@ -15,7 +15,7 @@ set the admin credentials.
 The work runs in ``ir.cron``, not in the web request, because installing
 ``base`` takes about a minute.
     """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.2.0.0',
     'category': 'Administration',
     'author': 'Msolutions',
     'license': 'LGPL-3',
@@ -31,7 +31,9 @@ The work runs in ``ir.cron``, not in the web request, because installing
         'security/ir.model.access.csv',
         'data/ir_config_parameter.xml',
         'data/ir_cron.xml',
+        'data/saas_plan_data.xml',
         'views/saas_tenant_views.xml',
+        'views/saas_plan_views.xml',
         'views/saas_audit_log_views.xml',
         'views/saas_config_views.xml',
     ],

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_saas_plan_list" model="ir.ui.view">
+        <field name="name">saas.plan.list</field>
+        <field name="model">saas.plan</field>
+        <field name="arch" type="xml">
+            <list string="Plans">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="template_db"/>
+                <!-- The template-age indicator: how stale each template is. -->
+                <field name="template_age_display" string="Template"
+                       decoration-warning="not template_exists and template_db"/>
+                <field name="template_exists" invisible="1"/>
+                <field name="template_last_rebuilt"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_saas_plan_form" model="ir.ui.view">
+        <field name="name">saas.plan.form</field>
+        <field name="model">saas.plan</field>
+        <field name="arch" type="xml">
+            <form string="Plan">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Basic"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="template_db" placeholder="tpl_basic"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="template_age_display"/>
+                            <field name="template_exists"/>
+                            <field name="template_last_rebuilt"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert"
+                         invisible="not template_db">
+                        Edit the modules below, then rebuild this template with
+                        <code>/opt/scripts/rebuild_templates.sh</code> for the
+                        change to reach new tenants. Existing tenants are not
+                        touched by a rebuild.
+                    </div>
+                    <field name="module_ids" widget="many2many_tags"
+                           options="{'no_create': True}"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_saas_plan" model="ir.actions.act_window">
+        <field name="name">Plans</field>
+        <field name="res_model">saas.plan</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_saas_plans" name="Plans" sequence="30"
+              parent="menu_saas_root" action="action_saas_plan"/>
+
+</odoo>

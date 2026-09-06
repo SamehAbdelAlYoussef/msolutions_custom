@@ -64,6 +64,8 @@
                     <group>
                         <group>
                             <field name="company_name"/>
+                            <field name="plan_id" readonly="state != 'draft'"
+                                   options="{'no_create': True}"/>
                         </group>
                         <group>
                             <field name="admin_login" readonly="state != 'draft'"/>
