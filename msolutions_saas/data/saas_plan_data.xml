@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: the operator assigns each plan's modules and rebuilds its
+         template; those edits must survive a module upgrade. The three plans
+         ship with template names set and no modules. Assign apps in the Plans
+         screen, then run rebuild_templates.sh. -->
+    <data noupdate="1">
+        <record id="plan_basic" model="saas.plan">
+            <field name="name">Basic</field>
+            <field name="template_db">tpl_basic</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="plan_business" model="saas.plan">
+            <field name="name">Business</field>
+            <field name="template_db">tpl_business</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="plan_advanced" model="saas.plan">
+            <field name="name">Advanced</field>
+            <field name="template_db">tpl_advanced</field>
+            <field name="sequence">30</field>
+        </record>
+    </data>
+</odoo>

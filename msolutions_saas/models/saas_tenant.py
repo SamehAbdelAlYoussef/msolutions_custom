@@ -6,15 +6,23 @@ import shutil
 import subprocess
 import string
 import sys
+import uuid
 from contextlib import closing
 from datetime import timedelta
 
 import psycopg2
+from passlib.context import CryptContext
 
 import odoo
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.service import db as odoo_db
+
+# Odoo hashes passwords with pbkdf2_sha512; a hash we generate with the same
+# scheme verifies against res.users.login unchanged. Used only on the template
+# path, where the admin password is set by raw SQL (no tenant registry is
+# opened) -- the from-scratch path gets its password from _initialize_db.
+_CRYPT_CONTEXT = CryptContext(schemes=["pbkdf2_sha512"])
 
 _logger = logging.getLogger(__name__)
 
@@ -125,6 +133,20 @@ class SaasTenant(models.Model):
              "Edit before clicking Create; cannot be changed after provisioning.",
     )
 
+    # When set, provisioning clones the plan's template database (seconds)
+    # instead of building the schema from scratch (minutes). If the plan has no
+    # template, or the template is missing, provisioning falls back to a
+    # from-scratch build -- a missing template never breaks a tenant.
+    plan_id = fields.Many2one(
+        "saas.plan",
+        string="Plan",
+        ondelete="restrict",
+        copy=False,
+        help="Provision by cloning this plan's template database. Without a "
+             "plan (or if its template is missing) the tenant is built from "
+             "scratch.",
+    )
+
     # Odoo 19 dropped _sql_constraints -- it is now ignored with a log warning.
     _name_uniq = models.Constraint(
         "UNIQUE (name)",
@@ -182,6 +204,17 @@ class SaasTenant(models.Model):
                     "'%(name)s' is reserved and cannot be used as a tenant name.",
                     name=name,
                 ))
+
+    @api.onchange("plan_id")
+    def _onchange_plan_id(self):
+        """Mirror the plan's modules onto the tenant.
+
+        On the template path the plan's apps are already baked into the clone,
+        so this is only cosmetic there; on the fallback (template missing) path
+        it is what gets the plan's apps installed from scratch.
+        """
+        if self.plan_id and self.plan_id.module_ids:
+            self.module_ids = self.plan_id.module_ids
 
     # ------------------------------------------------------------------
     # Security helpers
@@ -436,24 +469,38 @@ class SaasTenant(models.Model):
                     self.name,
                 )
                 self._drop_database_raw()
-            self._provision_database()
-            self._provision_odoo()
-            # Install extra modules BEFORE granting web ownership.
-            # Objects created by the extra-module subprocess are owned by
-            # odoo_provision. Granting ownership after all installs ensures
-            # odoo_web can SELECT/INSERT on every table including those added
-            # by sales, accounting, discuss, etc. Granting before caused a
-            # 500 on any tenant with extra modules (permission denied on
-            # discuss_channel, account_move, and ~400 other objects).
+            used_template = self._provision_database()
+            if used_template:
+                # The clone already carries base + the plan's STANDARD apps + an
+                # admin user, all copied from the template. It must NOT be
+                # initialised again; instead it is scrubbed of the template's
+                # identity (uuid, logs, crons, sessions, name, admin password).
+                self._post_copy_cleanup()
+            else:
+                self._provision_odoo()
+            # Both paths: install any requested app the database does NOT already
+            # have. The template gives the standard apps for free (the clone is
+            # instant); anything a tenant wants beyond them is installed here, on
+            # demand, and takes its own time. On the from-scratch path only base
+            # is present, so this installs the full set. It runs BEFORE
+            # _grant_web_ownership: the install subprocess creates objects owned
+            # by odoo_provision, and the grant afterwards hands them to odoo_web
+            # (granting before caused a 500 -- permission denied on the new
+            # tables -- on any tenant with extra modules).
             self._install_extra_modules()
+            # Both paths: a clone inherits objects already owned by odoo_web (a
+            # no-op re-grant) but still needs the database-level CONNECT, which
+            # CREATE DATABASE does not copy. See _grant_web_ownership.
             self._grant_web_ownership()
             self.write({
                 "state": "active",
                 "ever_active": True,
                 "error_message": False,
             })
-            self._log("provision_ok")
-            _logger.info("SaaS: tenant %s is active", self.name)
+            self._log("provision_ok",
+                      detail="template" if used_template else "scratch")
+            _logger.info("SaaS: tenant %s is active (%s)", self.name,
+                         "from template" if used_template else "from scratch")
         except Exception as exc:  # noqa: BLE001 - recorded on the record
             _logger.exception("SaaS: provisioning tenant %s failed", self.name)
             self.write({"state": "error", "error_message": str(exc)})
@@ -487,12 +534,52 @@ class SaasTenant(models.Model):
 
     def _database_exists(self):
         self.ensure_one()
+        return self._database_exists_named(self.name)
+
+    def _database_exists_named(self, dbname):
+        """True if a database of this name exists. Shared by tenant and template
+        existence checks; queries the postgres database, never a registry."""
         connection = odoo.sql_db.db_connect("postgres")
         with closing(connection.cursor()) as cr:
-            cr.execute("SELECT 1 FROM pg_database WHERE datname = %s", (self.name,))
+            cr.execute("SELECT 1 FROM pg_database WHERE datname = %s", (dbname,))
             return bool(cr.fetchone())
 
+    def _template_db(self):
+        """The template database to clone, or None to build from scratch.
+
+        A missing template must never break provisioning: if the plan names a
+        template that does not exist (never built, or dropped), fall back to a
+        from-scratch build rather than failing the tenant.
+        """
+        self.ensure_one()
+        tpl = self.plan_id.template_db if self.plan_id else False
+        if not tpl:
+            return None
+        if not self._database_exists_named(tpl):
+            _logger.warning(
+                "SaaS: plan %s template %s is missing; building %s from scratch",
+                self.plan_id.name, tpl, self.name,
+            )
+            return None
+        return tpl
+
     def _provision_database(self):
+        """Create the tenant database. Return True if a template was cloned.
+
+        Cloning a template copies the schema at file level (seconds) instead of
+        building it from scratch (minutes). Falls back to an empty database when
+        the plan has no usable template.
+        """
+        self.ensure_one()
+        tpl = self._template_db()
+        if tpl:
+            _logger.info("SaaS: cloning tenant %s from template %s", self.name, tpl)
+            self._provision_from_template(tpl)
+            return True
+        self._create_empty_database()
+        return False
+
+    def _create_empty_database(self):
         """Create the empty database.
 
         Uses Odoo's own helper rather than a psql subprocess: it quotes the
@@ -503,6 +590,104 @@ class SaasTenant(models.Model):
         """
         self.ensure_one()
         odoo_db._create_empty_database(self.name)
+
+    def _provision_from_template(self, tpl):
+        """Clone the tenant database and filestore from a template.
+
+        CREATE DATABASE ... TEMPLATE requires zero other sessions on the
+        source; templates are marked ALLOW_CONNECTIONS=false by the rebuild, so
+        there are none, but we terminate defensively first in case a template
+        was left connectable. The database copy carries only ir_attachment
+        *references*, so the template's filestore has to be copied too --
+        without it every tenant would point at the template's files and break
+        the moment the template is rebuilt or removed.
+        """
+        self.ensure_one()
+        pg = odoo.sql_db.db_connect("postgres")
+        with closing(pg.cursor()) as cr:
+            cr._cnx.autocommit = True
+            cr.execute(
+                "SELECT pg_terminate_backend(pid) FROM pg_stat_activity "
+                "WHERE datname = %s AND pid <> pg_backend_pid()", (tpl,))
+            cr.execute(odoo.tools.SQL(
+                "CREATE DATABASE %s TEMPLATE %s",
+                odoo.tools.SQL.identifier(self.name),
+                odoo.tools.SQL.identifier(tpl)))
+        self._copy_filestore(tpl)
+
+    def _copy_filestore(self, tpl):
+        """Copy the template's filestore to the new tenant's own directory."""
+        self.ensure_one()
+        src = odoo.tools.config.filestore(tpl)
+        dst = odoo.tools.config.filestore(self.name)
+        if not os.path.isdir(src):
+            _logger.info("SaaS: template %s has no filestore; nothing to copy", tpl)
+            return
+        if os.path.isdir(dst):
+            shutil.rmtree(dst, ignore_errors=True)
+        shutil.copytree(src, dst)
+        _logger.info("SaaS: copied filestore %s -> %s", src, dst)
+
+    def _post_copy_cleanup(self):
+        """Strip the template's identity from a freshly cloned tenant.
+
+        A file-level clone is byte-identical to the template, so it shares the
+        template's database.uuid, its logs, its cron schedule, its sessions, its
+        company name and its admin password. Each of those has to be reset or
+        the tenant is not really its own database. Runs as odoo_provision over
+        raw psycopg -- the objects are still odoo_provision-owned at this point
+        (the ownership hand-off to odoo_web happens next, in
+        _grant_web_ownership), and no tenant registry is opened.
+        """
+        self.ensure_one()
+        new_uuid = str(uuid.uuid1())
+        # A shared database.secret would let sessions/tokens signed for the
+        # template (or a sibling clone) validate here; rotate it too. This is
+        # also what makes "clear sessions" real -- every existing signed session
+        # becomes invalid the moment the secret changes.
+        new_secret = str(uuid.uuid4())
+        password = "admin"
+        pwd_hash = _CRYPT_CONTEXT.hash(password)
+        company = self.company_name or self.name
+        login = self.admin_login
+
+        conn = odoo.sql_db.db_connect(self.name)
+        with closing(conn.cursor()) as cr:
+            # Identity
+            cr.execute(
+                "UPDATE ir_config_parameter SET value = %s WHERE key = 'database.uuid'",
+                (new_uuid,))
+            cr.execute(
+                "UPDATE ir_config_parameter SET value = %s WHERE key = 'database.secret'",
+                (new_secret,))
+            # Logs and cron schedule inherited from the template
+            cr.execute("TRUNCATE ir_logging")
+            cr.execute("UPDATE ir_cron SET nextcall = (now() AT TIME ZONE 'UTC'), "
+                       "lastcall = NULL")
+            # Sessions / logged-in devices / API keys -- only if the tables are
+            # present in this Odoo build. Belt-and-suspenders with the secret
+            # rotation above.
+            for tbl in ("res_device_log", "res_device", "res_users_apikeys"):
+                cr.execute("SELECT to_regclass(%s)", ("public." + tbl,))
+                if cr.fetchone()[0] is not None:
+                    cr.execute(odoo.tools.SQL(
+                        "DELETE FROM %s", odoo.tools.SQL.identifier(tbl)))
+            # Company identity (res_company row 1 and its partner)
+            cr.execute("UPDATE res_company SET name = %s WHERE id = 1", (company,))
+            cr.execute(
+                "UPDATE res_partner SET name = %s "
+                "WHERE id = (SELECT partner_id FROM res_company WHERE id = 1)",
+                (company,))
+            # Admin credentials (the base admin user is id 2 in a fresh database)
+            cr.execute(
+                "UPDATE res_users SET login = %s, password = %s WHERE id = 2",
+                (login, pwd_hash))
+            cr._cnx.commit()
+
+        self.admin_password = password
+        _logger.info(
+            "SaaS: post-copy cleanup for %s (new uuid/secret, cron reset, "
+            "admin reset)", self.name)
 
     def _provision_odoo(self):
         """Install ``base`` and set the admin credentials."""
@@ -524,17 +709,41 @@ class SaasTenant(models.Model):
         self.admin_password = password
 
     def _install_extra_modules(self):
-        """Install the tenant's selected apps after base is initialised.
+        """Install any requested app the tenant database does not already have.
 
-        Runs odoo-bin in a subprocess so the tenant registry loads and
-        exits in that process, never inside the worker.  A failure is
-        logged and recorded on the record but does NOT set state='error':
-        base is already installed and the tenant is usable; the operator
-        can install the missing apps manually.
+        The desired set is the tenant's own module_ids (which default to the
+        plan's standard apps and can be extended per tenant). Whatever the
+        database already has installed -- everything the template baked in, on
+        the clone path -- is skipped, so a template clone that wants exactly the
+        standard apps installs nothing and stays instant, while a tenant that
+        asked for an app beyond the template installs just that delta, on
+        demand, and it takes its own time.
+
+        Runs odoo-bin in a subprocess so the tenant registry loads and exits in
+        that process, never inside the worker. A failure is logged and recorded
+        on the record but does NOT set state='error': the tenant is already
+        usable; the operator can install the missing apps manually.
         """
         self.ensure_one()
-        module_names = self.module_ids.mapped("name")
+        # On the fallback path (plan set, template missing) fall back to the
+        # plan's modules if the tenant carries none of its own.
+        desired = (self.module_ids or self.plan_id.module_ids).mapped("name")
+        if not desired:
+            return
+
+        # Skip apps the (possibly cloned) database already has -- the template's
+        # standard apps, on the clone path.
+        conn = odoo.sql_db.db_connect(self.name)
+        with closing(conn.cursor()) as cr:
+            cr.execute(
+                "SELECT name FROM ir_module_module "
+                "WHERE state = 'installed' AND name = ANY(%s)", (list(desired),))
+            already = {r[0] for r in cr.fetchall()}
+        module_names = [n for n in desired if n not in already]
         if not module_names:
+            _logger.info(
+                "SaaS: tenant %s already has every requested app (from template)",
+                self.name)
             return
 
         _logger.info(
