@@ -9,10 +9,10 @@
     'license': 'OPL-1',
     # This meta-module pulls in the accounting suite only. Integrations that
     # would drag in an unrelated Odoo app (Project, Manufacturing, Point of
-    # Sale, Fleet) are deliberately NOT listed below. They are kept in the
-    # distribution and every one of them is 'auto_install': True with its own
-    # app dependency, so it installs itself again the moment that app is
-    # installed. Nothing is removed, it is only decoupled:
+    # Sale, Fleet, Inventory) are deliberately NOT listed below. They are kept
+    # in the distribution and every one of them is 'auto_install': True with
+    # its own app dependency, so it installs itself again the moment that app
+    # is installed. Nothing is removed, it is only decoupled:
     #
     #   project_account, project_account_asset, project_account_budget -> Project
     #   project_mrp_account -> Project + Manufacturing
@@ -20,6 +20,13 @@
     #   pos_account_reports                                             -> Point of Sale
     #   account_accountant_fleet, account_asset_fleet,
     #   account_fiscal_categories_fleet                                 -> Fleet
+    #   account_avatax_stock                                            -> Inventory
+    #
+    # stock_accountant is the one exception: it is 'auto_install': False, but
+    # it is meaningless without Inventory anyway - its only content is a
+    # settings block injected into stock's own res.config.settings form via
+    # inherit_id="stock.res_config_settings_view_form". mrp_accountant still
+    # declares it as a dependency, so it returns together with Manufacturing.
     'depends': [   'account',
                    'account_3way_match',
                    'account_accountant',
@@ -28,7 +35,6 @@
                    'account_avatax',
                    'account_avatax_geolocalize',
                    'account_avatax_sale',
-                   'account_avatax_stock',
                    'account_bank_statement_import',
                    'account_bank_statement_import_csv',
                    'account_bank_statement_import_ofx',
@@ -60,8 +66,7 @@
                    'accountant',
                    'msolutions_account_bridge',
                    'purchase_accountant',
-                   'sale_external_tax',
-                   'stock_accountant'],
+                   'sale_external_tax'],
     'data': ['views/msolutions_accounting_menus.xml'],
     'application': True,
     'auto_install': False,
