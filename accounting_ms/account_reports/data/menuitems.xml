@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Reporting / Review menu entries, mirroring Odoo Enterprise
+        `account_reports/data/menuitems.xml` - same xml-ids, same names, same
+        parents, same sequences and groups. Only the actions differ (they point
+        at the client actions declared in account_report_actions.xml).
+
+        Parent menus are Community ones (`account.menu_finance_reports` and the
+        report sub-menus), so the full Reporting tree is reproduced:
+
+            Reporting
+             ├─ Ledgers            (seq 2)  Trial Balance, General Ledger
+             ├─ Legal Statements            Balance Sheet, Profit and Loss, Cash Flow
+             ├─ Management                  Executive Summary
+             ├─ Partners                    Partner Ledger, Aged Receivable/Payable
+             └─ Taxes & Fiscal              Tax Report, Sales Reports
+    -->
+
+    <!-- ===== Reporting > Ledgers ===== -->
+    <menuitem id="account_reports_audit_menu"
+              name="Ledgers"
+              parent="account.menu_finance_reports"
+              sequence="2"
+              groups="account.group_account_readonly">
+        <menuitem id="menu_action_account_report_coa"
+                  name="Trial Balance"
+                  action="action_account_report_coa"
+                  groups="account.group_account_readonly"/>
+        <menuitem id="menu_action_account_report_general_ledger"
+                  name="General Ledger"
+                  action="action_account_report_general_ledger"
+                  groups="account.group_account_readonly"/>
+    </menuitem>
+
+    <!-- ===== Reporting > Legal Statements ===== -->
+    <menuitem id="menu_action_account_report_balance_sheet"
+              name="Balance Sheet"
+              action="action_account_report_bs"
+              parent="account.account_reports_legal_statements_menu"
+              groups="account.group_account_readonly"/>
+    <menuitem id="menu_action_account_report_profit_and_loss"
+              name="Profit and Loss"
+              action="action_account_report_pl"
+              parent="account.account_reports_legal_statements_menu"
+              groups="account.group_account_readonly"/>
+    <menuitem id="menu_action_account_report_cash_flow"
+              name="Cash Flow Statement"
+              action="action_account_report_cs"
+              parent="account.account_reports_legal_statements_menu"
+              groups="account.group_account_readonly"/>
+
+    <!-- ===== Reporting > Management ===== -->
+    <menuitem id="menu_action_account_report_exec_summary"
+              name="Executive Summary"
+              action="action_account_report_exec_summary"
+              parent="account.account_reports_management_menu"
+              groups="account.group_account_readonly"/>
+
+    <!-- ===== Reporting > Partners ===== -->
+    <menuitem id="menu_action_account_report_partner_ledger"
+              name="Partner Ledger"
+              action="action_account_report_partner_ledger"
+              parent="account.account_reports_partners_reports_menu"
+              groups="account.group_account_readonly,account.group_account_basic"/>
+    <menuitem id="menu_action_account_report_aged_receivable"
+              name="Aged Receivable"
+              action="action_account_report_ar"
+              parent="account.account_reports_partners_reports_menu"
+              groups="account.group_account_readonly,account.group_account_basic"/>
+    <menuitem id="menu_action_account_report_aged_payable"
+              name="Aged Payable"
+              action="action_account_report_ap"
+              parent="account.account_reports_partners_reports_menu"
+              groups="account.group_account_readonly,account.group_account_basic"/>
+
+    <!-- ===== Reporting > Taxes & Fiscal ===== -->
+    <menuitem id="menu_action_account_report_gt"
+              name="Tax Report"
+              action="action_account_report_gt"
+              parent="account.account_reports_taxes_and_fiscal_menu"
+              groups="account.group_account_readonly,account.group_account_basic"/>
+
+    <!-- ===== Review tab ===== -->
+    <menuitem id="menu_action_account_report_ja"
+              name="Journal Audit"
+              action="action_account_report_ja"
+              parent="account.account_audit_control_menu"
+              sequence="10"
+              groups="account.group_account_readonly"/>
+
+    <menuitem id="account_audit_regularization_entries_menu"
+              name="Regularization Entries"
+              parent="account.account_audit_menu"
+              sequence="50"
+              groups="account.group_account_readonly">
+        <menuitem id="menu_action_account_report_multicurrency_revaluation"
+                  name="Currencies"
+                  action="action_account_report_multicurrency_revaluation"
+                  groups="base.group_multi_currency"/>
+        <menuitem id="menu_action_account_report_deferred_revenue"
+                  name="Deferred Revenues"
+                  action="action_account_report_deferred_revenue"
+                  groups="account.group_account_readonly"/>
+        <menuitem id="menu_action_account_report_deferred_expense"
+                  name="Deferred Expenses"
+                  action="action_account_report_deferred_expense"
+                  groups="account.group_account_readonly"/>
+    </menuitem>
+</odoo>

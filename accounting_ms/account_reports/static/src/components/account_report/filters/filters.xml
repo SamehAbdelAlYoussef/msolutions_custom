@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="account_reports.AccountReportFilters">
+        <div class="o_account_reports_filter d-flex flex-wrap gap-2 align-items-center">
+            <div id="filter_extra_options" class="o_account_reports_filter_extra_options d-flex flex-wrap gap-2">
+                <t t-foreach="filterExtraOptions" t-as="option" t-key="option">
+                    <span class="badge text-bg-light" t-esc="option"/>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!--
+        Base template inherited by account_asset.DepreciationScheduleFilters and
+        account_intrastat.IntrastatReportFilters through
+        t-inherit="account_reports.AccountReportFiltersCustomizable".
+        The `filter_extra_options` node is the xpath anchor they target.
+    -->
+    <t t-name="account_reports.AccountReportFiltersCustomizable">
+        <div id="filter_extra_options" class="o_account_reports_filter_extra_options d-flex flex-wrap gap-2"/>
+    </t>
+</templates>

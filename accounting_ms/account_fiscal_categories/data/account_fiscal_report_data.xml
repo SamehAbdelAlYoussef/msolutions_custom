@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Report record updated by account_fiscal_categories_fleet
+        (it sets `custom_handler_model_id` on it).
+    -->
+    <record id="fiscal_report" model="account.report">
+        <field name="name">Fiscal Report</field>
+        <field name="filter_date_range" eval="True"/>
+        <field name="filter_show_draft" eval="True"/>
+    </record>
+</odoo>

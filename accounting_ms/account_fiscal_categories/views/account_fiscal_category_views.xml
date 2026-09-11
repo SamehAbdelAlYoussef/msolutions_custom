@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Base views whose xml-ids are inherited by account_fiscal_categories_fleet.
+        The xpath anchors it targets are:
+          * group[@name='left_column']      (form)
+          * field[@name='account_ids']      (list)
+    -->
+
+    <record id="view_account_fiscal_category_form" model="ir.ui.view">
+        <field name="name">account.fiscal.category.form</field>
+        <field name="model">account.fiscal.category</field>
+        <field name="arch" type="xml">
+            <form string="Fiscal Category">
+                <sheet>
+                    <group>
+                        <group name="left_column">
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Accounts" name="accounts">
+                            <field name="account_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_account_fiscal_category_tree" model="ir.ui.view">
+        <field name="name">account.fiscal.category.list</field>
+        <field name="model">account.fiscal.category</field>
+        <field name="arch" type="xml">
+            <list string="Fiscal Categories">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="account_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_account_fiscal_category_search" model="ir.ui.view">
+        <field name="name">account.fiscal.category.search</field>
+        <field name="model">account.fiscal.category</field>
+        <field name="arch" type="xml">
+            <search string="Fiscal Categories">
+                <field name="name"/>
+                <field name="code"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_account_fiscal_category" model="ir.actions.act_window">
+        <field name="name">Fiscal Categories</field>
+        <field name="res_model">account.fiscal.category</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Configuration entry, not a root menu (keeps the app tree tidy). -->
+    <menuitem id="menu_account_fiscal_category"
+              name="Fiscal Categories"
+              action="action_account_fiscal_category"
+              parent="account.menu_finance_configuration"
+              sequence="87"/>
+</odoo>

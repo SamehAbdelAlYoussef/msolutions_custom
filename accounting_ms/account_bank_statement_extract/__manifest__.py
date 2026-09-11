@@ -1,0 +1,17 @@
+{   'name': 'Account Bank Statement Extract',
+    'category': 'msolutions Accounting',
+    'version': '1.0',
+    'depends': [   'msolutions_account_bridge',
+                   'accountant',
+                   'account_bank_statement_import',
+                   'account_extract'],
+    'summary': 'Extract data from bank statement scans to fill them automatically [msolutions: requires an '
+               'unemulated Enterprise module]',
+    'data': ['views/res_config_settings_views.xml', 'views/account_bank_statement_views.xml'],
+    'assets': {'web.assets_backend': ['account_bank_statement_extract/static/src/js/*.js']},
+    'auto_install': True,
+    'author': 'msolutions',
+    'license': 'OPL-1',
+    'website': 'https://msolutions.example.com',
+    'icon': '/account_bank_statement_extract/static/description/icon.png',
+    'installable': False}
