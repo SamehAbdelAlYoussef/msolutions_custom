@@ -35,6 +35,7 @@ does. Same day. Every time.
 | `backup_manifest.sh`    | `/opt/scripts/backup_manifest.sh`    | host-side, read-only generator of the backup-registry JSON the Odoo module reads (runs every 15 min via `odoo-backup-manifest.timer`) |
 | `update_tenant_list.sh` | `/opt/scripts/update_tenant_list.sh` | regenerates the nginx tenant + suspended maps (runs ~every 2 s via `odoo-tenant-sync.timer`) |
 | `restic_prune.sh`       | `/opt/scripts/restic_prune.sh`       | weekly offsite space reclamation (`odoo-prune.timer`) |
+| `tenant_health.sh`      | `/opt/scripts/tenant_health.sh`      | tenant reachability + orphan-DB probe for the dashboard (runs every 5 min via `odoo-tenant-health.timer`); read-only, hits `/web/health` (no session, no tenant DB load) |
 | `rebuild_templates.sh`  | `/opt/scripts/rebuild_templates.sh`  | rebuilds all SaaS plan templates (run manually after an upgrade) |
 
 **Reference only — deliberately NOT identical to live:**

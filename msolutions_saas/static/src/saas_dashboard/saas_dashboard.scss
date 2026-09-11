@@ -424,6 +424,8 @@ $saas-dead:      #9CA3AF;   // terminated
 
         &.o_saas_stat_icon_green { background: rgba(22, 163, 74, 0.12); color: #16a34a; }
         &.o_saas_stat_icon_blue { background: rgba(37, 99, 235, 0.12); color: #2563eb; }
+        &.o_saas_stat_icon_red { background: rgba(225, 29, 72, 0.12); color: #e11d48; }
+        &.o_saas_stat_icon_amber { background: rgba(217, 119, 6, 0.12); color: #d97706; }
     }
     .o_saas_stat_value { font-size: 1.35rem; font-weight: 700; line-height: 1.15; }
     .o_saas_stat_label {

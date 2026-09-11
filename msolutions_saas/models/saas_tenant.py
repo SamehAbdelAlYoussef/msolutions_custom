@@ -9,7 +9,7 @@ import string
 import sys
 import uuid
 from contextlib import closing
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import psycopg2
 from passlib.context import CryptContext
@@ -18,6 +18,17 @@ import odoo
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.service import db as odoo_db
+
+
+def _parse_iso_z(value):
+    """Parse an ISO-8601 '...Z' UTC timestamp (as written by the host probe)
+    into a naive-UTC datetime, or False. Mirrors saas_backup._parse_dt."""
+    if not value:
+        return False
+    try:
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
+    except Exception:  # noqa: BLE001
+        return False
 
 # Odoo hashes passwords with pbkdf2_sha512; a hash we generate with the same
 # scheme verifies against res.users.login unchanged. Used only on the template
@@ -187,6 +198,34 @@ class SaasTenant(models.Model):
     # Stale threshold, in hours -- kept in step with the MOTD backup banner.
     _BACKUP_STALE_HOURS = 48
 
+    # ---- Reachability (host probe: routing + DB existence + Odoo alive) ----
+    # Written by _sync_reachability from the tenant_health.json the host probe
+    # produces; the module only ever reads it. reachability_state is stored so
+    # the list can be FILTERED on it, exactly like backup_state.
+    # Stale threshold in minutes -- 3x the 5-min probe cadence. A stale panel
+    # means the probe itself stopped, which is a red signal (same trap as the
+    # backup banner: an empty/old status must never read as healthy).
+    _REACH_STALE_MINUTES = 15
+    _HEALTH_REL_PATH = os.path.join(".tenant_status", "tenant_health.json")
+
+    reachability_http_code = fields.Integer(
+        "Last HTTP", copy=False,
+        help="HTTP status from the last /web/health probe (200 = routed & up, "
+             "404 = not routed by nginx, 5xx/0 = Odoo/nginx down).")
+    reachability_has_db = fields.Boolean(
+        "DB present", copy=False,
+        help="Whether the tenant database existed at the last probe.")
+    reachability_checked_at = fields.Datetime("Last probed", copy=False)
+    reachability_state = fields.Selection(
+        [("ok", "OK"), ("unreachable", "Unreachable"),
+         ("stale", "Stale"), ("na", "n/a")],
+        string="Reachability", compute="_compute_reachability_state",
+        store=True,
+        help="OK: active tenant whose public URL answered 200. Unreachable: "
+             "active tenant that did NOT answer 200 (check the HTTP code). "
+             "Stale: no fresh probe within %d min -- the probe has stopped. "
+             "n/a: tenant is not active." % _REACH_STALE_MINUTES)
+
     @api.depends("backup_ids.backup_date")
     def _compute_backup_state(self):
         threshold = fields.Datetime.now() - timedelta(hours=self._BACKUP_STALE_HOURS)
@@ -207,6 +246,81 @@ class SaasTenant(models.Model):
                 tenant.backup_state = "ok"
             else:
                 tenant.backup_state = "stale"
+
+    @api.depends("state", "reachability_http_code",
+                 "reachability_has_db", "reachability_checked_at")
+    def _compute_reachability_state(self):
+        stale_cut = (fields.Datetime.now()
+                     - timedelta(minutes=self._REACH_STALE_MINUTES))
+        for tenant in self:
+            if tenant.state != "active":
+                tenant.reachability_state = "na"
+            elif (not tenant.reachability_checked_at
+                  or tenant.reachability_checked_at < stale_cut):
+                tenant.reachability_state = "stale"
+            elif (tenant.reachability_has_db
+                  and tenant.reachability_http_code == 200):
+                tenant.reachability_state = "ok"
+            else:
+                tenant.reachability_state = "unreachable"
+
+    @api.model
+    def _health_path(self):
+        return os.path.join(odoo.tools.config["data_dir"],
+                            self._HEALTH_REL_PATH)
+
+    @api.model
+    def _read_health(self):
+        path = self._health_path()
+        if not os.path.exists(path):
+            _logger.warning("SaaS: tenant health file not found at %s", path)
+            return None
+        try:
+            with open(path, "r") as fh:
+                return json.load(fh)
+        except Exception:  # noqa: BLE001
+            _logger.exception("SaaS: cannot parse tenant health file %s", path)
+            return None
+
+    @api.model
+    def _sync_reachability(self):
+        """Refresh reachability from the host probe's tenant_health.json. Runs
+        as the cron superuser; the probe file is read-only to the container.
+        Missing file -> leave values as-is (per-tenant staleness turns the panel
+        red on its own)."""
+        self._assert_control_plane()
+        data = self._read_health()
+        if data is None:
+            return
+        Tenant = self.sudo()
+        by_name = {t.name: t for t in Tenant.search([])}
+        for e in data.get("checked", []):
+            tenant = by_name.get(e.get("tenant"))
+            if not tenant:
+                continue
+            tenant.write({
+                "reachability_http_code": int(e.get("http_code") or 0),
+                "reachability_has_db": bool(e.get("has_db")),
+                "reachability_checked_at": (_parse_iso_z(e.get("checked_at"))
+                                             or fields.Datetime.now()),
+            })
+        ICP = self.env["ir.config_parameter"].sudo()
+        ICP.set_param("saas_health.generated_at", data.get("generated_at") or "")
+        ICP.set_param("saas_health.orphan_dbs",
+                      json.dumps(data.get("orphan_dbs") or []))
+        ICP.set_param("saas_health.unreachable_count",
+                      str(data.get("unreachable_count") or 0))
+        ICP.set_param("saas_health.orphan_count",
+                      str(data.get("orphan_count") or 0))
+        Tenant.search([])._compute_reachability_state()
+        self.env.cr.commit()
+        _logger.info("SaaS: reachability synced (%s active, %s unreachable, "
+                     "%s orphan)", data.get("active_count"),
+                     data.get("unreachable_count"), data.get("orphan_count"))
+
+    @api.model
+    def _cron_sync_reachability(self):
+        self._sync_reachability()
 
     # Odoo 19 dropped _sql_constraints -- it is now ignored with a log warning.
     _name_uniq = models.Constraint(
@@ -1369,9 +1483,31 @@ class SaasTenant(models.Model):
                     "disk_fs_bytes": usage.get(t.id, {}).get("files", 0),
                     "quota_gb": t.quota_gb or 0.0,
                     "suspended": t.suspended,
+                    "reachability_state": t.reachability_state,
                 }
                 for t in tenants
             ],
+            "health": self._health_summary(),
+        }
+
+    @api.model
+    def _health_summary(self):
+        """Fleet reachability + orphan summary for the dashboard header."""
+        ICP = self.env["ir.config_parameter"].sudo()
+        try:
+            orphans = json.loads(ICP.get_param("saas_health.orphan_dbs") or "[]")
+        except Exception:  # noqa: BLE001
+            orphans = []
+        return {
+            "unreachable": self.search_count(
+                [("state", "=", "active"),
+                 ("reachability_state", "=", "unreachable")]),
+            "stale": self.search_count(
+                [("state", "=", "active"),
+                 ("reachability_state", "=", "stale")]),
+            "orphans": orphans,
+            "orphan_count": len(orphans),
+            "generated_at": ICP.get_param("saas_health.generated_at") or "",
         }
 
     @api.model

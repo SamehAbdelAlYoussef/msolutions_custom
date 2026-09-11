@@ -35,6 +35,24 @@
                         <div class="o_saas_stat_label" t-esc="tr('stat_storage')"/>
                     </div>
                 </div>
+                <div class="o_saas_stat">
+                    <div class="o_saas_stat_icon" t-att-class="{'o_saas_stat_icon_red': (unreachableCount + staleCount) &gt; 0, 'o_saas_stat_icon_green': (unreachableCount + staleCount) === 0}">
+                        <i class="fa fa-heartbeat"/>
+                    </div>
+                    <div>
+                        <div class="o_saas_stat_value" t-esc="unreachableCount + staleCount"/>
+                        <div class="o_saas_stat_label" t-esc="tr('stat_unreachable')"/>
+                    </div>
+                </div>
+                <div class="o_saas_stat" t-att-title="orphanNames.join(', ')">
+                    <div class="o_saas_stat_icon" t-att-class="{'o_saas_stat_icon_red': orphanCount &gt; 0, 'o_saas_stat_icon_green': orphanCount === 0}">
+                        <i class="fa fa-unlink"/>
+                    </div>
+                    <div>
+                        <div class="o_saas_stat_value" t-esc="orphanCount"/>
+                        <div class="o_saas_stat_label" t-esc="tr('stat_orphans')"/>
+                    </div>
+                </div>
             </div>
 
             <!-- ── Toolbar: search + filters ────────────────────── -->

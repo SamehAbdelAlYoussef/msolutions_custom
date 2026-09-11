@@ -32,6 +32,7 @@ export const LANGS = {
         no_match: "No tenants match your search.",
         clear_filters: "Clear filters",
         stat_tenants: "Tenants", stat_active: "Active", stat_storage: "Storage used",
+        stat_unreachable: "Unreachable", stat_orphans: "Orphan DBs",
         near_full: "NEAR FULL", full: "FULL", per_mo: "/mo",
         over_limit: "OVER LIMIT — BLOCKED",
         work_in_progress: "Work in progress — this page refreshes itself.",
@@ -61,6 +62,7 @@ export const LANGS = {
         no_match: "لا يوجد عملاء مطابقون لبحثك.",
         clear_filters: "مسح الفلاتر",
         stat_tenants: "العملاء", stat_active: "النشطون", stat_storage: "المساحة المستخدمة",
+        stat_unreachable: "غير متاح", stat_orphans: "قواعد بيانات يتيمة",
         near_full: "قارب الامتلاء", full: "ممتلئ", per_mo: "/شهر",
         over_limit: "تخطّى الحد — موقوف",
         work_in_progress: "جاري العمل — الصفحة تُحدّث نفسها.",
@@ -322,6 +324,19 @@ export class SaasDashboard extends Component {
             .filter((t) => t.state === "active")
             .reduce((s, t) => s + this.tenantPrice(t), 0);
     }
+    // Reachability + orphan health (fed by dashboard_data().health).
+    get unreachableCount() {
+        return (this.state.health && this.state.health.unreachable) || 0;
+    }
+    get staleCount() {
+        return (this.state.health && this.state.health.stale) || 0;
+    }
+    get orphanCount() {
+        return (this.state.health && this.state.health.orphan_count) || 0;
+    }
+    get orphanNames() {
+        return (this.state.health && this.state.health.orphans) || [];
+    }
     formatMoney(v) {
         const p = this.state.pricing || {};
         return `${Math.round((v || 0) * 100) / 100} ${p.currency || ""}`.trim();
@@ -396,6 +411,7 @@ export class SaasDashboard extends Component {
             tenants: [],
             baseDomain: "",
             pricing: {},
+            health: {},
             loading: true,
             query: "",
             filter: "all",   // "all" | "active" | "inactive"
@@ -415,6 +431,7 @@ export class SaasDashboard extends Component {
         this.state.baseDomain = data.base_domain;
         this.state.pricing = data.pricing || {};
         this.state.tenants = data.tenants;
+        this.state.health = data.health || {};
         this.state.loading = false;
     }
 

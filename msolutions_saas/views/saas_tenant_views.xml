@@ -33,6 +33,10 @@
                        decoration-success="backup_state == 'ok'"
                        decoration-danger="backup_state in ('failed', 'stale')"
                        decoration-warning="backup_state == 'never'"/>
+                <field name="reachability_state" widget="badge" string="Reachability"
+                       decoration-success="reachability_state == 'ok'"
+                       decoration-danger="reachability_state in ('unreachable', 'stale')"
+                       decoration-muted="reachability_state == 'na'"/>
             </list>
         </field>
     </record>
@@ -121,6 +125,24 @@
                                     <field name="restic_snapshot_id" optional="hide"/>
                                 </list>
                             </field>
+                        </page>
+                        <page string="Health" name="health">
+                            <group>
+                                <group>
+                                    <field name="reachability_state"/>
+                                    <field name="reachability_http_code"/>
+                                    <field name="reachability_has_db"/>
+                                    <field name="reachability_checked_at"/>
+                                </group>
+                            </group>
+                            <div class="text-muted">
+                                Reachability is probed from the host every few minutes
+                                via <code>/web/health</code> (no session, no tenant DB
+                                load). OK: the public URL routed and Odoo answered.
+                                Unreachable: it did not (404 = nginx has no route or the
+                                DB is missing; 5xx/0 = Odoo/nginx down). Stale: the probe
+                                itself stopped.
+                            </div>
                         </page>
                         <page string="Apps" name="apps">
                             <!-- Editable only before provisioning; once the
