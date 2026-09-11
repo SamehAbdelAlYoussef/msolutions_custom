@@ -86,5 +86,17 @@
             <field name="interval_type">minutes</field>
             <field name="active" eval="True"/>
         </record>
+
+        <!-- Prepare backup-download links: fresh dump (container) or ask the host
+             to restore an existing snapshot; then finalize + expire links. -->
+        <record id="cron_prepare_downloads" model="ir.cron">
+            <field name="name">SaaS: prepare backup downloads</field>
+            <field name="model_id" ref="model_saas_backup_download"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_prepare()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+        </record>
     </data>
 </odoo>

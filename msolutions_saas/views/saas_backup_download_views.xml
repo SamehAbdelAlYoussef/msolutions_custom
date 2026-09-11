@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Data-export log: who pulled which tenant's data off the platform, when,
+         and WHY. Read-only; rows are the exfiltration audit trail. -->
+    <record id="view_saas_backup_download_list" model="ir.ui.view">
+        <field name="name">saas.backup.download.list</field>
+        <field name="model">saas.backup.download</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" delete="0" default_order="requested_at desc">
+                <field name="requested_at"/>
+                <field name="requested_by"/>
+                <field name="tenant_name"/>
+                <field name="source"/>
+                <field name="source_date" string="Data as of"/>
+                <field name="audience"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state in ('failed', 'expired')"
+                       decoration-info="state in ('preparing', 'streaming')"
+                       decoration-warning="state in ('pending', 'dormant', 'ready')"/>
+                <field name="used_at" optional="show"/>
+                <field name="reason"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_saas_backup_download_form" model="ir.ui.view">
+        <field name="name">saas.backup.download.form</field>
+        <field name="model">saas.backup.download</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="tenant_name"/>
+                            <field name="requested_by"/>
+                            <field name="requested_at"/>
+                            <field name="source"/>
+                            <field name="source_date"/>
+                            <field name="audience"/>
+                        </group>
+                        <group>
+                            <field name="state"/>
+                            <field name="expires_at"/>
+                            <field name="used_at"/>
+                            <field name="byte_count"/>
+                            <field name="fs_file_count"/>
+                            <field name="attachment_count"/>
+                        </group>
+                    </group>
+                    <group string="Reason (why the data left the platform)">
+                        <field name="reason" nolabel="1"/>
+                    </group>
+                    <group string="Error" invisible="not error">
+                        <field name="error" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_saas_backup_download" model="ir.actions.act_window">
+        <field name="name">Data Exports</field>
+        <field name="res_model">saas.backup.download</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_saas_backup_downloads" name="Data Exports" sequence="27"
+              parent="menu_saas_root" action="action_saas_backup_download"/>
+</odoo>

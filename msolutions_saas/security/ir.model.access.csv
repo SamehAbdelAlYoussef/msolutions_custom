@@ -5,3 +5,4 @@ access_saas_config_developer,saas.config.developer,model_saas_config,group_saas_
 access_saas_plan_developer,saas.plan.developer,model_saas_plan,group_saas_developer,1,1,1,1
 access_saas_backup_developer,saas.backup.developer,model_saas_backup,group_saas_developer,1,0,0,0
 access_saas_backup_job_developer,saas.backup.job.developer,model_saas_backup_job,group_saas_developer,1,0,0,0
+access_saas_backup_download_developer,saas.backup.download.developer,model_saas_backup_download,group_saas_developer,1,0,0,0

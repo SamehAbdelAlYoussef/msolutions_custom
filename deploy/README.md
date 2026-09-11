@@ -37,6 +37,7 @@ does. Same day. Every time.
 | `restic_prune.sh`       | `/opt/scripts/restic_prune.sh`       | weekly offsite space reclamation (`odoo-prune.timer`) |
 | `tenant_health.sh`      | `/opt/scripts/tenant_health.sh`      | tenant reachability + orphan-DB probe for the dashboard (runs every 5 min via `odoo-tenant-health.timer`); read-only, hits `/web/health` (no session, no tenant DB load) |
 | `backup_now.sh`         | `/opt/scripts/backup_now.sh`         | host side of "Backup Now": uploads a module-staged dump to B2 with restic, writes the record + result, deletes the temp (runs ~every 30s via `odoo-backup-now.timer`). Takes the SAME `flock` as the nightly (shared-inode file on the filestore); runs no `restic forget`, so manual snapshots never touch nightly retention |
+| `backup_restore.sh`     | `/opt/scripts/backup_restore.sh`     | host side of "Download an existing backup": assembles a backup's `dump.sql` + `filestore/` into the download staging dir (local copy if <7 days, else `restic restore` from B2). Same `flock`; read-only w.r.t. the backups (runs ~every 15s via `odoo-backup-restore.timer`) |
 | `rebuild_templates.sh`  | `/opt/scripts/rebuild_templates.sh`  | rebuilds all SaaS plan templates (run manually after an upgrade) |
 
 **Reference only — deliberately NOT identical to live:**

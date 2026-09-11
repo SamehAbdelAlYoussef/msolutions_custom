@@ -16,7 +16,7 @@ set -uo pipefail
 LIVE_DIR="${LIVE_DIR:-/opt/scripts}"
 DEPLOY_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-MIRRORED="backup_manifest.sh update_tenant_list.sh rebuild_templates.sh restic_prune.sh tenant_health.sh backup_now.sh"
+MIRRORED="backup_manifest.sh update_tenant_list.sh rebuild_templates.sh restic_prune.sh tenant_health.sh backup_now.sh backup_restore.sh"
 REFERENCE="backup_tenants.sh"
 
 rc=0

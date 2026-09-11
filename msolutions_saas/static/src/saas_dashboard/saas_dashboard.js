@@ -34,6 +34,11 @@ export const LANGS = {
         stat_tenants: "Tenants", stat_active: "Active", stat_storage: "Storage used",
         stat_unreachable: "Unreachable", stat_orphans: "Orphan DBs",
         backup_now: "Backup Now", backing_up: "Backing up\u2026",
+        download: "Download data", dl_title: "Download tenant data",
+        dl_intro: "Exports the full database + filestore as a zip. Downloading is logged (who, when, why).",
+        dl_existing: "Most recent backup:", dl_fresh: "Take a fresh dump now",
+        dl_reason: "Reason (required)", dl_reason_ph: "Why is this data leaving the platform?",
+        dl_create: "Prepare link", dl_ready: "Single-use link (expires in 1 hour) \u2014 opening it now:",
         near_full: "NEAR FULL", full: "FULL", per_mo: "/mo",
         over_limit: "OVER LIMIT — BLOCKED",
         work_in_progress: "Work in progress — this page refreshes itself.",
@@ -65,6 +70,11 @@ export const LANGS = {
         stat_tenants: "العملاء", stat_active: "النشطون", stat_storage: "المساحة المستخدمة",
         stat_unreachable: "غير متاح", stat_orphans: "قواعد بيانات يتيمة",
         backup_now: "\u0646\u0633\u062e \u0627\u062d\u062a\u064a\u0627\u0637\u064a \u0627\u0644\u0622\u0646", backing_up: "\u062c\u0627\u0631\u064d \u0627\u0644\u0646\u0633\u062e\u2026",
+        download: "\u062a\u0646\u0632\u064a\u0644 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a", dl_title: "\u062a\u0646\u0632\u064a\u0644 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0639\u0645\u064a\u0644",
+        dl_intro: "\u064a\u064f\u0635\u062f\u0651\u0631 \u0642\u0627\u0639\u062f\u0629 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0648\u0627\u0644\u0645\u0644\u0641\u0627\u062a. \u064a\u064f\u0633\u062c\u0651\u0644 \u0627\u0644\u062a\u0646\u0632\u064a\u0644.",
+        dl_existing: "\u0623\u062d\u062f\u062b \u0646\u0633\u062e\u0629:", dl_fresh: "\u0623\u062e\u0630 \u0646\u0633\u062e\u0629 \u062c\u062f\u064a\u062f\u0629 \u0627\u0644\u0622\u0646",
+        dl_reason: "\u0627\u0644\u0633\u0628\u0628 (\u0645\u0637\u0644\u0648\u0628)", dl_reason_ph: "\u0644\u0645\u0627\u0630\u0627 \u062a\u063a\u0627\u062f\u0631 \u0647\u0630\u0647 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a\u061f",
+        dl_create: "\u062a\u062c\u0647\u064a\u0632 \u0631\u0627\u0628\u0637", dl_ready: "\u0631\u0627\u0628\u0637 \u0644\u0645\u0631\u0629 \u0648\u0627\u062d\u062f\u0629 (\u064a\u0646\u062a\u0647\u064a \u062e\u0644\u0627\u0644 \u0633\u0627\u0639\u0629):",
         near_full: "قارب الامتلاء", full: "ممتلئ", per_mo: "/شهر",
         over_limit: "تخطّى الحد — موقوف",
         work_in_progress: "جاري العمل — الصفحة تُحدّث نفسها.",
@@ -291,12 +301,44 @@ export class TenantDetailsDialog extends Component {
     doOpen() { this.props.onOpen(); this.props.close(); }
     doDrop() { this.props.close(); this.props.onDrop(); }
     doBackup() { this.props.onBackup(); this.props.close(); }
+    doDownload() { this.props.onDownload(); this.props.close(); }
     doRetry() { this.props.onRetry(); this.props.close(); }
+}
+
+export class DownloadDialog extends Component {
+    static template = "msolutions_saas.DownloadDialog";
+    static components = { Dialog };
+    static props = { close: Function, tenant: Object, lang: String };
+    setup() {
+        this.orm = useService("orm");
+        this.state = useState({
+            source: this.props.tenant.last_backup_date ? "existing" : "fresh",
+            reason: "", error: "", url: "", busy: false,
+        });
+    }
+    tr(key) { return translate(this.props.lang, key); }
+    get dir() { return this.props.lang === "ar" ? "rtl" : "ltr"; }
+    async create() {
+        if (this.state.reason.trim().length < 3) {
+            this.state.error = _t("A written reason is required."); return;
+        }
+        this.state.busy = true; this.state.error = "";
+        try {
+            const res = await this.orm.call("saas.tenant", "action_prepare_download",
+                [[this.props.tenant.id], this.state.reason, this.state.source]);
+            this.state.url = res.url;
+            window.open(res.url, "_blank");
+        } catch (e) {
+            this.state.error = (e && e.data && e.data.message) || _t("Could not prepare the download.");
+        } finally {
+            this.state.busy = false;
+        }
+    }
 }
 
 export class SaasDashboard extends Component {
     static template = "msolutions_saas.SaasDashboard";
-    static components = { NewTenantDialog, TenantUsageChart, TenantDetailsDialog };
+    static components = { NewTenantDialog, TenantUsageChart, TenantDetailsDialog, DownloadDialog };
     static props = { ...standardActionServiceProps };
 
     // ---- Language (live EN/AR toggle) ----
@@ -402,6 +444,7 @@ export class SaasDashboard extends Component {
             onOpen: () => window.open(tenant.url, "_blank"),
             onDrop: () => this.onDrop(tenant),
             onBackup: () => this.onBackup(tenant),
+            onDownload: () => this.onDownload(tenant),
             onRetry: () => this.onRetry(tenant),
             onSaved: () => this.load(),
         });
@@ -583,6 +626,10 @@ export class SaasDashboard extends Component {
             _t("Backup queued for %s -- watch it under Backup Jobs.", tenant.name),
             { type: "info" });
         await this.load();
+    }
+
+    onDownload(tenant) {
+        this.dialog.add(DownloadDialog, { tenant, lang: this.state.lang });
     }
 }
 

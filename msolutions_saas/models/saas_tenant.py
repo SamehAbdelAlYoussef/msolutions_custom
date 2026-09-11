@@ -582,6 +582,43 @@ class SaasTenant(models.Model):
         self._trigger_backup_cron()
         return created.ids
 
+    def _downloadable_backups(self):
+        """Existing backups for this tenant, newest first, for the download
+        picker: [{ref, source, date, size, reached_b2}]. Only ones already
+        off-site or still on local disk can be served."""
+        self.ensure_one()
+        rows = self.env["saas.backup"].sudo().search(
+            [("tenant_name", "=", self.name)], order="backup_date desc", limit=30)
+        return [{"ref": r.ref_key, "source": r.source,
+                 "date": r.backup_date and r.backup_date.strftime("%Y-%m-%d %H:%M"),
+                 "size": r.size_display, "reached_b2": r.reached_b2} for r in rows]
+
+    def action_prepare_download(self, reason, source="existing", backup_ref=None):
+        """Mint a single-use, 1-hour download link for this tenant and log the
+        export. source='existing' (default -> most recent backup) or 'fresh'.
+        Developer group only; a written reason is mandatory."""
+        self.ensure_one()
+        self._check_developer_group()
+        self._assert_control_plane()
+        Backup = self.env["saas.backup"].sudo()
+        backup = None
+        if source == "existing":
+            if backup_ref:
+                backup = Backup.search([("ref_key", "=", backup_ref)], limit=1)
+            else:
+                backup = Backup.search([("tenant_name", "=", self.name)],
+                                       order="backup_date desc", limit=1)
+            if not backup:
+                raise UserError(_(
+                    "No existing backup for %s yet -- take a fresh one instead.",
+                    self.name))
+        rec = self.env["saas.backup.download"]._create_request(
+            self, reason, source, backup=backup, audience="internal")
+        return {"url": rec._url(), "download_id": rec.id,
+                "source": source,
+                "data_as_of": rec.source_date and
+                rec.source_date.strftime("%Y-%m-%d %H:%M")}
+
     # ------------------------------------------------------------------
     # Cron
     # ------------------------------------------------------------------
@@ -1113,21 +1150,13 @@ class SaasTenant(models.Model):
         _logger.info("SaaS: granted odoo_web ownership on tenant %s", self.name)
 
 
-    def _dump_tenant(self, dest_dir, timeout=1800):
-        """THE single tenant-dump implementation: pg_dump -Fp (--no-owner) plus a
-        filestore tar into dest_dir. Uses pg_dump directly (Odoo's dump_db is
-        blocked when list_db=False) and never opens a tenant registry. Removes
-        partial files and raises UserError on any failure or an implausibly small
-        dump. Returns (sql_path, fs_path_or_False, sql_size). Both the pre-drop
-        safety backup and Backup Now call this -- one thing to keep correct."""
+    def _pg_dump(self, sql_path, timeout=1800):
+        """THE single pg_dump invocation: -Fp --no-owner, config-driven, writing
+        to sql_path. Removes the partial file and raises UserError with pg's
+        stderr on failure. Never opens a tenant registry. Used by _dump_tenant
+        (backups) and by the download builder."""
         self.ensure_one()
         cfg = odoo.tools.config
-        os.makedirs(dest_dir, exist_ok=True)
-        ts = fields.Datetime.now().strftime("%Y%m%d_%H%M%S")
-        base = os.path.join(dest_dir, "%s_%s" % (self.name, ts))
-        sql_path = base + ".sql"
-        fs_path = base + ".filestore.tar.gz"
-
         env = dict(os.environ)
         if cfg.get("db_password"):
             env["PGPASSWORD"] = cfg["db_password"]
@@ -1141,28 +1170,53 @@ class SaasTenant(models.Model):
         if cfg.get("db_user"):
             args += ["--username", cfg["db_user"]]
         args.append(self.name)
-
-        made_fs = False
         try:
             subprocess.run(args, env=env, check=True, capture_output=True, timeout=timeout)
-            filestore = cfg.filestore(self.name)
-            if os.path.exists(filestore):
+        except Exception as exc:  # noqa: BLE001
+            if os.path.exists(sql_path):
+                os.remove(sql_path)
+            detail = getattr(exc, "stderr", b"")
+            detail = detail.decode(errors="replace") if isinstance(detail, bytes) else str(exc)
+            raise UserError(_(
+                "pg_dump of %(name)s failed (%(err)s).",
+                name=self.name, err=detail[:300] or str(exc),
+            )) from exc
+
+    def _dump_tenant(self, dest_dir, timeout=1800):
+        """THE single tenant-dump implementation for backups: _pg_dump plus a
+        filestore tar into dest_dir. Removes partial files and raises UserError on
+        any failure or an implausibly small dump. Returns
+        (sql_path, fs_path_or_False, sql_size). Both the pre-drop safety backup
+        and Backup Now call this -- one thing to keep correct."""
+        self.ensure_one()
+        cfg = odoo.tools.config
+        os.makedirs(dest_dir, exist_ok=True)
+        ts = fields.Datetime.now().strftime("%Y%m%d_%H%M%S")
+        base = os.path.join(dest_dir, "%s_%s" % (self.name, ts))
+        sql_path = base + ".sql"
+        fs_path = base + ".filestore.tar.gz"
+
+        self._pg_dump(sql_path, timeout=timeout)   # raises + cleans up on failure
+        made_fs = False
+        filestore = cfg.filestore(self.name)
+        if os.path.exists(filestore):
+            try:
                 subprocess.run(
                     ["tar", "czf", fs_path, "-C", os.path.dirname(filestore),
                      os.path.basename(filestore)],
                     check=True, capture_output=True, timeout=timeout,
                 )
                 made_fs = True
-        except Exception as exc:  # noqa: BLE001
-            for f in (sql_path, fs_path):
-                if os.path.exists(f):
-                    os.remove(f)
-            detail = getattr(exc, "stderr", b"")
-            detail = detail.decode(errors="replace") if isinstance(detail, bytes) else str(exc)
-            raise UserError(_(
-                "Backup of %(name)s failed (%(err)s).",
-                name=self.name, err=detail[:300] or str(exc),
-            )) from exc
+            except Exception as exc:  # noqa: BLE001
+                for f in (sql_path, fs_path):
+                    if os.path.exists(f):
+                        os.remove(f)
+                detail = getattr(exc, "stderr", b"")
+                detail = detail.decode(errors="replace") if isinstance(detail, bytes) else str(exc)
+                raise UserError(_(
+                    "Backup of %(name)s failed at the filestore step (%(err)s).",
+                    name=self.name, err=detail[:300] or str(exc),
+                )) from exc
 
         size = os.path.getsize(sql_path)
         if size < 4096:
@@ -1572,6 +1626,8 @@ class SaasTenant(models.Model):
                     "backup": ({"state": latest_job[t.id].state,
                                 "message": latest_job[t.id].message or ""}
                                if t.id in latest_job else None),
+                    "last_backup_date": (t.last_backup_date and
+                        t.last_backup_date.strftime("%Y-%m-%d %H:%M")) or "",
                 }
                 for t in tenants
             ],

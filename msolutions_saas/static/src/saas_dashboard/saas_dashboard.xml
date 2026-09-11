@@ -306,6 +306,10 @@
                 <button t-if="t.state === 'error'" class="btn btn-secondary" t-on-click="doRetry">
                     <i class="fa fa-refresh me-1"/><t t-esc="tr('retry')"/>
                 </button>
+                <button t-if="t.state === 'active'" class="btn btn-outline-secondary"
+                        t-on-click="doDownload">
+                    <i class="fa fa-download me-1"/><t t-esc="tr('download')"/>
+                </button>
                 <button t-if="t.state === 'active'" class="btn btn-outline-primary"
                         t-att-disabled="t.backup and ['queued','running','uploading'].includes(t.backup.state)"
                         t-on-click="doBackup">
@@ -346,6 +350,43 @@
                 <button class="btn btn-primary" t-on-click="confirm" t-esc="tr('create')"/>
                 <button class="btn btn-secondary" t-on-click="() => this.props.close()"
                         t-esc="tr('cancel')"/>
+            </t>
+        </Dialog>
+    </t>
+
+    <t t-name="msolutions_saas.DownloadDialog">
+        <Dialog title="tr('dl_title')" size="'md'">
+            <div t-att-dir="dir">
+                <p class="text-muted small" t-esc="tr('dl_intro')"/>
+                <div t-if="props.tenant.last_backup_date" class="mb-2">
+                    <label><input type="radio" name="dlsrc" value="existing"
+                        t-att-checked="state.source === 'existing'"
+                        t-on-change="() => this.state.source = 'existing'"/>
+                        <span class="ms-1" t-esc="tr('dl_existing')"/>
+                        <b class="ms-1" t-esc="props.tenant.last_backup_date"/></label>
+                </div>
+                <div class="mb-3">
+                    <label><input type="radio" name="dlsrc" value="fresh"
+                        t-att-checked="state.source === 'fresh'"
+                        t-on-change="() => this.state.source = 'fresh'"/>
+                        <span class="ms-1" t-esc="tr('dl_fresh')"/></label>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label" t-esc="tr('dl_reason')"/>
+                    <textarea class="form-control" rows="2" t-model="state.reason"
+                        t-att-placeholder="tr('dl_reason_ph')"/>
+                </div>
+                <div t-if="state.error" class="text-danger small" t-esc="state.error"/>
+                <div t-if="state.url" class="alert alert-success small mt-2 mb-0">
+                    <div t-esc="tr('dl_ready')"/>
+                    <a t-att-href="state.url" target="_blank" class="text-break" t-esc="state.url"/>
+                </div>
+            </div>
+            <t t-set-slot="footer">
+                <button class="btn btn-primary" t-att-disabled="state.busy"
+                    t-on-click="create"><t t-esc="tr('dl_create')"/></button>
+                <button class="btn btn-secondary" t-on-click="() => this.props.close()"
+                    t-esc="tr('close')"/>
             </t>
         </Dialog>
     </t>
