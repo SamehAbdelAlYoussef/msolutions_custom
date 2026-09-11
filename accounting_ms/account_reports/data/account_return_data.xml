@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        account_asset and account_loans create `account.return.check.template`
+        records whose `return_type` points at this xml-id.
+    -->
+    <record id="default_audit_return_type" model="account.return.type">
+        <field name="name">Audit</field>
+        <field name="code">default_audit</field>
+        <field name="periodicity">yearly</field>
+    </record>
+
+    <record id="default_tax_return_type" model="account.return.type">
+        <field name="name">Tax Return</field>
+        <field name="code">default_tax</field>
+        <field name="periodicity">monthly</field>
+        <field name="report_id" ref="general_ledger_report"/>
+    </record>
+</odoo>

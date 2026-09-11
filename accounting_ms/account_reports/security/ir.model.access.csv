@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_account_return_type_user,account.return.type.user,model_account_return_type,base.group_user,1,1,1,1
+access_account_return_user,account.return.user,model_account_return,base.group_user,1,1,1,1
+access_account_return_check_user,account.return.check.user,model_account_return_check,base.group_user,1,1,1,1
+access_account_return_check_template_user,account.return.check.template.user,model_account_return_check_template,base.group_user,1,1,1,1
+access_account_tax_unit_user,account.tax.unit.user,model_account_tax_unit,base.group_user,1,1,1,1

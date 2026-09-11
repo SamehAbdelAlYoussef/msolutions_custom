@@ -1,0 +1,306 @@
+{
+  "account": [
+    "base_setup",
+    "onboarding",
+    "product",
+    "analytic",
+    "portal",
+    "digest"
+  ],
+  "account_3way_match": [
+    "purchase"
+  ],
+  "account_accountant": [
+    "account",
+    "mail_enterprise",
+    "web_tour"
+  ],
+  "account_accountant_check_printing": [
+    "account_accountant",
+    "account_check_printing"
+  ],
+  "account_accountant_fleet": [
+    "account_fleet",
+    "account_accountant"
+  ],
+  "account_asset": [
+    "accountant"
+  ],
+  "account_asset_fleet": [
+    "account_fleet",
+    "account_asset"
+  ],
+  "account_avatax": [
+    "payment",
+    "account_external_tax"
+  ],
+  "account_avatax_geolocalize": [
+    "account_avatax",
+    "base_geolocalize"
+  ],
+  "account_avatax_sale": [
+    "sale_external_tax",
+    "account_avatax",
+    "sale"
+  ],
+  "account_avatax_stock": [
+    "account_avatax_sale",
+    "stock"
+  ],
+  "account_bank_statement_extract": [
+    "accountant",
+    "account_bank_statement_import",
+    "iap_extract",
+    "account_extract"
+  ],
+  "account_bank_statement_import": [
+    "account",
+    "base_import"
+  ],
+  "account_bank_statement_import_csv": [
+    "account_bank_statement_import",
+    "base_import"
+  ],
+  "account_bank_statement_import_ofx": [
+    "account_bank_statement_import"
+  ],
+  "account_bank_statement_import_qif": [
+    "account_bank_statement_import"
+  ],
+  "account_base_import": [
+    "account_accountant",
+    "base_import",
+    "account_asset"
+  ],
+  "account_budget": [
+    "accountant"
+  ],
+  "account_budget_purchase": [
+    "account_budget",
+    "purchase"
+  ],
+  "account_check_printing": [
+    "account"
+  ],
+  "account_edi": [
+    "account"
+  ],
+  "account_edi_proxy_client": [
+    "account",
+    "certificate"
+  ],
+  "account_edi_ubl_cii": [
+    "account"
+  ],
+  "account_external_tax": [
+    "account",
+    "payment"
+  ],
+  "account_extract": [
+    "account",
+    "iap_extract",
+    "iap_mail",
+    "mail_enterprise",
+    "account_bank_statement_import"
+  ],
+  "account_fiscal_categories": [
+    "account",
+    "account_reports"
+  ],
+  "account_fiscal_categories_fleet": [
+    "account_accountant_fleet",
+    "account_fiscal_categories"
+  ],
+  "account_followup": [
+    "mail",
+    "sms",
+    "account_reports"
+  ],
+  "account_inter_company_rules": [
+    "account"
+  ],
+  "account_intrastat": [
+    "account_reports"
+  ],
+  "account_invoice_extract": [
+    "account_extract"
+  ],
+  "account_invoice_extract_purchase": [
+    "account_invoice_extract",
+    "purchase"
+  ],
+  "account_loans": [
+    "account_asset",
+    "base_import"
+  ],
+  "account_online_synchronization": [
+    "account_accountant"
+  ],
+  "account_payment": [
+    "account",
+    "payment"
+  ],
+  "account_peppol": [
+    "account_edi_proxy_client",
+    "account_edi_ubl_cii"
+  ],
+  "account_peppol_advanced_fields": [
+    "account",
+    "account_edi_ubl_cii"
+  ],
+  "account_qr_code_emv": [
+    "account"
+  ],
+  "account_qr_code_sepa": [
+    "account",
+    "base_iban"
+  ],
+  "account_reports": [
+    "base",
+    "web",
+    "account"
+  ],
+  "account_reports_cash_basis": [
+    "account_reports"
+  ],
+  "account_tax_python": [
+    "account"
+  ],
+  "account_transfer": [
+    "account_accountant"
+  ],
+  "account_update_tax_tags": [
+    "account"
+  ],
+  "account_winbooks_import": [
+    "account_accountant",
+    "base_vat",
+    "account_base_import"
+  ],
+  "accountant": [
+    "account_reports"
+  ],
+  "accountant_knowledge": [
+    "accountant",
+    "knowledge",
+    "sign"
+  ],
+  "ai_account": [
+    "ai",
+    "account"
+  ],
+  "appointment_account_payment": [
+    "appointment",
+    "account_payment"
+  ],
+  "documents_account": [
+    "documents",
+    "account_reports"
+  ],
+  "documents_account_peppol": [
+    "account_peppol",
+    "documents"
+  ],
+  "mrp_account": [
+    "mrp",
+    "stock_account"
+  ],
+  "mrp_accountant": [
+    "mrp_account",
+    "stock_accountant"
+  ],
+  "msolutions_account_bridge": [
+    "base",
+    "web",
+    "account",
+    "account_reports",
+    "account_fiscal_categories",
+    "account_bank_statement_import"
+  ],
+  "msolutions_accounting": [
+    "account",
+    "account_3way_match",
+    "account_accountant",
+    "account_accountant_check_printing",
+    "account_accountant_fleet",
+    "account_asset",
+    "account_asset_fleet",
+    "account_avatax",
+    "account_avatax_geolocalize",
+    "account_avatax_sale",
+    "account_avatax_stock",
+    "account_bank_statement_import",
+    "account_bank_statement_import_csv",
+    "account_bank_statement_import_ofx",
+    "account_bank_statement_import_qif",
+    "account_base_import",
+    "account_budget",
+    "account_budget_purchase",
+    "account_check_printing",
+    "account_edi",
+    "account_edi_proxy_client",
+    "account_edi_ubl_cii",
+    "account_external_tax",
+    "account_fiscal_categories",
+    "account_fiscal_categories_fleet",
+    "account_followup",
+    "account_inter_company_rules",
+    "account_intrastat",
+    "account_loans",
+    "account_online_synchronization",
+    "account_payment",
+    "account_peppol",
+    "account_peppol_advanced_fields",
+    "account_qr_code_emv",
+    "account_qr_code_sepa",
+    "account_reports",
+    "account_reports_cash_basis",
+    "account_tax_python",
+    "account_transfer",
+    "account_update_tax_tags",
+    "accountant",
+    "appointment_account_payment",
+    "mrp_account",
+    "mrp_accountant",
+    "msolutions_account_bridge",
+    "pos_account_reports",
+    "project_account",
+    "project_account_asset",
+    "project_account_budget",
+    "project_mrp_account",
+    "purchase_accountant",
+    "stock_accountant"
+  ],
+  "pos_account_reports": [
+    "point_of_sale",
+    "account_reports"
+  ],
+  "project_account": [
+    "account",
+    "project"
+  ],
+  "project_account_asset": [
+    "project",
+    "account_asset"
+  ],
+  "project_account_budget": [
+    "account_budget",
+    "project_enterprise"
+  ],
+  "project_mrp_account": [
+    "mrp_account",
+    "project_mrp"
+  ],
+  "purchase_accountant": [
+    "purchase",
+    "account_accountant"
+  ],
+  "sale_external_tax": [
+    "account_external_tax",
+    "sale"
+  ],
+  "stock_accountant": [
+    "account",
+    "stock_account"
+  ]
+}

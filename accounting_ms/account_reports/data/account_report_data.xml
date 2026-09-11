@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Placeholder report records.
+
+        Only the reports that have NO ported Enterprise definition live here:
+        they exist because their xml-ids are referenced at install time by the
+        ported modules (account_reports_cash_basis writes on them, account_followup,
+        accountant_knowledge and the asset/loan report actions read them).
+
+        Every other report is now defined in full by the ported Enterprise data
+        files (`data/balance_sheet.xml`, `data/profit_and_loss.xml`, ...) which
+        load after this file and carry the real lines and expressions.
+    -->
+
+    <record id="trial_balance_report" model="account.report">
+        <field name="name">Trial Balance</field>
+        <field name="filter_date_range" eval="True"/>
+    </record>
+
+    <record id="generic_ec_sales_report" model="account.report">
+        <field name="name">EC Sales List</field>
+        <field name="filter_date_range" eval="True"/>
+    </record>
+
+    <record id="followup_report" model="account.report">
+        <field name="name">Follow-up Report</field>
+    </record>
+
+    <record id="customer_statement_report" model="account.report">
+        <field name="name">Customer Statement</field>
+    </record>
+
+    <!--
+        NOTE: `general_ledger_report` and its `general_ledger_custom_engine_line`
+        are declared in data/general_ledger.xml (ported from Enterprise, with its
+        custom handler). Do not redeclare them here.
+    -->
+
+    <!--
+        NOTE: `menu_account_reports` is declared ONCE, in
+        views/account_report_views.xml. Declaring it here as well used to reset
+        its parent_id to NULL (data files load after views), turning it into a
+        stray root menu / extra app tab. Keep the single definition.
+
+        NOTE: the report client actions are declared ONCE, in
+        data/account_report_actions.xml, which loads after the report
+        definitions so their `report_id` resolves.
+    -->
+</odoo>

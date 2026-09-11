@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Stub views whose xml-ids are inherited by the ported modules:
+          * account_reports.account_report_form        -> account_reports_cash_basis
+          * account_reports.account_return_kanban_view -> account_intrastat
+        They must expose the exact nodes the inheriting xpaths target.
+    -->
+
+    <record id="account_report_form" model="ir.ui.view">
+        <field name="name">account.report.form</field>
+        <field name="model">account.report</field>
+        <field name="arch" type="xml">
+            <form string="Financial Report">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="country_id"/>
+                            <field name="availability_condition"/>
+                        </group>
+                        <group>
+                            <field name="filter_date_range"/>
+                            <field name="filter_show_draft"/>
+                            <field name="filter_unreconciled"/>
+                            <field name="filter_period_comparison"/>
+                            <!--
+                                `filter_cash_basis` is intentionally NOT declared
+                                here: account_reports_cash_basis inherits this view
+                                and adds it after filter_period_comparison.
+                            -->
+                            <field name="filter_analytic"/>
+                            <field name="filter_journals"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines" name="lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Columns" name="columns">
+                            <field name="column_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="expression_label"/>
+                                    <field name="figure_type"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="account_return_kanban_view" model="ir.ui.view">
+        <field name="name">account.return.kanban</field>
+        <field name="model">account.return</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="type_id">
+                <field name="name"/>
+                <field name="type_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="state"/>
+                <field name="is_completed"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="o_kanban_record_body">
+                            <field name="name" class="fw-bold"/>
+                            <field name="type_id"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </div>
+                        <div class="o_kanban_record_bottom">
+                            <div class="oe_kanban_bottom_right">
+                                <!-- Anchor inherited by account_intrastat. -->
+                                <a name="action_reset_tax_return_common"
+                                   type="object"
+                                   class="dropdown-item"
+                                   role="menuitem">Reset</a>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="account_return_list_view" model="ir.ui.view">
+        <field name="name">account.return.list</field>
+        <field name="model">account.return</field>
+        <field name="arch" type="xml">
+            <list string="Returns">
+                <field name="name"/>
+                <field name="type_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="account_return_form_view" model="ir.ui.view">
+        <field name="name">account.return.form</field>
+        <field name="model">account.return</field>
+        <field name="arch" type="xml">
+            <form string="Return">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="type_id"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="state"/>
+                    </group>
+                    <field name="check_ids">
+                        <list>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="result"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_account_returns" model="ir.actions.act_window">
+        <field name="name">Returns</field>
+        <field name="res_model">account.return</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+    <!-- QWeb template inherited server-side by account_reports_cash_basis. -->
+    <template id="pdf_export_filter_extra_options_template" name="Report Export Extra Options">
+        <div name="extra_filters"/>
+        <t name="options"/>
+    </template>
+
+    <record id="view_account_report_search" model="ir.ui.view">
+        <field name="name">account.report.search</field>
+        <field name="model">account.report</field>
+        <field name="arch" type="xml">
+            <search string="Financial Report">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_account_report_list" model="ir.ui.view">
+        <field name="name">account.report.list</field>
+        <field name="model">account.report</field>
+        <field name="arch" type="xml">
+            <list string="Financial Reports">
+                <field name="name"/>
+                <field name="country_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_account_report" model="ir.actions.act_window">
+        <field name="name">Financial Reports</field>
+        <field name="res_model">account.report</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!--
+        These xml-ids are referenced as `parent=` by account_asset, account_loans
+        and accountant_knowledge, so they must exist. They are deliberately NOT
+        root menus: their parents mirror Odoo Enterprise
+        (account_reports/data/menuitems.xml) so they land inside the Accounting
+        app tree instead of showing up as stray top-level tabs.
+    -->
+    <menuitem id="account_audit_working_file_menu"
+              name="Audit"
+              parent="account.account_audit_menu"
+              sequence="30"
+              groups="account.group_account_readonly"/>
+    <menuitem id="account_audit_inventory_entries_menu"
+              name="Inventory"
+              parent="account.account_audit_menu"
+              sequence="40"
+              groups="account.group_account_readonly"/>
+    <!-- Disabled by default; account_intrastat enables it (same as Enterprise). -->
+    <menuitem id="menu_action_account_report_sales"
+              name="Sales Reports"
+              action="action_account_report"
+              parent="account.account_reports_taxes_and_fiscal_menu"
+              sequence="20"
+              groups="account.group_account_readonly"
+              active="False"/>
+    <!-- Report definitions browser, under Reporting. -->
+    <menuitem id="menu_account_reports"
+              name="Financial Reports"
+              action="action_account_report"
+              parent="account.menu_finance_reports"
+              sequence="60"
+              groups="account.group_account_readonly"/>
+</odoo>

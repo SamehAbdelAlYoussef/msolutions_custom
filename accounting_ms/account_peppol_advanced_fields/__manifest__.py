@@ -1,0 +1,11 @@
+{   'name': '[DEPRECATED] Account Peppol Advanced Fields',
+    'summary': "Merged prematurly, not working correctly. Please don't use. Better solution coming soon.",
+    'author': 'msolutions',
+    'category': 'msolutions Accounting',
+    'version': '1.0',
+    'depends': ['account', 'account_edi_ubl_cii'],
+    'data': ['views/account_move_views.xml'],
+    'installable': True,
+    'license': 'OPL-1',
+    'website': 'https://msolutions.example.com',
+    'icon': '/account_peppol_advanced_fields/static/description/icon.png'}

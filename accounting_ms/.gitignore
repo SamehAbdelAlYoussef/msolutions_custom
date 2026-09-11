@@ -1,0 +1,23 @@
+# msolutions accounting - generated artifacts (not source)
+
+__pycache__/
+*.pyc
+*.pyo
+*.bak
+
+# Browser-run artifacts (Playwright console logs / snapshots).
+.playwright-mcp/
+
+# Verification screenshots taken at the module root. They document the port but
+# are reproducible by re-running the browser checks, so they stay local.
+/msolutions-*.png
+
+# Phase 1 keeps timestamped copies of every manifest it rewrites.
+# Regenerated on each run: _toolkit/phase1_refactor.py
+_toolkit/.backup/
+
+# Toolkit run output: logs and JSON reports.
+# `depends_baseline.json` IS source (it is what makes Phase 1 idempotent), so
+# it is explicitly kept below.
+_toolkit/out/*
+!_toolkit/out/depends_baseline.json

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!--
+        msolutions - Community replacement for the Enterprise report view.
+
+        Structure mirrors Odoo Enterprise `account_reports.AccountReport` so the
+        page sits inside the regular web client container:
+            o_action.account_report
+              ControlPanel          (breadcrumb + buttons + filters)
+              .o_content            (scrollable view body)
+                table.table         (report lines)
+        The same classes are used (`o_view_nocontent`, `line_name`, `line_cell`,
+        `line_level_N`, `btn_foldable`) so the SCSS and the feel are identical.
+    -->
+    <t t-name="account_reports.AccountReport">
+        <div class="o_action account_report" t-ref="root">
+            <ControlPanel display="{ layoutActions: true }">
+                <t t-set-slot="control-panel-create-button">
+                    <button class="btn btn-primary" t-on-click="() => this.load()"
+                            t-att-disabled="state.loading">
+                        <i class="fa fa-refresh me-1"/>Refresh
+                    </button>
+                </t>
+                <t t-set-slot="layout-actions">
+                    <div class="d-flex gap-2 flex-nowrap align-items-center">
+                        <div class="input-group input-group-sm w-auto flex-nowrap">
+                            <span class="input-group-text">From</span>
+                            <input type="date" class="form-control" name="date_from"
+                                   t-att-value="dateFrom" t-on-change="onDateChange"/>
+                        </div>
+                        <div class="input-group input-group-sm w-auto flex-nowrap">
+                            <span class="input-group-text">To</span>
+                            <input type="date" class="form-control" name="date_to"
+                                   t-att-value="dateTo" t-on-change="onDateChange"/>
+                        </div>
+                        <button class="btn btn-sm btn-secondary text-nowrap" t-on-click="toggleUnfoldAll">
+                            <i t-att-class="state.unfoldAll ? 'fa fa-compress' : 'fa fa-expand'"/>
+                            <t t-if="state.unfoldAll"> Collapse all</t>
+                            <t t-else=""> Expand all</t>
+                        </button>
+                    </div>
+                </t>
+            </ControlPanel>
+
+            <div class="overflow-hidden d-flex flex-row h-100">
+                <div class="o_content d-flex flex-column w-100">
+                    <!-- Loading -->
+                    <t t-if="state.loading">
+                        <div class="o_view_nocontent">
+                            <div class="text-center mt-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <!-- Error -->
+                    <t t-elif="state.error">
+                        <div class="o_view_nocontent">
+                            <div class="o_nocontent_help">
+                                <p class="o_view_nocontent_neutral_face">This report could not be computed.</p>
+                                <p>Check the server log for details.</p>
+                            </div>
+                        </div>
+                    </t>
+                    <!-- Table -->
+                    <t t-elif="state.lines.length">
+                        <div class="mx-auto fit-content w-print-100 o_account_report_scroll_container overflow-x-auto">
+                            <table class="table table-borderless table-hover w-print-100 mx-auto">
+                                <thead id="table_header" class="sticky">
+                                    <tr>
+                                        <th/>
+                                        <th t-foreach="columns" t-as="column"
+                                            t-key="column.expression_label"
+                                            class="column_header" t-esc="column.name"/>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="state.lines" t-as="line" t-key="line.id">
+                                        <tr t-att-class="lineClasses(line)">
+                                            <td class="line_name"
+                                                t-att-class="line.unfoldable ? 'unfoldable' : ''"
+                                                t-on-click="() => this.toggleLine(line)">
+                                                <div class="wrapper">
+                                                    <button t-if="line.unfoldable" class="btn btn_foldable"
+                                                            tabindex="-1">
+                                                        <i t-att-class="line.unfolded ? 'fa fa-caret-down' : 'fa fa-caret-right'"/>
+                                                    </button>
+                                                    <button t-else="" class="btn btn_foldable_empty" tabindex="-1"/>
+                                                    <div class="content">
+                                                        <span class="name" t-esc="line.name"/>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td t-foreach="line.columns" t-as="cell"
+                                                t-key="cell.expression_label"
+                                                class="line_cell numeric">
+                                                <div class="wrapper">
+                                                    <div class="content" t-esc="cell.value"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                    <!-- No content -->
+                    <t t-else="">
+                        <div class="o_view_nocontent">
+                            <div class="o_nocontent_help">
+                                <p class="o_view_nocontent_neutral_face">No data to display !</p>
+                                <p>There is no data to display for the given filters.</p>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

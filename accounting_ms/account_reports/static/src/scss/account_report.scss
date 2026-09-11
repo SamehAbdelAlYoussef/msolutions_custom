@@ -1,0 +1,183 @@
+// msolutions - Community-compatible accounting distribution.
+//
+// Styling for the Community report view. Adapted from Odoo Enterprise
+// `account_reports/static/src/components/account_report/account_report.scss`
+// so the report is visually consistent with the rest of the web client: the
+// same table look, the same folding carets, the same level indentation.
+//
+// Only Bootstrap variables and custom properties are used, so the file cannot
+// break the asset bundle if a Community/Enterprise-specific SCSS variable is
+// missing.
+
+.account_report {
+    .o_account_report_scroll_container {
+        margin-inline: 0 !important;
+    }
+
+    //--------------------------------------------------------------
+    // No content / loading
+    //--------------------------------------------------------------
+    .o_view_nocontent {
+        z-index: -1;
+    }
+
+    //--------------------------------------------------------------
+    // Table
+    //--------------------------------------------------------------
+    .table {
+        background-color: var(--o-view-background-color, #fff);
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.8rem;
+        margin: 24px;
+        width: auto;
+        min-width: 800px;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+
+        > :not(caption) > * > * {
+            padding: 0.25rem 0.75rem;
+        }
+
+        > thead > tr {
+            th:first-child {
+                color: lightgrey;
+            }
+            th:not(:first-child) {
+                text-align: center;
+                vertical-align: middle;
+            }
+        }
+
+        > tbody > tr {
+            > td {
+                a {
+                    cursor: pointer;
+                }
+                &:empty::after {
+                    content: "\00a0";
+                }
+                &:empty {
+                    line-height: 1;
+                }
+            }
+
+            &:not(.empty) > td {
+                border-bottom: 1px solid #e9ecef;
+            }
+            &.total,
+            &.o_bold_tr {
+                font-weight: bold;
+            }
+            &.unfolded {
+                font-weight: bold;
+            }
+        }
+    }
+
+    thead.sticky {
+        background-color: var(--o-view-background-color, #fff);
+        position: sticky;
+        top: 0;
+        z-index: 9;
+    }
+
+    //--------------------------------------------------------------
+    // Lines
+    //--------------------------------------------------------------
+    .line_name {
+        vertical-align: middle;
+
+        > .wrapper {
+            display: flex;
+            align-items: center;
+
+            > .content {
+                display: flex;
+                align-items: center;
+                sup {
+                    top: auto;
+                }
+            }
+        }
+
+        .name {
+            white-space: nowrap;
+        }
+
+        &.unfoldable:hover {
+            cursor: pointer;
+        }
+    }
+
+    .line_cell {
+        vertical-align: middle;
+
+        > .wrapper {
+            display: flex;
+            align-items: center;
+
+            > .content {
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        &.date > .wrapper {
+            justify-content: center;
+        }
+        &.numeric > .wrapper {
+            justify-content: flex-end;
+        }
+        .name {
+            white-space: nowrap;
+        }
+    }
+
+    // Level 0 lines are section headers: full width, bold, tinted background.
+    .line_level_0 {
+        color: #495057;
+        font-weight: bold;
+
+        > td {
+            border-bottom: 0 !important;
+            background-color: #e9ecef;
+        }
+    }
+
+    @for $i from 1 through 16 {
+        .line_level_#{$i} {
+            $indentation: (($i + 1) * 8px) - 20px; // 20px is the btn_foldable width
+
+            > td {
+                color: #495057;
+
+                &.line_name.unfoldable .wrapper {
+                    column-gap: calc(#{$indentation});
+                }
+                &.line_name:not(.unfoldable) .wrapper {
+                    padding-left: $indentation;
+                }
+            }
+        }
+    }
+
+    //--------------------------------------------------------------
+    // Buttons
+    //--------------------------------------------------------------
+    .btn_foldable,
+    .btn_foldable_empty {
+        border: none;
+        background: transparent;
+        color: #adb5bd;
+        font-size: inherit;
+        font-weight: normal;
+        padding: 0;
+        width: 20px;
+        min-width: 20px;
+    }
+
+    tbody > tr:hover .btn_foldable {
+        color: var(--bs-primary, #71639e);
+    }
+}
