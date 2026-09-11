@@ -7,13 +7,24 @@
     'author': 'msolutions',
     'website': 'https://msolutions.example.com',
     'license': 'OPL-1',
+    # This meta-module pulls in the accounting suite only. Integrations that
+    # would drag in an unrelated Odoo app (Project, Manufacturing, Point of
+    # Sale, Fleet) are deliberately NOT listed below. They are kept in the
+    # distribution and every one of them is 'auto_install': True with its own
+    # app dependency, so it installs itself again the moment that app is
+    # installed. Nothing is removed, it is only decoupled:
+    #
+    #   project_account, project_account_asset, project_account_budget -> Project
+    #   project_mrp_account -> Project + Manufacturing
+    #   mrp_account, mrp_accountant                                     -> Manufacturing
+    #   pos_account_reports                                             -> Point of Sale
+    #   account_accountant_fleet, account_asset_fleet,
+    #   account_fiscal_categories_fleet                                 -> Fleet
     'depends': [   'account',
                    'account_3way_match',
                    'account_accountant',
                    'account_accountant_check_printing',
-                   'account_accountant_fleet',
                    'account_asset',
-                   'account_asset_fleet',
                    'account_avatax',
                    'account_avatax_geolocalize',
                    'account_avatax_sale',
@@ -31,7 +42,6 @@
                    'account_edi_ubl_cii',
                    'account_external_tax',
                    'account_fiscal_categories',
-                   'account_fiscal_categories_fleet',
                    'account_followup',
                    'account_inter_company_rules',
                    'account_intrastat',
@@ -48,14 +58,7 @@
                    'account_transfer',
                    'account_update_tax_tags',
                    'accountant',
-                   'mrp_account',
-                   'mrp_accountant',
                    'msolutions_account_bridge',
-                   'pos_account_reports',
-                   'project_account',
-                   'project_account_asset',
-                   'project_account_budget',
-                   'project_mrp_account',
                    'purchase_accountant',
                    'sale_external_tax',
                    'stock_accountant'],
