@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_saas_backup_job_list" model="ir.ui.view">
+        <field name="name">saas.backup.job.list</field>
+        <field name="model">saas.backup.job</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" delete="0" default_order="requested_at desc">
+                <field name="tenant_name"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state == 'failed'"
+                       decoration-info="state in ('running', 'uploading')"
+                       decoration-warning="state == 'queued'"/>
+                <field name="requested_by"/>
+                <field name="requested_at"/>
+                <field name="finished_at" optional="show"/>
+                <field name="reached_b2" string="Off-site" optional="show"/>
+                <field name="message" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_saas_backup_job_form" model="ir.ui.view">
+        <field name="name">saas.backup.job.form</field>
+        <field name="model">saas.backup.job</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="tenant_name"/>
+                            <field name="state"/>
+                            <field name="requested_by"/>
+                            <field name="requested_at"/>
+                        </group>
+                        <group>
+                            <field name="started_at"/>
+                            <field name="finished_at"/>
+                            <field name="reached_b2"/>
+                            <field name="restic_snapshot_id"/>
+                        </group>
+                    </group>
+                    <group string="Result">
+                        <field name="message" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_saas_backup_job" model="ir.actions.act_window">
+        <field name="name">Backup Jobs</field>
+        <field name="res_model">saas.backup.job</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No on-demand backups yet.</p>
+            <p>"Backup Now" from a tenant queues a job here. One dump runs at a
+               time, and never alongside the nightly job.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_saas_backup_jobs" name="Backup Jobs" sequence="26"
+              parent="menu_saas_root" action="action_saas_backup_job"/>
+
+</odoo>

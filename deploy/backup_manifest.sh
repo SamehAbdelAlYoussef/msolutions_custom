@@ -72,6 +72,7 @@ if ! snap_json "${RESTIC_REPOSITORY_LOCKED:-}" "${RESTIC_PASSWORD_LOCKED:-}" \
 fi
 
 LOCAL_DIR="$LOCAL_DIR" PREDROP="$PREDROP" LOG_DIR="$LOG_DIR" BACKUP_ROOT="$BACKUP_ROOT" \
+MANUAL_REC="$STATUS_DIR/manual" \
 SNAP_DAILY="$SNAP_DAILY" SNAP_LOCKED="$SNAP_LOCKED" OUT="$OUT" STATUS_GID="$STATUS_GID" \
 python3 <<'PY'
 import os, json, glob, re, datetime
@@ -113,6 +114,17 @@ for sql in sorted(glob.glob(os.path.join(PREDROP,"*.sql"))):
         "date":"%sT%s:%s:%sZ"%(day,t[:2],t[2:4],t[4:]),"source":"pre_drop",
         "db_bytes":os.path.getsize(sql),"fs_bytes":os.path.getsize(fs) if has_fs else 0,
         "has_filestore":has_fs,"reached_b2":reached,"restic_snapshot_id":snap,"restic_repo":repo})
+# manual: root-owned records the host writes AFTER pushing a Backup Now to B2.
+# The staged local dump is deleted, so the record IS the durable registry entry.
+MANUAL_REC=os.environ.get("MANUAL_REC","")
+if MANUAL_REC and os.path.isdir(MANUAL_REC):
+    for rf in sorted(glob.glob(os.path.join(MANUAL_REC,"*.json"))):
+        try:
+            with open(rf) as fh: rec=json.load(fh)
+        except Exception:
+            continue
+        if rec.get("tenant") and rec.get("date") and rec.get("id"):
+            backups.append(rec)
 
 def read(p,cap=500):
     try: return open(p).read().strip()[:cap]

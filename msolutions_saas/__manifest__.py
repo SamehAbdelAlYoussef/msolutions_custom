@@ -27,7 +27,7 @@ Highlights
 All tenant access uses raw psycopg (never a tenant ORM registry); the split
 PostgreSQL roles keep the web tier unable to drop databases.
     """,
-    'version': '19.0.17.0.0',
+    'version': '19.0.18.0.0',
     'category': 'Administration',
     'author': 'Msolutions',
     'license': 'LGPL-3',
@@ -47,6 +47,7 @@ PostgreSQL roles keep the web tier unable to drop databases.
         'views/saas_tenant_views.xml',
         'views/saas_plan_views.xml',
         'views/saas_backup_views.xml',
+        'views/saas_backup_job_views.xml',
         'views/saas_audit_log_views.xml',
         'views/saas_config_views.xml',
     ],

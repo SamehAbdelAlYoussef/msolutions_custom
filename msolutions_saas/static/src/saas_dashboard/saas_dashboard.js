@@ -33,6 +33,7 @@ export const LANGS = {
         clear_filters: "Clear filters",
         stat_tenants: "Tenants", stat_active: "Active", stat_storage: "Storage used",
         stat_unreachable: "Unreachable", stat_orphans: "Orphan DBs",
+        backup_now: "Backup Now", backing_up: "Backing up\u2026",
         near_full: "NEAR FULL", full: "FULL", per_mo: "/mo",
         over_limit: "OVER LIMIT — BLOCKED",
         work_in_progress: "Work in progress — this page refreshes itself.",
@@ -63,6 +64,7 @@ export const LANGS = {
         clear_filters: "مسح الفلاتر",
         stat_tenants: "العملاء", stat_active: "النشطون", stat_storage: "المساحة المستخدمة",
         stat_unreachable: "غير متاح", stat_orphans: "قواعد بيانات يتيمة",
+        backup_now: "\u0646\u0633\u062e \u0627\u062d\u062a\u064a\u0627\u0637\u064a \u0627\u0644\u0622\u0646", backing_up: "\u062c\u0627\u0631\u064d \u0627\u0644\u0646\u0633\u062e\u2026",
         near_full: "قارب الامتلاء", full: "ممتلئ", per_mo: "/شهر",
         over_limit: "تخطّى الحد — موقوف",
         work_in_progress: "جاري العمل — الصفحة تُحدّث نفسها.",
@@ -288,6 +290,7 @@ export class TenantDetailsDialog extends Component {
 
     doOpen() { this.props.onOpen(); this.props.close(); }
     doDrop() { this.props.close(); this.props.onDrop(); }
+    doBackup() { this.props.onBackup(); this.props.close(); }
     doRetry() { this.props.onRetry(); this.props.close(); }
 }
 
@@ -398,6 +401,7 @@ export class SaasDashboard extends Component {
             lang: this.state.lang,
             onOpen: () => window.open(tenant.url, "_blank"),
             onDrop: () => this.onDrop(tenant),
+            onBackup: () => this.onBackup(tenant),
             onRetry: () => this.onRetry(tenant),
             onSaved: () => this.load(),
         });
@@ -412,6 +416,7 @@ export class SaasDashboard extends Component {
             baseDomain: "",
             pricing: {},
             health: {},
+            activeBackups: 0,
             loading: true,
             query: "",
             filter: "all",   // "all" | "active" | "inactive"
@@ -432,12 +437,14 @@ export class SaasDashboard extends Component {
         this.state.pricing = data.pricing || {};
         this.state.tenants = data.tenants;
         this.state.health = data.health || {};
+        this.state.activeBackups = data.active_backups || 0;
         this.state.loading = false;
     }
 
     /** Only refresh while something is actually moving. */
     poll() {
-        if (this.state.tenants.some((t) => PENDING_STATES.includes(t.state))) {
+        if (this.state.activeBackups > 0 ||
+            this.state.tenants.some((t) => PENDING_STATES.includes(t.state))) {
             this.load();
         }
     }
@@ -565,6 +572,16 @@ export class SaasDashboard extends Component {
 
     async onRetry(tenant) {
         await this.orm.call("saas.tenant", "action_provision", [[tenant.id]]);
+        await this.load();
+    }
+
+    async onBackup(tenant) {
+        // action_backup_now raises (already backing up / not active / disk
+        // short) -> Odoo shows the error and we skip the queued notice.
+        await this.orm.call("saas.tenant", "action_backup_now", [[tenant.id]]);
+        this.notification.add(
+            _t("Backup queued for %s -- watch it under Backup Jobs.", tenant.name),
+            { type: "info" });
         await this.load();
     }
 }

@@ -61,5 +61,30 @@
             <field name="interval_type">minutes</field>
             <field name="active" eval="True"/>
         </record>
+
+        <!-- Backup Now: dump the next queued job under the shared filestore lock,
+             and finalize jobs the host uploader has reported. Triggered on demand
+             by action_backup_now; the 1-min interval is a safety net. -->
+        <record id="cron_process_backups" model="ir.cron">
+            <field name="name">SaaS: process backup jobs</field>
+            <field name="model_id" ref="model_saas_backup_job"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_tick()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Rescue backup jobs whose worker/host died mid-step: fail them and
+             delete their staged dump (30-min default timeout). -->
+        <record id="cron_backup_watchdog" model="ir.cron">
+            <field name="name">SaaS: backup watchdog</field>
+            <field name="model_id" ref="model_saas_backup_job"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_watchdog()</field>
+            <field name="interval_number">5</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+        </record>
     </data>
 </odoo>

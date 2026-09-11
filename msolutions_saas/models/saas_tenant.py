@@ -553,6 +553,35 @@ class SaasTenant(models.Model):
         if cron:
             cron.sudo()._trigger()
 
+    def _trigger_backup_cron(self):
+        cron = self.env.ref("msolutions_saas.cron_process_backups",
+                            raise_if_not_found=False)
+        if cron:
+            cron.sudo()._trigger()
+
+    def action_backup_now(self):
+        """Queue an immediate off-site backup for each active tenant in self.
+        Reuses the pg_dump path (_dump_tenant); a host runner pushes the dump to
+        B2 -- credentials never enter a container. Returns the new job ids."""
+        self._check_developer_group()
+        self._assert_control_plane()
+        Job = self.env["saas.backup.job"].sudo()
+        created = Job.browse()
+        for tenant in self:
+            if tenant.state != "active":
+                raise UserError(_(
+                    "%s is not active; only active tenants can be backed up.",
+                    tenant.name))
+            busy = Job.search([("tenant_id", "=", tenant.id),
+                               ("state", "in", list(Job.ACTIVE_STATES))], limit=1)
+            if busy:
+                raise UserError(_("A backup of %(name)s is already %(state)s.",
+                                  name=tenant.name, state=busy.state))
+            created |= Job.create({"tenant_id": tenant.id, "tenant_name": tenant.name})
+            tenant._log("backup_queued")
+        self._trigger_backup_cron()
+        return created.ids
+
     # ------------------------------------------------------------------
     # Cron
     # ------------------------------------------------------------------
@@ -1084,18 +1113,18 @@ class SaasTenant(models.Model):
         _logger.info("SaaS: granted odoo_web ownership on tenant %s", self.name)
 
 
-    def _backup_before_drop(self):
-        """Take a full DB+filestore backup BEFORE dropping a tenant, using
-        pg_dump directly (Odoo's dump_db is blocked when list_db=False). Raises
-        on any failure so the drop is aborted -- a customer database must never
-        be destroyed without a recoverable copy. Written to the data_dir (on the
-        Odoo host, a different machine than Postgres); the daily job sweeps it to B2."""
+    def _dump_tenant(self, dest_dir, timeout=1800):
+        """THE single tenant-dump implementation: pg_dump -Fp (--no-owner) plus a
+        filestore tar into dest_dir. Uses pg_dump directly (Odoo's dump_db is
+        blocked when list_db=False) and never opens a tenant registry. Removes
+        partial files and raises UserError on any failure or an implausibly small
+        dump. Returns (sql_path, fs_path_or_False, sql_size). Both the pre-drop
+        safety backup and Backup Now call this -- one thing to keep correct."""
         self.ensure_one()
         cfg = odoo.tools.config
-        backup_dir = os.path.join(cfg["data_dir"], "pre_drop_backups")
-        os.makedirs(backup_dir, exist_ok=True)
+        os.makedirs(dest_dir, exist_ok=True)
         ts = fields.Datetime.now().strftime("%Y%m%d_%H%M%S")
-        base = os.path.join(backup_dir, "%s_%s" % (self.name, ts))
+        base = os.path.join(dest_dir, "%s_%s" % (self.name, ts))
         sql_path = base + ".sql"
         fs_path = base + ".filestore.tar.gz"
 
@@ -1113,15 +1142,17 @@ class SaasTenant(models.Model):
             args += ["--username", cfg["db_user"]]
         args.append(self.name)
 
+        made_fs = False
         try:
-            subprocess.run(args, env=env, check=True, capture_output=True, timeout=1800)
+            subprocess.run(args, env=env, check=True, capture_output=True, timeout=timeout)
             filestore = cfg.filestore(self.name)
             if os.path.exists(filestore):
                 subprocess.run(
                     ["tar", "czf", fs_path, "-C", os.path.dirname(filestore),
                      os.path.basename(filestore)],
-                    check=True, capture_output=True, timeout=1800,
+                    check=True, capture_output=True, timeout=timeout,
                 )
+                made_fs = True
         except Exception as exc:  # noqa: BLE001
             for f in (sql_path, fs_path):
                 if os.path.exists(f):
@@ -1129,21 +1160,68 @@ class SaasTenant(models.Model):
             detail = getattr(exc, "stderr", b"")
             detail = detail.decode(errors="replace") if isinstance(detail, bytes) else str(exc)
             raise UserError(_(
-                "Refusing to drop %(name)s: the safety backup failed "
-                "(%(err)s). No data was deleted.",
+                "Backup of %(name)s failed (%(err)s).",
                 name=self.name, err=detail[:300] or str(exc),
             )) from exc
 
         size = os.path.getsize(sql_path)
         if size < 4096:
             os.remove(sql_path)
+            if made_fs and os.path.exists(fs_path):
+                os.remove(fs_path)
             raise UserError(_(
-                "Refusing to drop %(name)s: safety backup is implausibly small "
-                "(%(size)d bytes). No data was deleted.",
-                name=self.name, size=size,
+                "Backup of %(name)s is implausibly small (%(size)d bytes); "
+                "refusing it.", name=self.name, size=size,
             ))
-        _logger.info("SaaS: pre-drop backup %s (%d bytes) + filestore", sql_path, size)
+        _logger.info("SaaS: dumped %s (%d bytes)%s", sql_path, size,
+                     " + filestore" if made_fs else "")
+        return sql_path, (fs_path if made_fs else False), size
+
+    def _backup_before_drop(self):
+        """Safety backup BEFORE dropping a tenant -- abort the drop on any
+        failure so a customer database is never destroyed without a recoverable
+        copy. Writes to pre_drop_backups/ (the daily job sweeps it to B2)."""
+        self.ensure_one()
+        dest = os.path.join(odoo.tools.config["data_dir"], "pre_drop_backups")
+        try:
+            sql_path, _fs, _size = self._dump_tenant(dest)
+        except UserError as exc:
+            raise UserError(_(
+                "Refusing to drop %(name)s: the safety backup failed (%(err)s). "
+                "No data was deleted.", name=self.name, err=str(exc),
+            )) from exc
         return sql_path
+
+    _BACKUP_DISK_MULTIPLIER = 2
+    _BACKUP_DISK_FLOOR_GB = 5
+
+    def _backup_disk_preflight(self):
+        """Free-space guard before a manual dump. Require
+        (db + filestore) * 2 + 5 GB free on the backup volume: the plain-text
+        dump can approach the DB's data size and the filestore tar adds more, so
+        2x covers dump+tar together with headroom, and the floor keeps a
+        nearly-full disk from tipping over for a tiny tenant. Returns
+        (ok, needed_bytes, free_bytes, message); the message spells out the
+        actual numbers so the operator knows whether to free space or the tenant
+        is simply too big for this box."""
+        self.ensure_one()
+        ICP = self.env["ir.config_parameter"].sudo()
+        mult = float(ICP.get_param("msolutions_saas.backup_disk_multiplier",
+                                   self._BACKUP_DISK_MULTIPLIER))
+        floor_gb = float(ICP.get_param("msolutions_saas.backup_disk_floor_gb",
+                                       self._BACKUP_DISK_FLOOR_GB))
+        usage = self._disk_usage(self)[self.id]
+        base = usage["db"] + usage["files"]
+        needed = base * mult + floor_gb * (1024 ** 3)
+        free = shutil.disk_usage(odoo.tools.config["data_dir"]).free
+        ok = free >= needed
+        gb = lambda n: "%.1f GB" % (n / float(1024 ** 3))
+        msg = "" if ok else _(
+            "Backup refused: needs %(need)s (DB %(db)s + files %(fs)s, "
+            "x%(mult)s + %(floor)s GB floor), %(free)s free on the backup volume.",
+            need=gb(needed), db=gb(usage["db"]), fs=gb(usage["files"]),
+            mult=("%g" % mult), floor=("%g" % floor_gb), free=gb(free))
+        return ok, needed, free, msg
 
     def _drop_database(self):
         """Drop a live tenant's database and filestore, after a safety backup."""
@@ -1463,6 +1541,13 @@ class SaasTenant(models.Model):
             to_clear.write({"admin_password": False})
 
         cfg = self.env["saas.config"]._get()
+        Job = self.env["saas.backup.job"].sudo()
+        latest_job = {}
+        for j in Job.search([("tenant_id", "in", tenants.ids)],
+                            order="requested_at desc"):
+            latest_job.setdefault(j.tenant_id.id, j)
+        active_backups = Job.search_count(
+            [("state", "in", list(Job.ACTIVE_STATES))])
         return {
             "base_domain": self._base_domain(),
             "pricing": {
@@ -1484,10 +1569,14 @@ class SaasTenant(models.Model):
                     "quota_gb": t.quota_gb or 0.0,
                     "suspended": t.suspended,
                     "reachability_state": t.reachability_state,
+                    "backup": ({"state": latest_job[t.id].state,
+                                "message": latest_job[t.id].message or ""}
+                               if t.id in latest_job else None),
                 }
                 for t in tenants
             ],
             "health": self._health_summary(),
+            "active_backups": active_backups,
         }
 
     @api.model

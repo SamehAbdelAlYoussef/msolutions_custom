@@ -2,5 +2,6 @@ from . import saas_audit_log
 from . import saas_config
 from . import saas_plan
 from . import saas_backup
+from . import saas_backup_job
 from . import saas_tenant
 from . import ir_module_module

@@ -306,6 +306,12 @@
                 <button t-if="t.state === 'error'" class="btn btn-secondary" t-on-click="doRetry">
                     <i class="fa fa-refresh me-1"/><t t-esc="tr('retry')"/>
                 </button>
+                <button t-if="t.state === 'active'" class="btn btn-outline-primary"
+                        t-att-disabled="t.backup and ['queued','running','uploading'].includes(t.backup.state)"
+                        t-on-click="doBackup">
+                    <i class="fa fa-cloud-upload me-1"/>
+                    <t t-esc="(t.backup and ['queued','running','uploading'].includes(t.backup.state)) ? tr('backing_up') : tr('backup_now')"/>
+                </button>
                 <button t-if="['active','error'].includes(t.state)"
                         class="btn btn-outline-danger" t-on-click="doDrop">
                     <i class="fa fa-trash me-1"/><t t-esc="tr('drop')"/>

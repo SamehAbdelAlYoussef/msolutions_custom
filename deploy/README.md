@@ -36,6 +36,7 @@ does. Same day. Every time.
 | `update_tenant_list.sh` | `/opt/scripts/update_tenant_list.sh` | regenerates the nginx tenant + suspended maps (runs ~every 2 s via `odoo-tenant-sync.timer`) |
 | `restic_prune.sh`       | `/opt/scripts/restic_prune.sh`       | weekly offsite space reclamation (`odoo-prune.timer`) |
 | `tenant_health.sh`      | `/opt/scripts/tenant_health.sh`      | tenant reachability + orphan-DB probe for the dashboard (runs every 5 min via `odoo-tenant-health.timer`); read-only, hits `/web/health` (no session, no tenant DB load) |
+| `backup_now.sh`         | `/opt/scripts/backup_now.sh`         | host side of "Backup Now": uploads a module-staged dump to B2 with restic, writes the record + result, deletes the temp (runs ~every 30s via `odoo-backup-now.timer`). Takes the SAME `flock` as the nightly (shared-inode file on the filestore); runs no `restic forget`, so manual snapshots never touch nightly retention |
 | `rebuild_templates.sh`  | `/opt/scripts/rebuild_templates.sh`  | rebuilds all SaaS plan templates (run manually after an upgrade) |
 
 **Reference only — deliberately NOT identical to live:**
@@ -43,6 +44,17 @@ does. Same day. Every time.
 | script | live path | why it differs |
 |---|---|---|
 | `backup_tenants.sh` | `/opt/scripts/backup_tenants.sh` | The nightly backup (`odoo-backup.timer`, 04:30 UTC). The **entire backup chain depends on it**, so the tested live copy is never replaced. The live copy keeps a couple of hardcoded infrastructure defaults for resilience; this repo copy reads them from `backup.env` instead. **Do not deploy this copy over the live one.** Mirror logic changes both ways by hand. |
+
+### The shared backup lock
+
+`backup_now.sh` and the nightly backup take the **same** `flock` on a file on the
+filestore (`.backup_locks/global.lock`), whose inode is shared between the host
+and the container — so a manual dump (in the container) and the nightly (on the
+host) can never run at once, in either direction. The nightly acquires it via a
+**systemd drop-in** (`/etc/systemd/system/odoo-backup.service.d/lock.conf`) that
+wraps `ExecStart` with `flock -w 3600`; `backup_tenants.sh` and the 02:30 timer
+are left **byte-for-byte untouched**. That drop-in is the one non-script piece
+of this coordination and lives only on the host.
 
 `backup_status.sh` (the login MOTD freshness indicator) is intentionally **not**
 mirrored here: scrubbing its one path cleanly would mean sourcing the root-only
@@ -65,6 +77,29 @@ In the committed scripts these stay **variable references** (`"$RESTIC_REPOSITOR
 the appropriate `.env` on the server and reference it by name here — never inline it.
 
 ---
+
+## Three traps that will each cost the next person an hour
+
+1. **Container paths vs host paths.** The container sees the filestore at
+   `/var/lib/odoo`; the host sees the same bytes at `/opt/odoo/filestore`. Any
+   path exchanged between the two (the backup spool, a download hand-off) must be
+   stored **relative to the data_dir** and each side resolves it against its own
+   root. Storing an absolute container path in a file the host reads (or vice
+   versa) fails validation or silently misses the file. (This bit the spool once.)
+
+2. **The shared-inode flock.** A lock file on the filestore has the **same inode**
+   in the host and the container, so `flock` coordinates across the boundary. Two
+   requirements: the lock *file* must be openable O_RDWR by **both** root and the
+   container group (it is `0660 root:messagebus`), and the lock *directory* must
+   already exist before anyone calls `flock` (the nightly drop-in's `ExecStartPre`
+   and `backup_now.sh` both ensure it). A `0644 root:root` lock file, or a missing
+   directory, silently breaks the coordination.
+
+3. **Post-upgrade worker restart.** `odoo -u <module>` runs in a **separate**
+   process. The long-running `odoo_worker` (which runs the crons) keeps its old
+   registry until it is **restarted**, so newly added `ir.cron` records do not
+   fire and queued jobs sit untouched. After any module upgrade that adds or
+   changes a cron: `docker restart odoo_worker`.
 
 ## Drift check
 
