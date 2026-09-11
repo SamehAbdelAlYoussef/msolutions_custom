@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_saas_backup_list" model="ir.ui.view">
+        <field name="name">saas.backup.list</field>
+        <field name="model">saas.backup</field>
+        <field name="arch" type="xml">
+            <!-- Read-only registry: no create / edit / delete from the UI. -->
+            <list string="Backups" create="0" edit="0" delete="0"
+                  decoration-muted="not reached_b2">
+                <field name="backup_date"/>
+                <field name="tenant_name"/>
+                <field name="source"/>
+                <field name="size_display"/>
+                <field name="has_filestore" string="Filestore"/>
+                <field name="reached_b2" string="Off-site"/>
+                <field name="restic_repo" optional="show"/>
+                <field name="restic_snapshot_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_saas_backup_form" model="ir.ui.view">
+        <field name="name">saas.backup.form</field>
+        <field name="model">saas.backup</field>
+        <field name="arch" type="xml">
+            <form string="Backup" create="0" edit="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="tenant_name"/>
+                            <field name="backup_date"/>
+                            <field name="source"/>
+                            <field name="size_display"/>
+                            <field name="has_filestore"/>
+                        </group>
+                        <group>
+                            <field name="reached_b2"/>
+                            <field name="restic_repo"/>
+                            <field name="restic_snapshot_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_saas_backup" model="ir.actions.act_window">
+        <field name="name">Backups</field>
+        <field name="res_model">saas.backup</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No backups on record.</p>
+            <p>If this stays empty, the backup manifest is missing — the nightly
+               job or its manifest generator has stopped. Investigate before you
+               need a restore.</p>
+        </field>
+    </record>
+
+    <!-- Server action so the Backups menu refreshes the registry when opened. -->
+    <record id="action_saas_backup_refresh" model="ir.actions.server">
+        <field name="name">Backups</field>
+        <field name="model_id" ref="model_saas_backup"/>
+        <!-- Odoo 19: a code server action with no group_ids requires WRITE on the
+             model to run (ir.actions.server._can_execute_action_on_records). The
+             registry is deliberately read-only for developers, so restrict the
+             action to the developer group instead - that satisfies the check
+             without granting write. The sync writes via sudo inside the method. -->
+        <field name="group_ids" eval="[Command.link(ref('group_saas_developer'))]"/>
+        <field name="state">code</field>
+        <field name="code">
+model._sync_backups()
+action = env.ref('msolutions_saas.action_saas_backup').sudo().read()[0]
+        </field>
+    </record>
+
+    <menuitem id="menu_saas_backups" name="Backups" sequence="25"
+              parent="menu_saas_root" action="action_saas_backup_refresh"/>
+
+</odoo>

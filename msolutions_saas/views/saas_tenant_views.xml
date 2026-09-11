@@ -29,6 +29,10 @@
                        decoration-success="state == 'active'"
                        decoration-danger="state == 'error'"
                        decoration-info="state in ('provisioning', 'terminating')"/>
+                <field name="backup_state" widget="badge" string="Backup"
+                       decoration-success="backup_state == 'ok'"
+                       decoration-danger="backup_state in ('failed', 'stale')"
+                       decoration-warning="backup_state == 'never'"/>
             </list>
         </field>
     </record>
@@ -96,6 +100,27 @@
                         <page string="Logs" name="logs">
                             <field name="id" widget="saas_logs"
                                    nolabel="1" readonly="1"/>
+                        </page>
+                        <page string="Backups" name="backups">
+                            <group>
+                                <group>
+                                    <field name="backup_state"/>
+                                    <field name="last_backup_date"/>
+                                    <field name="backup_count"/>
+                                </group>
+                            </group>
+                            <field name="backup_ids" nolabel="1" readonly="1">
+                                <list create="0" edit="0" delete="0"
+                                      decoration-muted="not reached_b2">
+                                    <field name="backup_date"/>
+                                    <field name="source"/>
+                                    <field name="size_display"/>
+                                    <field name="has_filestore" string="Filestore"/>
+                                    <field name="reached_b2" string="Off-site"/>
+                                    <field name="restic_repo" optional="show"/>
+                                    <field name="restic_snapshot_id" optional="hide"/>
+                                </list>
+                            </field>
                         </page>
                         <page string="Apps" name="apps">
                             <!-- Editable only before provisioning; once the

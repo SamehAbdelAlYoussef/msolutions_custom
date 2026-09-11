@@ -36,5 +36,17 @@
             <field name="interval_type">minutes</field>
             <field name="active" eval="True"/>
         </record>
+
+        <!-- Refreshes the read-only backup registry from the host-generated
+             manifest. Read-only: never touches B2, never writes a backup. -->
+        <record id="cron_sync_backups" model="ir.cron">
+            <field name="name">SaaS: sync backup registry</field>
+            <field name="model_id" ref="model_saas_backup"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_sync_backups()</field>
+            <field name="interval_number">30</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+        </record>
     </data>
 </odoo>

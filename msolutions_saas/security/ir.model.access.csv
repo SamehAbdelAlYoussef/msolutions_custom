@@ -3,3 +3,4 @@ access_saas_tenant_developer,saas.tenant.developer,model_saas_tenant,group_saas_
 access_saas_audit_log_developer,saas.audit.log.developer,model_saas_audit_log,group_saas_developer,1,0,1,0
 access_saas_config_developer,saas.config.developer,model_saas_config,group_saas_developer,1,1,1,1
 access_saas_plan_developer,saas.plan.developer,model_saas_plan,group_saas_developer,1,1,1,1
+access_saas_backup_developer,saas.backup.developer,model_saas_backup,group_saas_developer,1,0,0,0

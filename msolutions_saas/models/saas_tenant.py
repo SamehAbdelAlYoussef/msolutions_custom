@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import re
@@ -167,6 +168,45 @@ class SaasTenant(models.Model):
         help="Auto-set when storage exceeds the quota; the customer sees an "
              "upgrade page until you raise the quota.",
     )
+
+    # ---- Backups (read-only registry; populated from the host manifest) ----
+    backup_ids = fields.One2many("saas.backup", "tenant_id", string="Backups")
+    backup_count = fields.Integer(compute="_compute_backup_state")
+    last_backup_date = fields.Datetime(compute="_compute_backup_state")
+    # Stored so the list can be FILTERED on stale/failed (a non-stored computed
+    # field can't be searched). It recomputes on backup changes via @api.depends;
+    # the 30-min sync cron also force-recomputes every tenant so the time-based
+    # 48h staleness stays fresh. Matches the MOTD backup banner.
+    backup_state = fields.Selection(
+        [("ok", "OK"), ("stale", "Stale"), ("failed", "Failed"), ("never", "Never")],
+        string="Backup", compute="_compute_backup_state", store=True,
+        help="OK: a backup within the last 48h. Stale: newest backup is older "
+             "than 48h. Failed: the last run failed for this tenant. Never: no "
+             "backup on record.")
+
+    # Stale threshold, in hours -- kept in step with the MOTD backup banner.
+    _BACKUP_STALE_HOURS = 48
+
+    @api.depends("backup_ids.backup_date")
+    def _compute_backup_state(self):
+        threshold = fields.Datetime.now() - timedelta(hours=self._BACKUP_STALE_HOURS)
+        try:
+            failed = set(json.loads(self.env["ir.config_parameter"].sudo()
+                                    .get_param("saas_backup.failed_tenants") or "[]"))
+        except Exception:  # noqa: BLE001
+            failed = set()
+        for tenant in self:
+            dates = tenant.backup_ids.mapped("backup_date")
+            tenant.backup_count = len(tenant.backup_ids)
+            tenant.last_backup_date = max(dates) if dates else False
+            if tenant.name in failed:
+                tenant.backup_state = "failed"
+            elif not dates:
+                tenant.backup_state = "never"
+            elif tenant.last_backup_date >= threshold:
+                tenant.backup_state = "ok"
+            else:
+                tenant.backup_state = "stale"
 
     # Odoo 19 dropped _sql_constraints -- it is now ignored with a log warning.
     _name_uniq = models.Constraint(
