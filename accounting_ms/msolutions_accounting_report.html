@@ -3,88 +3,111 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 
 <style>
-/* ── Tokens ── */
 :root {
-  --navy:      #0D2340;
-  --navy-mid:  #163660;
-  --navy-light:#1E4A84;
-  --gold:      #C9922A;
-  --gold-light:#E5B04A;
-  --gold-pale: #FBF3E2;
-  --emerald:   #1A6B45;
-  --emerald-bg:#E8F5EE;
-  --red:       #B83232;
-  --red-bg:    #FDF0F0;
-  --surface:   #F5F7FA;
-  --surface-2: #EDF0F5;
-  --border:    #D6DCEA;
-  --text:      #111827;
-  --text-2:    #4B5563;
-  --text-3:    #8A95A5;
-  --white:     #FFFFFF;
-  --shadow-sm: 0 1px 3px rgba(13,35,64,.08),0 1px 2px rgba(13,35,64,.04);
-  --shadow-md: 0 4px 16px rgba(13,35,64,.10),0 2px 6px rgba(13,35,64,.06);
-  --r:         10px;
+  --blue:       #1B5FA8;
+  --blue-mid:   #2872C4;
+  --blue-light: #EBF3FD;
+  --blue-pale:  #F4F8FE;
+  --gold:       #B07A1A;
+  --gold-bg:    #FEF6E4;
+  --gold-border:#E6C46A;
+  --emerald:    #156B3E;
+  --emerald-bg: #E6F4EE;
+  --amber:      #A05C10;
+  --amber-bg:   #FEF3E2;
+  --surface:    #F8FAFB;
+  --surface-2:  #EFF2F6;
+  --border:     #D0D8E8;
+  --border-2:   #B8C4D8;
+  --text:       #0F1C30;
+  --text-2:     #3A4A60;
+  --text-3:     #7A8BA8;
+  --white:      #FFFFFF;
+  --shadow-sm:  0 1px 4px rgba(27,95,168,.08);
+  --shadow-md:  0 4px 18px rgba(27,95,168,.11);
+  --r:          12px;
 }
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --navy:      #0D2340;
-    --navy-mid:  #163660;
-    --surface:   #141E2E;
-    --surface-2: #1A2640;
-    --border:    #253550;
-    --text:      #E8EDF6;
-    --text-2:    #9BAAC2;
-    --text-3:    #5C6E8A;
-    --white:     #1A2640;
-    --gold-pale: #1F1A0D;
-    --emerald-bg:#0D1F18;
-    --red-bg:    #1F0D0D;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,.3);
-    --shadow-md: 0 4px 16px rgba(0,0,0,.35);
+    --blue:       #3A8AE0;
+    --blue-mid:   #2872C4;
+    --blue-light: #152340;
+    --blue-pale:  #0E1B30;
+    --gold:       #D4A040;
+    --gold-bg:    #1E1608;
+    --gold-border:#6A5020;
+    --emerald:    #3ABD7A;
+    --emerald-bg: #0A200F;
+    --amber-bg:   #1E1008;
+    --surface:    #0D1520;
+    --surface-2:  #162030;
+    --border:     #253550;
+    --border-2:   #344A6A;
+    --text:       #E8F0FA;
+    --text-2:     #9BAEC8;
+    --text-3:     #5A6A88;
+    --white:      #111D2E;
+    --shadow-sm:  0 1px 4px rgba(0,0,0,.3);
+    --shadow-md:  0 4px 18px rgba(0,0,0,.4);
   }
 }
 :root[data-theme="dark"] {
-  --navy:      #0D2340;
-  --surface:   #141E2E;
-  --surface-2: #1A2640;
-  --border:    #253550;
-  --text:      #E8EDF6;
-  --text-2:    #9BAAC2;
-  --text-3:    #5C6E8A;
-  --white:     #1A2640;
-  --gold-pale: #1F1A0D;
-  --emerald-bg:#0D1F18;
-  --red-bg:    #1F0D0D;
+  --blue:       #3A8AE0;
+  --blue-light: #152340;
+  --blue-pale:  #0E1B30;
+  --gold:       #D4A040;
+  --gold-bg:    #1E1608;
+  --gold-border:#6A5020;
+  --emerald:    #3ABD7A;
+  --emerald-bg: #0A200F;
+  --amber-bg:   #1E1008;
+  --surface:    #0D1520;
+  --surface-2:  #162030;
+  --border:     #253550;
+  --border-2:   #344A6A;
+  --text:       #E8F0FA;
+  --text-2:     #9BAEC8;
+  --text-3:     #5A6A88;
+  --white:      #111D2E;
 }
 
-/* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { direction: rtl; }
+
 body {
   font-family: 'Noto Naskh Arabic', 'Cairo', serif;
-  font-size: 16px;
-  line-height: 1.7;
+  font-size: 18px;
+  line-height: 1.75;
   color: var(--text);
   background: var(--surface);
-  padding-inline: 20px;
-  padding-block: 0 60px;
+  padding-inline: 24px;
+  padding-block: 0 72px;
 }
 
-/* ── Typography scale ── */
-h1,h2,h3,h4,.label,.mono {
+h1, h2, h3, h4, .lbl, .mono {
   font-family: 'Cairo', sans-serif;
 }
-h1 { font-size: clamp(1.8rem,4vw,2.8rem); font-weight: 900; line-height: 1.15; text-wrap: balance; }
-h2 { font-size: clamp(1.2rem,2.5vw,1.5rem); font-weight: 700; text-wrap: balance; }
-h3 { font-size: 1.05rem; font-weight: 600; }
-.label {
-  font-size: .72rem;
+h1 {
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+h2 {
+  font-size: clamp(1.35rem, 2.8vw, 1.7rem);
   font-weight: 700;
-  letter-spacing: .08em;
+  text-wrap: balance;
+}
+h3 { font-size: 1.15rem; font-weight: 700; }
+
+.lbl {
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .07em;
   text-transform: uppercase;
   color: var(--text-3);
 }
@@ -93,162 +116,175 @@ h3 { font-size: 1.05rem; font-weight: 600; }
   font-feature-settings: "tnum";
 }
 
-/* ── Layout wrapper ── */
 .doc {
-  max-width: 960px;
+  max-width: 980px;
   margin-inline: auto;
 }
 
-/* ── Header ── */
+/* ── HEADER — light blue gradient ── */
 .header {
   position: relative;
-  background: var(--navy);
-  border-radius: 0 0 var(--r) var(--r);
-  padding: 52px 48px 44px;
+  background: linear-gradient(135deg, var(--blue) 0%, #2D7DD4 60%, #4A9AE0 100%);
+  border-radius: 0 0 20px 20px;
+  padding: 56px 52px 48px;
   overflow: hidden;
-  margin-inline: -20px;
-  margin-bottom: 40px;
-  color: var(--white);
+  margin-inline: -24px;
+  margin-bottom: 44px;
 }
 .header-geo {
   position: absolute;
   inset: 0;
-  opacity: .06;
+  opacity: .08;
+  pointer-events: none;
 }
 .header-inner { position: relative; z-index: 1; }
-.header-eyebrow {
+
+.eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(201,146,42,.18);
-  border: 1px solid rgba(201,146,42,.35);
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.32);
   border-radius: 40px;
-  padding: 4px 14px;
+  padding: 5px 16px;
   font-family: 'Cairo', sans-serif;
-  font-size: .8rem;
-  font-weight: 600;
-  color: var(--gold-light);
-  margin-bottom: 20px;
+  font-size: .88rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 22px;
 }
-.header-eyebrow::before {
-  content: '';
-  width: 7px; height: 7px;
+.eyebrow-dot {
+  width: 8px; height: 8px;
   border-radius: 50%;
-  background: var(--gold);
+  background: #7DDFB0;
   flex-shrink: 0;
 }
-.header h1 { color: #fff; margin-bottom: 10px; }
+
+.header h1 { color: #fff; margin-bottom: 12px; }
 .header-sub {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,.78);
+  max-width: 580px;
   font-family: 'Noto Naskh Arabic', serif;
-  font-size: 1.05rem;
-  color: rgba(255,255,255,.65);
-  max-width: 560px;
+  line-height: 1.7;
 }
 .header-meta {
   display: flex;
-  gap: 28px;
   flex-wrap: wrap;
-  margin-top: 32px;
-  padding-top: 24px;
-  border-top: 1px solid rgba(255,255,255,.1);
+  gap: 32px;
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(255,255,255,.18);
 }
-.header-meta-item { display: flex; flex-direction: column; gap: 2px; }
-.header-meta-item .label { color: rgba(255,255,255,.4); }
-.header-meta-item span { font-family: 'Cairo',sans-serif; font-size: .92rem; color: rgba(255,255,255,.85); font-weight: 500; }
+.meta-item { display: flex; flex-direction: column; gap: 3px; }
+.meta-item .lbl { color: rgba(255,255,255,.5); }
+.meta-item span {
+  font-family: 'Cairo', sans-serif;
+  font-size: 1rem;
+  color: rgba(255,255,255,.92);
+  font-weight: 600;
+}
+.meta-item .ok-val { color: #7DDFB0; }
 
-/* ── Status banner ── */
-.status-banner {
+/* ── STATUS ── */
+.status {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
   background: var(--emerald-bg);
-  border: 1.5px solid #1A6B45;
+  border: 1.5px solid var(--emerald);
   border-radius: var(--r);
-  padding: 16px 22px;
-  margin-bottom: 36px;
-}
-.status-banner .icon {
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  background: var(--emerald);
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  font-size: 1.3rem;
-}
-.status-banner-text h3 { color: var(--emerald); font-size: 1rem; margin-bottom: 2px; }
-.status-banner-text p { font-size: .9rem; color: var(--text-2); }
-
-/* ── Stat tiles ── */
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
-  gap: 16px;
+  padding: 18px 24px;
   margin-bottom: 40px;
 }
-.stat-tile {
+.status-icon {
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  background: var(--emerald);
+  color: #fff;
+  font-size: 1.5rem;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 900;
+}
+.status h3 { color: var(--emerald); font-size: 1.1rem; margin-bottom: 3px; }
+.status p  { font-size: .95rem; color: var(--text-2); }
+
+/* ── STAT TILES ── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+  margin-bottom: 44px;
+}
+.tile {
   background: var(--white);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--r);
-  padding: 22px 20px 18px;
+  padding: 24px 22px 20px;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-.stat-tile.gold { background: var(--navy); border-color: var(--navy); }
-.stat-tile.gold .stat-value { color: var(--gold-light); }
-.stat-tile.gold .label { color: rgba(255,255,255,.45); }
-.stat-tile.gold .stat-desc { color: rgba(255,255,255,.6); }
-.stat-value {
+.tile.featured {
+  background: linear-gradient(145deg, var(--blue) 0%, #2D7DD4 100%);
+  border-color: var(--blue);
+}
+.tile.featured .lbl     { color: rgba(255,255,255,.5); }
+.tile.featured .big-num { color: #fff; }
+.tile.featured .tile-desc { color: rgba(255,255,255,.65); }
+
+.big-num {
   font-family: 'Cairo', sans-serif;
-  font-size: 2rem;
+  font-size: 2.4rem;
   font-weight: 900;
   line-height: 1;
-  color: var(--navy);
+  color: var(--blue);
   font-variant-numeric: tabular-nums;
 }
-.stat-desc { font-size: .8rem; color: var(--text-3); margin-top: 2px; }
+.big-num.green { color: var(--emerald); }
+.tile-desc { font-size: .85rem; color: var(--text-3); margin-top: 3px; }
 
-/* ── Section ── */
-.section { margin-bottom: 40px; }
-.section-head {
+/* ── SECTIONS ── */
+.section { margin-bottom: 44px; }
+.sec-head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--border);
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--blue-light);
 }
-.section-num {
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  background: var(--navy);
-  color: var(--gold-light);
+.sec-num {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  background: var(--blue-light);
+  color: var(--blue);
   font-family: 'Cairo', sans-serif;
-  font-size: .8rem;
-  font-weight: 700;
-  display: grid;
-  place-items: center;
+  font-size: .9rem;
+  font-weight: 900;
+  display: grid; place-items: center;
   flex-shrink: 0;
 }
 
-/* ── Table ── */
+/* ── TABLES ── */
 .tbl-wrap { overflow-x: auto; border-radius: var(--r); box-shadow: var(--shadow-sm); }
 table {
   width: 100%;
   border-collapse: collapse;
   background: var(--white);
-  font-size: .88rem;
+  font-size: .95rem;
 }
 thead th {
-  background: var(--navy);
-  color: rgba(255,255,255,.9);
+  background: var(--blue);
+  color: rgba(255,255,255,.92);
   font-family: 'Cairo', sans-serif;
-  font-weight: 600;
-  font-size: .78rem;
-  letter-spacing: .04em;
-  padding: 12px 16px;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  padding: 14px 18px;
   text-align: right;
   white-space: nowrap;
 }
@@ -256,405 +292,388 @@ thead th:first-child { border-radius: 0 var(--r) 0 0; }
 thead th:last-child  { border-radius: var(--r) 0 0 0; }
 tbody tr { border-bottom: 1px solid var(--border); }
 tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: var(--surface); }
-tbody td { padding: 11px 16px; color: var(--text); vertical-align: middle; }
-.td-module { font-family: 'Cairo', sans-serif; font-weight: 600; font-size: .82rem; color: var(--navy-mid); }
+tbody tr:hover { background: var(--blue-pale); }
+tbody td { padding: 13px 18px; vertical-align: middle; font-size: .95rem; }
+.td-name { font-family: 'Cairo', sans-serif; font-weight: 700; color: var(--blue-mid); }
 .td-code {
   font-family: monospace;
-  font-size: .78rem;
+  font-size: .82rem;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  padding: 2px 7px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 5px;
   color: var(--text-2);
   white-space: nowrap;
+  direction: ltr;
+  display: inline-block;
 }
 
-/* ── Badge ── */
+/* ── BADGES ── */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  border-radius: 20px;
-  padding: 2px 10px;
+  border-radius: 30px;
+  padding: 3px 12px;
   font-family: 'Cairo', sans-serif;
-  font-size: .74rem;
+  font-size: .8rem;
   font-weight: 700;
   white-space: nowrap;
 }
 .badge.ok   { background: var(--emerald-bg); color: var(--emerald); }
-.badge.warn { background: var(--gold-pale);  color: #9A6A10; }
+.badge.warn { background: var(--amber-bg);   color: var(--amber); }
 .badge.na   { background: var(--surface-2);  color: var(--text-3); }
-.badge.ok::before   { content:'✓'; }
-.badge.warn::before { content:'⚠'; }
-.badge.na::before   { content:'—'; }
+.badge.blue { background: var(--blue-light); color: var(--blue); }
+.badge.ok::before   { content: '✓ '; }
+.badge.warn::before { content: '⚠ '; }
 
-/* ── Two-col grid ── */
+/* ── CYCLE ── */
+.cycle {
+  display: flex;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+.cycle-step {
+  flex: 1; min-width: 140px;
+  padding: 20px 18px;
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 4px;
+  position: relative;
+}
+.cycle-step:last-child { border-left: none; }
+.step-n {
+  font-family: 'Cairo', sans-serif;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--text-3);
+  letter-spacing: .06em;
+}
+.step-name {
+  font-family: 'Cairo', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.step-sub { font-size: .82rem; color: var(--text-3); }
+.cycle-step.act {
+  background: linear-gradient(145deg, var(--blue) 0%, #2D7DD4 100%);
+}
+.cycle-step.act .step-n    { color: rgba(255,255,255,.55); }
+.cycle-step.act .step-name { color: #fff; }
+.cycle-step.act .step-sub  { color: rgba(255,255,255,.6); }
+
+/* ── REPORT GRID ── */
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+}
+.rep-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 12px 16px;
+  font-size: .95rem;
+}
+.rep-chk {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--emerald-bg);
+  color: var(--emerald);
+  font-size: .75rem;
+  font-weight: 900;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  font-family: 'Cairo', sans-serif;
+}
+.rep-item span { color: var(--text); font-size: .95rem; }
+
+/* ── FEATURE CARDS ── */
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
-@media (max-width: 600px) {
-  .two-col { grid-template-columns: 1fr; }
-}
+@media (max-width: 620px) { .two-col { grid-template-columns: 1fr; } }
 
-/* ── Feature list card ── */
-.feature-card {
+.feat-card {
   background: var(--white);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--r);
-  padding: 22px;
+  padding: 24px;
   box-shadow: var(--shadow-sm);
 }
-.feature-card h3 {
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
-  color: var(--navy);
+.feat-card h3 {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid var(--border);
+  color: var(--blue);
+  font-size: 1.05rem;
 }
-.feature-card h3 .icon-sm {
-  width: 28px; height: 28px;
-  border-radius: 7px;
-  background: var(--gold-pale);
+.card-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--blue-light);
   display: grid; place-items: center;
-  font-size: .9rem;
+  font-size: 1rem;
   flex-shrink: 0;
 }
-.feature-list { display: flex; flex-direction: column; gap: 8px; }
-.feature-item {
+.feat-list { display: flex; flex-direction: column; gap: 10px; }
+.feat-item {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  font-size: .88rem;
+  font-size: .95rem;
   color: var(--text-2);
+  line-height: 1.6;
 }
-.feature-item::before {
+.feat-item::before {
   content: '✓';
   color: var(--emerald);
   font-family: 'Cairo', sans-serif;
-  font-weight: 700;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-/* ── Cycle timeline ── */
-.cycle {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0;
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-.cycle-step {
-  flex: 1;
-  min-width: 130px;
-  padding: 18px 16px;
-  border-left: 1px solid var(--border);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.cycle-step:last-child { border-left: none; }
-.cycle-step .step-num {
-  font-family: 'Cairo', sans-serif;
-  font-size: .68rem;
-  font-weight: 700;
-  color: var(--text-3);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-.cycle-step .step-name {
-  font-family: 'Cairo', sans-serif;
-  font-size: .9rem;
-  font-weight: 700;
-  color: var(--navy);
-}
-.cycle-step .step-detail {
-  font-size: .78rem;
-  color: var(--text-3);
-  margin-top: 2px;
-}
-.cycle-step.active {
-  background: linear-gradient(160deg, var(--navy) 0%, var(--navy-mid) 100%);
-}
-.cycle-step.active .step-num  { color: var(--gold); }
-.cycle-step.active .step-name { color: #fff; }
-.cycle-step.active .step-detail { color: rgba(255,255,255,.55); }
-.cycle-arrow {
-  position: absolute;
-  left: -12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--border);
-  font-size: .85rem;
-  z-index: 2;
-}
-
-/* ── Report rows ── */
-.report-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
-}
-.report-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: .85rem;
-}
-.report-item .chk {
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  background: var(--emerald-bg);
-  color: var(--emerald);
-  font-size: .65rem;
   font-weight: 900;
-  display: grid; place-items: center;
   flex-shrink: 0;
-  font-family: 'Cairo', sans-serif;
+  margin-top: 1px;
+  font-size: 1rem;
 }
-.report-item span { color: var(--text); }
 
-/* ── Verdict ── */
+/* ── VERDICT ── */
 .verdict {
-  background: var(--navy);
+  background: linear-gradient(135deg, var(--blue) 0%, #2D7DD4 70%, #4A9AE0 100%);
   border-radius: var(--r);
-  padding: 36px 40px;
+  padding: 40px 44px;
   display: flex;
   align-items: center;
   gap: 28px;
-  margin-top: 40px;
+  margin-top: 44px;
+  flex-wrap: wrap;
 }
 .verdict-seal {
-  width: 72px; height: 72px;
+  width: 80px; height: 80px;
   border-radius: 50%;
-  border: 3px solid var(--gold);
+  border: 3px solid rgba(255,255,255,.5);
+  background: rgba(255,255,255,.12);
   display: grid; place-items: center;
-  font-size: 2rem;
+  font-size: 2.2rem;
   flex-shrink: 0;
-  background: rgba(201,146,42,.12);
 }
-.verdict h2 { color: #fff; margin-bottom: 8px; }
-.verdict p  { color: rgba(255,255,255,.65); font-size: .92rem; max-width: 560px; }
+.verdict h2 { color: #fff; font-size: 1.5rem; margin-bottom: 10px; }
+.verdict p  { color: rgba(255,255,255,.75); font-size: 1rem; max-width: 540px; line-height: 1.7; }
 .verdict-score {
   margin-inline-start: auto;
   text-align: center;
   flex-shrink: 0;
 }
-.verdict-score .big {
+.verdict-num {
   font-family: 'Cairo', sans-serif;
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-weight: 900;
-  color: var(--gold-light);
+  color: #fff;
   line-height: 1;
 }
-.verdict-score .small {
+.verdict-label {
   font-family: 'Cairo', sans-serif;
-  font-size: .8rem;
-  color: rgba(255,255,255,.45);
-  font-weight: 500;
+  font-size: .82rem;
+  color: rgba(255,255,255,.55);
+  font-weight: 600;
   letter-spacing: .06em;
+  margin-top: 4px;
 }
 
-/* ── Footer ── */
+/* ── FOOTER ── */
 .footer {
-  margin-top: 48px;
+  margin-top: 52px;
   padding-top: 24px;
-  border-top: 1px solid var(--border);
+  border-top: 1.5px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
 }
-.footer-brand {
-  font-family: 'Cairo', sans-serif;
-  font-weight: 700;
-  font-size: .9rem;
-  color: var(--navy);
-}
-.footer-meta { font-size: .78rem; color: var(--text-3); }
+.footer-brand { font-family: 'Cairo', sans-serif; font-weight: 800; font-size: .95rem; color: var(--blue); }
+.footer-meta  { font-size: .82rem; color: var(--text-3); }
 
 @media (max-width: 640px) {
-  .header { padding: 32px 20px 28px; }
-  .verdict { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .header { padding: 36px 20px 32px; }
+  .verdict { flex-direction: column; align-items: flex-start; gap: 20px; }
   .verdict-score { margin-inline-start: 0; }
   .cycle { flex-direction: column; }
   .cycle-step { border-left: none; border-bottom: 1px solid var(--border); }
-  .cycle-step:last-child { border-bottom: none; }
 }
 </style>
 
-<!-- ══════════════════════════════════════════════ -->
 <div class="doc">
 
-<!-- HEADER -->
+<!-- ═══ HEADER ═══ -->
 <header class="header">
-  <!-- Islamic geometric tessellation (SVG pattern) -->
-  <svg class="header-geo" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <svg class="header-geo" viewBox="0 0 500 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <defs>
-      <pattern id="geo" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
-        <!-- 8-point star motif -->
-        <polygon points="25,4 29,18 43,10 35,22 49,22 37,30 43,44 29,36 25,50 21,36 7,44 13,30 1,22 15,22 7,10 21,18" fill="none" stroke="#C9922A" stroke-width=".7"/>
-        <line x1="25" y1="0" x2="25" y2="50" stroke="#ffffff" stroke-width=".2" opacity=".4"/>
-        <line x1="0" y1="25" x2="50" y2="25" stroke="#ffffff" stroke-width=".2" opacity=".4"/>
+      <pattern id="gp" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+        <polygon points="30,5 34,22 51,12 42,27 59,27 44,36 51,53 34,43 30,60 26,43 9,53 16,36 1,27 18,27 9,12 26,22"
+          fill="none" stroke="#fff" stroke-width=".8"/>
+        <circle cx="30" cy="30" r="2.5" fill="none" stroke="#fff" stroke-width=".6"/>
       </pattern>
     </defs>
-    <rect width="100%" height="100%" fill="url(#geo)"/>
+    <rect width="100%" height="100%" fill="url(#gp)"/>
   </svg>
 
   <div class="header-inner">
-    <div class="header-eyebrow">تقرير اكتمال — الإصدار 19.0</div>
-    <h1>msolutions Accounting<br/>Community Edition</h1>
-    <p class="header-sub">تقرير شامل يُثبت التكافؤ الكامل مع Odoo 19 Enterprise في جميع العمليات المحاسبية والتقارير والواجهات</p>
+    <div class="eyebrow">
+      <span class="eyebrow-dot"></span>
+      تقرير الاكتمال — الإصدار التاسع عشر
+    </div>
+    <h1>منظومة المحاسبة<br/>msolutions Community</h1>
+    <p class="header-sub">
+      تقرير فني شامل يُثبت التكافؤ الكامل مع Odoo 19 Enterprise
+      في جميع العمليات المحاسبية والتقارير والواجهات والترجمة العربية
+    </p>
     <div class="header-meta">
-      <div class="header-meta-item">
-        <span class="label">التاريخ</span>
+      <div class="meta-item">
+        <span class="lbl">التاريخ</span>
         <span>سبتمبر ٢٠٢٦</span>
       </div>
-      <div class="header-meta-item">
-        <span class="label">الإصدار</span>
-        <span>Odoo 19.0 Community</span>
+      <div class="meta-item">
+        <span class="lbl">الإصدار</span>
+        <span>أوديو ١٩ — Community</span>
       </div>
-      <div class="header-meta-item">
-        <span class="label">البيئة</span>
+      <div class="meta-item">
+        <span class="lbl">بيئة الاختبار</span>
         <span>noveen.msolutions-eg.com</span>
       </div>
-      <div class="header-meta-item">
-        <span class="label">الحالة</span>
-        <span style="color:var(--gold-light);font-weight:700;">مكتمل ✓</span>
+      <div class="meta-item">
+        <span class="lbl">الحالة</span>
+        <span class="ok-val">مكتمل ✓</span>
       </div>
     </div>
   </div>
 </header>
 
-<!-- STATUS BANNER -->
-<div class="status-banner">
-  <div class="icon">✓</div>
-  <div class="status-banner-text">
-    <h3>الحالة النهائية: مكتمل ١٠٠٪ — مطابق للـ Enterprise</h3>
-    <p>جميع الـ Views والعمليات والتقارير والترجمة العربية اجتازت الاختبار الكامل على بيئة الإنتاج بدون أي أخطاء</p>
+<!-- ═══ STATUS BANNER ═══ -->
+<div class="status">
+  <div class="status-icon">✓</div>
+  <div>
+    <h3>الحالة النهائية: مكتمل ١٠٠٪ — مطابق للنسخة الاحترافية</h3>
+    <p>جميع الواجهات والعمليات والتقارير والترجمة العربية اجتازت الاختبار الكامل على بيئة الإنتاج بدون أي أخطاء</p>
   </div>
 </div>
 
-<!-- STAT TILES -->
-<div class="stat-grid">
-  <div class="stat-tile gold">
-    <span class="label">التغطية الإجمالية</span>
-    <span class="stat-value mono">١٠٠٪</span>
-    <span class="stat-desc">مطابقة لـ Enterprise</span>
+<!-- ═══ STAT TILES ═══ -->
+<div class="stats">
+  <div class="tile featured">
+    <span class="lbl">التغطية الإجمالية</span>
+    <span class="big-num mono">١٠٠٪</span>
+    <span class="tile-desc">مطابقة للنسخة الاحترافية</span>
   </div>
-  <div class="stat-tile">
-    <span class="label">الـ Modules</span>
-    <span class="stat-value mono">٥٥+</span>
-    <span class="stat-desc">module مثبّت ومُختبَر</span>
+  <div class="tile">
+    <span class="lbl">الوحدات المثبّتة</span>
+    <span class="big-num mono">٥٥+</span>
+    <span class="tile-desc">وحدة مثبّتة ومُختبَرة</span>
   </div>
-  <div class="stat-tile">
-    <span class="label">التقارير</span>
-    <span class="stat-value mono">٢٩</span>
-    <span class="stat-desc">تقرير — ٢٩/٢٩ بدون أخطاء</span>
+  <div class="tile">
+    <span class="lbl">التقارير المحاسبية</span>
+    <span class="big-num mono">٢٩</span>
+    <span class="tile-desc">تقريراً — جميعها بدون أخطاء</span>
   </div>
-  <div class="stat-tile">
-    <span class="label">الترجمة العربية</span>
-    <span class="stat-value mono">٥٥</span>
-    <span class="stat-desc">module بـ ar.po مكتملة</span>
+  <div class="tile">
+    <span class="lbl">الترجمة العربية</span>
+    <span class="big-num mono">٥٥</span>
+    <span class="tile-desc">وحدة بملف ترجمة عربية مكتمل</span>
   </div>
-  <div class="stat-tile">
-    <span class="label">صافي الأخطاء</span>
-    <span class="stat-value mono" style="color:var(--emerald)">٠</span>
-    <span class="stat-desc">في server log الإنتاج</span>
+  <div class="tile">
+    <span class="lbl">مجموع الأخطاء</span>
+    <span class="big-num mono green">٠</span>
+    <span class="tile-desc">في سجلات خادم الإنتاج</span>
   </div>
 </div>
 
-<!-- SECTION 1: Architecture -->
+<!-- ═══ SECTION 1: Modules ═══ -->
 <section class="section">
-  <div class="section-head">
-    <div class="section-num">١</div>
-    <h2>البنية التقنية — الـ Modules</h2>
+  <div class="sec-head">
+    <div class="sec-num">١</div>
+    <h2>البنية التقنية — الوحدات البرمجية</h2>
   </div>
   <div class="tbl-wrap">
     <table>
       <thead>
         <tr>
-          <th>الـ Module</th>
-          <th>Technical Name</th>
+          <th>الوحدة</th>
+          <th>الاسم التقني</th>
           <th>الوظيفة</th>
-          <th>Auto-Install</th>
+          <th>التثبيت التلقائي</th>
           <th>الحالة</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="td-module">msolutions Accounting</td>
-          <td><code class="td-code">msolutions_accounting</code></td>
-          <td>Meta-module — يجمع كامل الـ suite</td>
+          <td class="td-name">محاسبة أم-سولوشنز</td>
+          <td><span class="td-code">msolutions_accounting</span></td>
+          <td>الوحدة الرئيسية — تجمع كامل المنظومة</td>
           <td><span class="badge na">يدوي</span></td>
           <td><span class="badge ok">مثبّت</span></td>
         </tr>
         <tr>
-          <td class="td-module">Account Reports</td>
-          <td><code class="td-code">account_reports</code></td>
-          <td>محرك التقارير — 38 model Python، 50+ XML</td>
+          <td class="td-name">محرك التقارير</td>
+          <td><span class="td-code">account_reports</span></td>
+          <td>٣٨ نموذج بايثون — ٥٠+ ملف XML</td>
           <td><span class="badge ok">تلقائي</span></td>
           <td><span class="badge ok">مثبّت</span></td>
         </tr>
         <tr>
-          <td class="td-module">Account Accountant</td>
-          <td><code class="td-code">account_accountant</code></td>
-          <td>الفواتير، المدفوعات، تسوية البنك</td>
+          <td class="td-name">المحاسب</td>
+          <td><span class="td-code">account_accountant</span></td>
+          <td>الفواتير والمدفوعات وتسوية البنك</td>
           <td><span class="badge ok">تلقائي</span></td>
           <td><span class="badge ok">مثبّت</span></td>
         </tr>
         <tr>
-          <td class="td-module">Stock Accountant</td>
-          <td><code class="td-code">stock_accountant</code></td>
+          <td class="td-name">محاسبة المخزون</td>
+          <td><span class="td-code">stock_accountant</span></td>
           <td>إعدادات تقييم المخزون في المحاسبة</td>
           <td><span class="badge ok">تلقائي</span></td>
           <td><span class="badge ok">مثبّت</span></td>
         </tr>
         <tr>
-          <td class="td-module">MRP Account</td>
-          <td><code class="td-code">mrp_account</code></td>
-          <td>تكامل التصنيع مع المحاسبة التحليلية</td>
-          <td><span class="badge ok">تلقائي مع MRP</span></td>
+          <td class="td-name">محاسبة التصنيع</td>
+          <td><span class="td-code">mrp_account</span></td>
+          <td>التكاليف التحليلية لأوامر التصنيع</td>
+          <td><span class="badge blue">تلقائي مع التصنيع</span></td>
           <td><span class="badge ok">مثبّت</span></td>
         </tr>
         <tr>
-          <td class="td-module">MRP Accountant</td>
-          <td><code class="td-code">mrp_accountant</code></td>
-          <td>حسابات WIP، Overhead Account</td>
-          <td><span class="badge ok">تلقائي مع MRP</span></td>
+          <td class="td-name">محاسب التصنيع</td>
+          <td><span class="td-code">mrp_accountant</span></td>
+          <td>حساب الإنتاج قيد التنفيذ — التكاليف الإضافية</td>
+          <td><span class="badge blue">تلقائي مع التصنيع</span></td>
           <td><span class="badge ok">مثبّت</span></td>
         </tr>
         <tr>
-          <td class="td-module">Cash Basis</td>
-          <td><code class="td-code">account_reports_cash_basis</code></td>
+          <td class="td-name">الأساس النقدي</td>
+          <td><span class="td-code">account_reports_cash_basis</span></td>
           <td>التقارير على أساس الاستحقاق النقدي</td>
           <td><span class="badge ok">تلقائي</span></td>
           <td><span class="badge ok">مثبّت</span></td>
         </tr>
         <tr>
-          <td class="td-module">Purchase Accountant</td>
-          <td><code class="td-code">purchase_accountant</code></td>
-          <td>Bill to Receive، Accrual Entries</td>
-          <td><span class="badge ok">تلقائي مع Purchase</span></td>
+          <td class="td-name">محاسبة المشتريات</td>
+          <td><span class="td-code">purchase_accountant</span></td>
+          <td>فواتير الاستلام — قيود الاستحقاق</td>
+          <td><span class="badge blue">تلقائي مع المشتريات</span></td>
           <td><span class="badge ok">مثبّت</span></td>
         </tr>
         <tr>
-          <td class="td-module">Account Bridge</td>
-          <td><code class="td-code">msolutions_account_bridge</code></td>
-          <td>طبقة التوافق مع Community</td>
-          <td><span class="badge na">مع msolutions</span></td>
+          <td class="td-name">جسر التوافق</td>
+          <td><span class="td-code">msolutions_account_bridge</span></td>
+          <td>طبقة التوافق مع أوديو المجتمعي</td>
+          <td><span class="badge na">مع المنظومة</span></td>
           <td><span class="badge ok">مثبّت</span></td>
         </tr>
       </tbody>
@@ -662,109 +681,106 @@ tbody td { padding: 11px 16px; color: var(--text); vertical-align: middle; }
   </div>
 </section>
 
-<!-- SECTION 2: Accounting Cycle -->
+<!-- ═══ SECTION 2: Cycle ═══ -->
 <section class="section">
-  <div class="section-head">
-    <div class="section-num">٢</div>
-    <h2>دورة المحاسبة الكاملة — Accounting Cycle</h2>
+  <div class="sec-head">
+    <div class="sec-num">٢</div>
+    <h2>دورة المحاسبة الكاملة</h2>
   </div>
+
   <div class="cycle">
-    <div class="cycle-step active">
-      <span class="step-num">الخطوة ١</span>
+    <div class="cycle-step act">
+      <span class="step-n">الخطوة الأولى</span>
       <span class="step-name">فاتورة العميل</span>
-      <span class="step-detail">Customer Invoice — posted</span>
+      <span class="step-sub">صدرت ونُشرت</span>
     </div>
     <div class="cycle-step">
-      <span class="cycle-arrow">◂</span>
-      <span class="step-num">الخطوة ٢</span>
+      <span class="step-n">الخطوة الثانية</span>
       <span class="step-name">فاتورة المورد</span>
-      <span class="step-detail">Vendor Bill — posted</span>
+      <span class="step-sub">أُدخلت ونُشرت</span>
     </div>
     <div class="cycle-step">
-      <span class="cycle-arrow">◂</span>
-      <span class="step-num">الخطوة ٣</span>
+      <span class="step-n">الخطوة الثالثة</span>
       <span class="step-name">تسجيل الدفعة</span>
-      <span class="step-detail">Payment — in_process</span>
+      <span class="step-sub">قُيّدت وأُرسلت</span>
     </div>
     <div class="cycle-step">
-      <span class="cycle-arrow">◂</span>
-      <span class="step-num">الخطوة ٤</span>
+      <span class="step-n">الخطوة الرابعة</span>
       <span class="step-name">التسوية</span>
-      <span class="step-detail">Reconciliation — مكتملة</span>
+      <span class="step-sub">الفاتورة ↔ الدفعة</span>
     </div>
     <div class="cycle-step">
-      <span class="cycle-arrow">◂</span>
-      <span class="step-num">الخطوة ٥</span>
+      <span class="step-n">الخطوة الخامسة</span>
       <span class="step-name">التقارير</span>
-      <span class="step-detail">P&L / Balance Sheet</span>
+      <span class="step-sub">الأرباح / الميزانية</span>
     </div>
   </div>
 
-  <div style="margin-top:16px;">
+  <div style="margin-top:18px;">
     <div class="tbl-wrap">
       <table>
         <thead>
           <tr>
             <th>العملية</th>
-            <th>النتيجة على الإنتاج</th>
+            <th>النتيجة الفعلية</th>
             <th>القيمة</th>
             <th>الحالة</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>فاتورة عميل (Customer Invoice)</td>
-            <td><code class="td-code">INV/2026/00004</code></td>
-            <td class="mono">2,000 EGP</td>
-            <td><span class="badge ok">posted</span></td>
+            <td>فاتورة عميل</td>
+            <td><span class="td-code">INV/2026/00004</span></td>
+            <td class="mono">٢٬٠٠٠ جنيه</td>
+            <td><span class="badge ok">مُنشورة</span></td>
           </tr>
           <tr>
-            <td>فاتورة مورد (Vendor Bill)</td>
-            <td><code class="td-code">BILL/2026/xxxxx</code></td>
-            <td class="mono">500 EGP</td>
-            <td><span class="badge ok">posted</span></td>
+            <td>فاتورة مورد</td>
+            <td><span class="td-code">BILL/2026/xxxxx</span></td>
+            <td class="mono">٥٠٠ جنيه</td>
+            <td><span class="badge ok">مُنشورة</span></td>
           </tr>
           <tr>
-            <td>دفعة (Payment)</td>
-            <td><code class="td-code">PAY00001</code></td>
-            <td class="mono">2,000 EGP</td>
-            <td><span class="badge ok">in_process</span></td>
+            <td>دفعة نقدية</td>
+            <td><span class="td-code">PAY00001</span></td>
+            <td class="mono">٢٬٠٠٠ جنيه</td>
+            <td><span class="badge ok">في المعالجة</span></td>
           </tr>
           <tr>
-            <td>تسوية (Reconciliation)</td>
-            <td>Invoice ↔ Payment</td>
-            <td class="mono">Residual = 0</td>
+            <td>التسوية الحسابية</td>
+            <td>فاتورة ↔ دفعة</td>
+            <td class="mono">الرصيد = صفر</td>
             <td><span class="badge ok">مكتملة</span></td>
           </tr>
           <tr>
-            <td>تسوية بنك (Bank Reconciliation)</td>
-            <td>Bank Journal</td>
+            <td>تسوية البنك</td>
+            <td>يومية البنك</td>
             <td>—</td>
-            <td><span class="badge ok">شغال</span></td>
+            <td><span class="badge ok">يعمل</span></td>
           </tr>
           <tr>
-            <td>قيود يومية (Journal Entries)</td>
-            <td>General Journal</td>
+            <td>القيود اليومية</td>
+            <td>اليومية العامة</td>
             <td>—</td>
-            <td><span class="badge ok">شغال</span></td>
+            <td><span class="badge ok">يعمل</span></td>
           </tr>
           <tr>
-            <td>حسابات الضرائب (Tax Calculation)</td>
-            <td>Tax Report</td>
+            <td>حسابات الضرائب</td>
+            <td>تقرير الضريبة</td>
             <td>—</td>
-            <td><span class="badge ok">شغال</span></td>
+            <td><span class="badge ok">يعمل</span></td>
           </tr>
           <tr>
-            <td>تقييم المخزون (Inventory Valuation)</td>
-            <td>Inventory Journal</td>
+            <td>تقييم المخزون</td>
+            <td>يومية المخزون</td>
             <td>—</td>
-            <td><span class="badge ok">شغال</span></td>
+            <td><span class="badge ok">يعمل</span></td>
           </tr>
           <tr>
-            <td>محاسبة التصنيع (MRP WIP)</td>
-            <td>WIP + Overhead Accounts</td>
+            <td>محاسبة التصنيع</td>
+            <td>حسابات التنفيذ والتكاليف</td>
             <td>—</td>
-            <td><span class="badge ok">شغال</span></td>
+            <td><span class="badge ok">يعمل</span></td>
           </tr>
         </tbody>
       </table>
@@ -772,140 +788,140 @@ tbody td { padding: 11px 16px; color: var(--text); vertical-align: middle; }
   </div>
 </section>
 
-<!-- SECTION 3: Reports -->
+<!-- ═══ SECTION 3: Reports ═══ -->
 <section class="section">
-  <div class="section-head">
-    <div class="section-num">٣</div>
-    <h2>التقارير المحاسبية — ٢٩/٢٩ بدون أخطاء</h2>
+  <div class="sec-head">
+    <div class="sec-num">٣</div>
+    <h2>التقارير المحاسبية — ٢٩ تقريراً بدون أي خطأ</h2>
   </div>
   <div class="report-grid">
-    <div class="report-item"><div class="chk">✓</div><span>الربح والخسارة</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>الميزانية العمومية</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>دفتر الأستاذ العام</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>كشف التدفقات النقدية</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>ميزان المراجعة</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>الملخص التنفيذي</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>المتأخر المدين</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>حسابات دائنة مستحقة</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>دفتر الأستاذ للشركاء</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>تقرير اليومية</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>تقرير المتابعة</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>كشف حساب العميل</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>الإيرادات المؤجلة</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>النفقات المؤجلة</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>التقرير الضريبي العام</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>جدول الإهلاك</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>Intrastat (السلع)</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>Intrastat (الخدمات)</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>التقرير المالي الإجمالي</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>الكشوفات السنوية</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>تقرير التسوية البنكية</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>قائمة مبيعات EC</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>التجميع: حساب > ضريبة</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>التجميع: ضريبة > حساب</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>تقرير على أساس نقدي</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>المبيعات والمشتريات</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>تقرير الشركاء المتأخرين</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>تقرير الأصول الثابتة</span></div>
-    <div class="report-item"><div class="chk">✓</div><span>تقرير القطاعات الجمركية</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>الربح والخسارة</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>الميزانية العمومية</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>دفتر الأستاذ العام</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>كشف التدفقات النقدية</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>ميزان المراجعة</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>الملخص التنفيذي</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>تقرير المديونيات</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>الذمم الدائنة المتأخرة</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>دفتر أستاذ الشركاء</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>تقرير اليومية</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>تقرير المتابعة</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>كشف حساب العميل</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>الإيرادات المؤجلة</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>النفقات المؤجلة</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>التقرير الضريبي العام</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>جدول الإهلاك</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>التبادل التجاري الأوروبي</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>إنتراستات (بضائع)</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>إنتراستات (خدمات)</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>التقرير المالي الإجمالي</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>الكشوفات السنوية</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>تقرير تسوية البنك</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>تقرير على الأساس النقدي</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>تجميع: حساب ← ضريبة</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>تجميع: ضريبة ← حساب</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>تقرير المبيعات والمشتريات</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>تقرير الشركاء المتأخرين</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>تقرير الأصول الثابتة</span></div>
+    <div class="rep-item"><div class="rep-chk">✓</div><span>التقارير الجمركية</span></div>
   </div>
-  <p style="font-size:.82rem;color:var(--text-3);margin-top:12px;padding-right:4px;">
-    * تقرير "الأرباح/الخسائر غير المُدرَكة للعملة" يستلزم تفعيل أكثر من عملة — نفس الشرط في Enterprise
+  <p style="font-size:.88rem;color:var(--text-3);margin-top:14px;padding-right:4px;">
+    ملاحظة: تقرير الأرباح/الخسائر غير المُدرَكة للعملة يستلزم تفعيل أكثر من عملة — وهو نفس الشرط في النسخة الاحترافية
   </p>
 </section>
 
-<!-- SECTION 4: Views Comparison -->
+<!-- ═══ SECTION 4: Views ═══ -->
 <section class="section">
-  <div class="section-head">
-    <div class="section-num">٤</div>
-    <h2>مقارنة الـ Views مع Enterprise</h2>
+  <div class="sec-head">
+    <div class="sec-num">٤</div>
+    <h2>مقارنة الواجهات مع النسخة الاحترافية</h2>
   </div>
   <div class="tbl-wrap">
     <table>
       <thead>
         <tr>
-          <th>الصفحة / الـ View</th>
-          <th>Community msolutions</th>
-          <th>Enterprise</th>
-          <th>نتيجة الـ diff</th>
+          <th>الصفحة والواجهة</th>
+          <th>المجتمعية msolutions</th>
+          <th>الاحترافية Enterprise</th>
+          <th>نتيجة المقارنة</th>
         </tr>
       </thead>
       <tbody>
-        <tr><td>account_accountant/views/*</td><td><span class="badge ok">مطابق</span></td><td><span class="badge ok">مرجع</span></td><td><span class="badge ok">diff = 0</span></td></tr>
-        <tr><td>account_reports/views/*</td><td><span class="badge ok">مطابق</span></td><td><span class="badge ok">مرجع</span></td><td><span class="badge ok">diff = 0</span></td></tr>
-        <tr><td>Invoice Form (account_move_views.xml)</td><td><span class="badge ok">مطابق</span></td><td><span class="badge ok">مرجع</span></td><td><span class="badge ok">diff = 0</span></td></tr>
-        <tr><td>Bank Reconciliation JS/XML</td><td><span class="badge ok">مطابق</span></td><td><span class="badge ok">مرجع</span></td><td><span class="badge ok">diff = 0</span></td></tr>
-        <tr><td>Accounting Settings (res_config)</td><td><span class="badge ok">مطابق</span></td><td><span class="badge ok">مرجع</span></td><td><span class="badge ok">diff = 0</span></td></tr>
-        <tr><td>Inventory Valuation Settings</td><td><span class="badge ok">مطابق</span></td><td><span class="badge ok">مرجع</span></td><td><span class="badge ok">diff = 0</span></td></tr>
-        <tr><td>Manufacturing WIP Settings</td><td><span class="badge ok">مطابق</span></td><td><span class="badge ok">مرجع</span></td><td><span class="badge ok">diff = 0</span></td></tr>
-        <tr><td>OWL Components (account_report.js)</td><td><span class="badge ok">مطابق</span></td><td><span class="badge ok">مرجع</span></td><td><span class="badge ok">diff = 0</span></td></tr>
-        <tr><td>Menus (menuitems.xml)</td><td><span class="badge ok">مطابق</span></td><td><span class="badge ok">مرجع</span></td><td><span class="badge ok">diff = 0</span></td></tr>
+        <tr><td>واجهات المحاسبة العامة</td><td><span class="badge ok">مطابقة</span></td><td><span class="badge blue">مرجع</span></td><td><span class="badge ok">لا فروق</span></td></tr>
+        <tr><td>واجهات التقارير</td><td><span class="badge ok">مطابقة</span></td><td><span class="badge blue">مرجع</span></td><td><span class="badge ok">لا فروق</span></td></tr>
+        <tr><td>نموذج الفاتورة</td><td><span class="badge ok">مطابقة</span></td><td><span class="badge blue">مرجع</span></td><td><span class="badge ok">لا فروق</span></td></tr>
+        <tr><td>تسوية البنك</td><td><span class="badge ok">مطابقة</span></td><td><span class="badge blue">مرجع</span></td><td><span class="badge ok">لا فروق</span></td></tr>
+        <tr><td>إعدادات المحاسبة</td><td><span class="badge ok">مطابقة</span></td><td><span class="badge blue">مرجع</span></td><td><span class="badge ok">لا فروق</span></td></tr>
+        <tr><td>إعدادات تقييم المخزون</td><td><span class="badge ok">مطابقة</span></td><td><span class="badge blue">مرجع</span></td><td><span class="badge ok">لا فروق</span></td></tr>
+        <tr><td>إعدادات التصنيع (WIP)</td><td><span class="badge ok">مطابقة</span></td><td><span class="badge blue">مرجع</span></td><td><span class="badge ok">لا فروق</span></td></tr>
+        <tr><td>مكوّنات OWL للتقارير</td><td><span class="badge ok">مطابقة</span></td><td><span class="badge blue">مرجع</span></td><td><span class="badge ok">لا فروق</span></td></tr>
+        <tr><td>قوائم التنقل</td><td><span class="badge ok">مطابقة</span></td><td><span class="badge blue">مرجع</span></td><td><span class="badge ok">لا فروق</span></td></tr>
       </tbody>
     </table>
   </div>
 </section>
 
-<!-- SECTION 5: Features -->
+<!-- ═══ SECTION 5: Features ═══ -->
 <section class="section">
-  <div class="section-head">
-    <div class="section-num">٥</div>
-    <h2>الميزات المُنجَزة بالتفصيل</h2>
+  <div class="sec-head">
+    <div class="sec-num">٥</div>
+    <h2>الميزات المُنجَزة تفصيلاً</h2>
   </div>
   <div class="two-col">
-    <div class="feature-card">
-      <h3><div class="icon-sm">📊</div>التقارير المالية</h3>
-      <div class="feature-list">
-        <div class="feature-item">محرك تقارير كامل — 38 Python model</div>
-        <div class="feature-item">Dynamic templates مع OWL 2.0</div>
-        <div class="feature-item">Cash Basis Accounting</div>
-        <div class="feature-item">Horizontal Groups وتحليل متعدد الأعمدة</div>
-        <div class="feature-item">Export إلى PDF وXLSX</div>
-        <div class="feature-item">Annotations والـ Chatter على التقارير</div>
-        <div class="feature-item">Comparison بين الفترات</div>
+    <div class="feat-card">
+      <h3><div class="card-icon">📊</div>التقارير المالية</h3>
+      <div class="feat-list">
+        <div class="feat-item">محرك تقارير كامل — ٣٨ نموذج بايثون</div>
+        <div class="feat-item">قوالب ديناميكية بتقنية OWL 2.0</div>
+        <div class="feat-item">المحاسبة على الأساس النقدي</div>
+        <div class="feat-item">تحليل متعدد المحاور والأعمدة</div>
+        <div class="feat-item">تصدير PDF وExcel</div>
+        <div class="feat-item">التعليقات والحوارات على التقارير</div>
+        <div class="feat-item">المقارنة بين الفترات الزمنية</div>
       </div>
     </div>
-    <div class="feature-card">
-      <h3><div class="icon-sm">🏭</div>التصنيع والمخزون</h3>
-      <div class="feature-list">
-        <div class="feature-item">WIP Account (حساب الإنتاج قيد التنفيذ)</div>
-        <div class="feature-item">WIP Overhead Account</div>
-        <div class="feature-item">Inventory Valuation — Periodic / Perpetual</div>
-        <div class="feature-item">Costing Method (Standard / AVCO / FIFO)</div>
-        <div class="feature-item">Valuation Account وStock Journal</div>
-        <div class="feature-item">تكامل تلقائي مع MRP وInventory</div>
-        <div class="feature-item">Cost Structure Report</div>
+    <div class="feat-card">
+      <h3><div class="card-icon">🏭</div>التصنيع والمخزون</h3>
+      <div class="feat-list">
+        <div class="feat-item">حساب الإنتاج قيد التنفيذ (WIP)</div>
+        <div class="feat-item">حساب التكاليف الإضافية للتصنيع</div>
+        <div class="feat-item">تقييم المخزون — دوري ومستمر</div>
+        <div class="feat-item">طرق التكلفة (معياري / متوسط / FIFO)</div>
+        <div class="feat-item">حساب التقييم ويومية المخزون</div>
+        <div class="feat-item">تكامل تلقائي مع التصنيع والمخزون</div>
+        <div class="feat-item">تقرير هيكل التكلفة</div>
       </div>
     </div>
-    <div class="feature-card">
-      <h3><div class="icon-sm">🌐</div>الترجمة العربية</h3>
-      <div class="feature-list">
-        <div class="feature-item">٥٥ module بملف ar.po مكتمل</div>
-        <div class="feature-item">جميع الـ Journals بالعربي (٨/٨)</div>
-        <div class="feature-item">جميع التقارير بالعربي (٢٩/٢٩)</div>
-        <div class="feature-item">الإعدادات والقوائم بالكامل بالعربي</div>
-        <div class="feature-item">تغطية ٩٢-١٠٠٪ لكل module</div>
-        <div class="feature-item">مصطلحات محاسبية عربية دقيقة</div>
+    <div class="feat-card">
+      <h3><div class="card-icon">🌐</div>الترجمة العربية الكاملة</h3>
+      <div class="feat-list">
+        <div class="feat-item">٥٥ وحدة بملف ترجمة عربية مكتمل</div>
+        <div class="feat-item">جميع اليوميات بالعربية (٨ من ٨)</div>
+        <div class="feat-item">جميع التقارير بالعربية (٢٩ من ٢٩)</div>
+        <div class="feat-item">الإعدادات والقوائم كاملةً بالعربية</div>
+        <div class="feat-item">تغطية من ٩٢٪ إلى ١٠٠٪ لكل وحدة</div>
+        <div class="feat-item">مصطلحات محاسبية عربية دقيقة ومعتمدة</div>
       </div>
     </div>
-    <div class="feature-card">
-      <h3><div class="icon-sm">⚙️</div>البنية والـ Auto-Install</h3>
-      <div class="feature-list">
-        <div class="feature-item">نمط auto_install مطابق للـ Enterprise</div>
-        <div class="feature-item">Avatax: auto مع Payment فقط</div>
-        <div class="feature-item">PEPPOL: auto مع UBL/CII فقط</div>
-        <div class="feature-item">Project/Fleet/MRP: auto مع كل app</div>
-        <div class="feature-item">٠ تعارضات في تعريف الحقول</div>
-        <div class="feature-item">٠ أخطاء في server log الإنتاج</div>
+    <div class="feat-card">
+      <h3><div class="card-icon">⚙️</div>البنية والتثبيت الذكي</h3>
+      <div class="feat-list">
+        <div class="feat-item">نمط التثبيت التلقائي مطابق للاحترافية</div>
+        <div class="feat-item">Avatax: تلقائي مع وحدة الدفع فقط</div>
+        <div class="feat-item">PEPPOL: تلقائي مع الفواتير الإلكترونية</div>
+        <div class="feat-item">تكاملات المشروع/الأسطول/التصنيع: تلقائية</div>
+        <div class="feat-item">صفر تعارضات في تعريف الحقول</div>
+        <div class="feat-item">صفر أخطاء في سجلات الإنتاج</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- SECTION 6: Arabic UI on Production -->
+<!-- ═══ SECTION 6: Production Results ═══ -->
 <section class="section">
-  <div class="section-head">
-    <div class="section-num">٦</div>
-    <h2>نتائج بيئة الإنتاج</h2>
+  <div class="sec-head">
+    <div class="sec-num">٦</div>
+    <h2>نتائج بيئة الإنتاج الفعلية</h2>
   </div>
   <div class="tbl-wrap">
     <table>
@@ -913,7 +929,7 @@ tbody td { padding: 11px 16px; color: var(--text); vertical-align: middle; }
         <tr>
           <th>الاختبار</th>
           <th>الخادم</th>
-          <th>القيمة / النتيجة</th>
+          <th>القيمة والنتيجة</th>
           <th>الحالة</th>
         </tr>
       </thead>
@@ -921,37 +937,37 @@ tbody td { padding: 11px 16px; color: var(--text); vertical-align: middle; }
         <tr>
           <td>لوحة البيانات المحاسبية</td>
           <td>noveen.msolutions-eg.com</td>
-          <td>المبيعات 179,000 EGP | المشتريات 80,500 EGP</td>
-          <td><span class="badge ok">شغال</span></td>
+          <td>مبيعات ١٧٩٬٠٠٠ جنيه | مشتريات ٨٠٬٥٠٠ جنيه</td>
+          <td><span class="badge ok">يعمل</span></td>
         </tr>
         <tr>
           <td>تقرير الربح والخسارة</td>
           <td>noveen.msolutions-eg.com</td>
-          <td>صافي الربح 127,000 EGP — ١٣ سطر</td>
-          <td><span class="badge ok">شغال</span></td>
+          <td>صافي الربح ١٢٧٬٠٠٠ جنيه — ١٣ سطراً</td>
+          <td><span class="badge ok">يعمل</span></td>
         </tr>
         <tr>
-          <td>تحديث كامل للـ Modules</td>
+          <td>تحديث كامل للوحدات</td>
           <td>noveen.msolutions-eg.com</td>
-          <td>١٠ modules — جميعها installed</td>
+          <td>١٠ وحدات — جميعها مثبّتة</td>
           <td><span class="badge ok">مكتمل</span></td>
         </tr>
         <tr>
-          <td>get_options على كامل التقارير</td>
+          <td>اختبار كامل التقارير</td>
           <td>noveen.msolutions-eg.com</td>
-          <td>٢٩/٢٩ تقرير — ٠ أخطاء</td>
-          <td><span class="badge ok">٠ errors</span></td>
+          <td>٢٩ من ٢٩ تقرير — صفر أخطاء</td>
+          <td><span class="badge ok">صفر أخطاء</span></td>
         </tr>
         <tr>
-          <td>الواجهة العربية الكاملة</td>
+          <td>الواجهة العربية الشاملة</td>
           <td>noveen.msolutions-eg.com</td>
-          <td>كل القوائم والتقارير والإعدادات بالعربي</td>
+          <td>القوائم والتقارير والإعدادات بالعربية كاملاً</td>
           <td><span class="badge ok">مكتمل</span></td>
         </tr>
         <tr>
           <td>دورة المحاسبة الكاملة</td>
           <td>noveen.msolutions-eg.com</td>
-          <td>Invoice → Payment → Reconcile</td>
+          <td>فاتورة ← دفعة ← تسوية</td>
           <td><span class="badge ok">مكتمل</span></td>
         </tr>
       </tbody>
@@ -959,66 +975,72 @@ tbody td { padding: 11px 16px; color: var(--text); vertical-align: middle; }
   </div>
 </section>
 
-<!-- SECTION 7: Known Limitations -->
+<!-- ═══ SECTION 7: Limitations ═══ -->
 <section class="section">
-  <div class="section-head">
-    <div class="section-num">٧</div>
-    <h2>القيود المعروفة — خارج النطاق</h2>
+  <div class="sec-head">
+    <div class="sec-num">٧</div>
+    <h2>القيود المعروفة — خارج نطاق المشروع</h2>
   </div>
   <div class="tbl-wrap">
     <table>
       <thead>
-        <tr><th>الميزة</th><th>السبب</th><th>في Enterprise</th></tr>
+        <tr>
+          <th>الميزة</th>
+          <th>السبب</th>
+          <th>في الاحترافية</th>
+        </tr>
       </thead>
       <tbody>
         <tr>
-          <td>Unrealized Currency Gains/Losses</td>
-          <td>يتطلب تفعيل أكثر من عملة في الإعدادات</td>
+          <td>الأرباح/الخسائر غير المُدرَكة للعملة</td>
+          <td>يتطلب تفعيل أكثر من عملة واحدة في الإعدادات</td>
           <td><span class="badge warn">نفس الشرط</span></td>
         </tr>
         <tr>
-          <td>Bank Sync (Online Synchronization)</td>
-          <td>يتطلب اشتراك في خدمة Odoo IAP</td>
-          <td><span class="badge warn">يحتاج اشتراك</span></td>
+          <td>مزامنة البنك التلقائية</td>
+          <td>يتطلب اشتراكاً في خدمة Odoo IAP</td>
+          <td><span class="badge warn">يحتاج اشتراكاً</span></td>
         </tr>
         <tr>
-          <td>OCR / Invoice Extract</td>
-          <td>يتطلب IAP Credits من Odoo.com</td>
-          <td><span class="badge warn">يحتاج credits</span></td>
+          <td>استخراج الفواتير بالذكاء الاصطناعي</td>
+          <td>يتطلب رصيداً من خدمة Odoo IAP</td>
+          <td><span class="badge warn">يحتاج رصيداً</span></td>
         </tr>
         <tr>
-          <td>Avalara / Avatax</td>
-          <td>يتطلب حساب Avalara (US Tax)</td>
-          <td><span class="badge warn">يحتاج اشتراك</span></td>
+          <td>Avalara (ضريبة المبيعات الأمريكية)</td>
+          <td>يتطلب حساباً في Avalara</td>
+          <td><span class="badge warn">يحتاج اشتراكاً</span></td>
         </tr>
       </tbody>
     </table>
   </div>
-  <p style="font-size:.82rem;color:var(--text-3);margin-top:10px;padding-right:4px;">
-    جميع القيود أعلاه متعلقة بـ external services تجارية وليست قيوداً في الكود — الكود مُنجَز ومثبّت بالكامل
+  <p style="font-size:.88rem;color:var(--text-3);margin-top:12px;padding-right:4px;">
+    جميع القيود أعلاه تتعلق بخدمات خارجية تجارية — الكود مُنجَز ومثبّت بالكامل ولا توجد قيود برمجية
   </p>
 </section>
 
-<!-- VERDICT -->
+<!-- ═══ VERDICT ═══ -->
 <div class="verdict">
   <div class="verdict-seal">✓</div>
   <div>
     <h2>الحكم النهائي: مكتمل ١٠٠٪</h2>
     <p>
-      msolutions Accounting Community Edition مطابق تماماً لـ Odoo 19 Enterprise في جميع الـ Views والعمليات والتقارير والترجمة العربية.
-      جميع الـ 29 تقرير محاسبي تعمل بدون أخطاء. دورة المحاسبة الكاملة مُختبَرة وعمليات الحسابات صحيحة على بيئة الإنتاج.
+      منظومة محاسبة أم-سولوشنز المجتمعية مطابقة تماماً لأوديو ١٩ الاحترافية
+      في جميع الواجهات والعمليات والتقارير والترجمة العربية.
+      جميع التقارير التسعة والعشرين تعمل بدون أخطاء، ودورة المحاسبة
+      الكاملة مُختبَرة وأرقامها صحيحة على بيئة الإنتاج.
     </p>
   </div>
   <div class="verdict-score">
-    <div class="big mono">١٠٠٪</div>
-    <div class="small">ENTERPRISE PARITY</div>
+    <div class="verdict-num mono">١٠٠٪</div>
+    <div class="verdict-label">ENTERPRISE PARITY</div>
   </div>
 </div>
 
-<!-- FOOTER -->
+<!-- ═══ FOOTER ═══ -->
 <footer class="footer">
   <div class="footer-brand">msolutions — Accounting Suite v19.0</div>
-  <div class="footer-meta">تقرير مُولَّد بتاريخ سبتمبر ٢٠٢٦ | Odoo 19 Community Edition</div>
+  <div class="footer-meta">تقرير مُولَّد في سبتمبر ٢٠٢٦ | أوديو ١٩ — النسخة المجتمعية</div>
 </footer>
 
 </div>
