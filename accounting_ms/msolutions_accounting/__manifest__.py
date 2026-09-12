@@ -7,34 +7,34 @@
     'author': 'msolutions',
     'website': 'https://msolutions.example.com',
     'license': 'OPL-1',
-    # This meta-module pulls in the accounting suite only. Integrations that
-    # would drag in an unrelated Odoo app (Project, Manufacturing, Point of
-    # Sale, Fleet, Inventory) are deliberately NOT listed below. They are kept
-    # in the distribution and every one of them is 'auto_install': True with
-    # its own app dependency, so it installs itself again the moment that app
-    # is installed. Nothing is removed, it is only decoupled:
+    # -----------------------------------------------------------------------
+    # Dependency strategy — mirrors Enterprise account_accountant pattern:
     #
-    #   project_account, project_account_asset, project_account_budget -> Project
-    #   project_mrp_account -> Project + Manufacturing
-    #   mrp_account, mrp_accountant                                     -> Manufacturing
-    #   pos_account_reports                                             -> Point of Sale
-    #   account_accountant_fleet, account_asset_fleet,
-    #   account_fiscal_categories_fleet                                 -> Fleet
-    #   account_avatax_stock                                            -> Inventory
+    # ALWAYS installed with this meta-module (core accounting suite):
+    #   All modules in the 'depends' list below.
     #
-    # stock_accountant is the one exception: it is 'auto_install': False, but
-    # it is meaningless without Inventory anyway - its only content is a
-    # settings block injected into stock's own res.config.settings form via
-    # inherit_id="stock.res_config_settings_view_form". mrp_accountant still
-    # declares it as a dependency, so it returns together with Manufacturing.
+    # AUTO-INSTALL — NOT listed here, self-install when their trigger is met:
+    #   account_avatax            → auto_install=['payment']   (Avalara US Tax)
+    #   account_avatax_geolocalize→ auto_install=True          (avatax + geolocalize)
+    #   account_avatax_sale       → auto_install=True          (avatax + sale)
+    #   account_peppol            → auto_install=['account_edi_ubl_cii'] (PEPPOL e-invoicing)
+    #   account_peppol_advanced_fields → deprecated in Enterprise, auto-removed
+    #
+    # APP-INTEGRATION — auto_install=True when their app is installed:
+    #   mrp_account, mrp_accountant          → Manufacturing
+    #   project_account, project_account_*   → Project
+    #   pos_account_reports                  → Point of Sale
+    #   account_accountant_fleet, *_fleet    → Fleet
+    #   account_avatax_stock                 → Inventory (stock)
+    #   purchase_accountant                  → auto when purchase present
+    #   sale_external_tax                    → auto when sale + account_external_tax
+    #   stock_accountant                     → auto when stock_account present
+    # -----------------------------------------------------------------------
     'depends': [   'account',
                    'account_3way_match',
                    'account_accountant',
                    'account_accountant_check_printing',
                    'account_asset',
-                   'account_avatax',
-                   'account_avatax_geolocalize',
-                   'account_avatax_sale',
                    'account_bank_statement_import',
                    'account_bank_statement_import_csv',
                    'account_bank_statement_import_ofx',
@@ -54,8 +54,6 @@
                    'account_loans',
                    'account_online_synchronization',
                    'account_payment',
-                   'account_peppol',
-                   'account_peppol_advanced_fields',
                    'account_qr_code_emv',
                    'account_qr_code_sepa',
                    'account_reports',

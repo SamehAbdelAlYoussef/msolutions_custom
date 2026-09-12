@@ -5,6 +5,7 @@
     'version': '1.0',
     'depends': ['account', 'account_edi_ubl_cii'],
     'data': ['views/account_move_views.xml'],
+    'auto_install': ['account_edi_ubl_cii'],
     'installable': True,
     'license': 'OPL-1',
     'website': 'https://msolutions.example.com',
