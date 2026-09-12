@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    msolutions - ported from Odoo Enterprise `account_reports/data/%s`.
-    Enterprise-only fields were stripped so the file loads on Community.
-    The evaluation engine lives in account_reports/models/account_report.py.
--->
 <odoo auto_sequence="1">
 
     <record id="deferred_expense_report" model="account.report">
@@ -17,6 +12,8 @@
         <field name="filter_unfold_all" eval="True"/>
         <field name="filter_hierarchy">by_default</field>
         <field name="default_opening_date_filter">previous_month</field>
+        <field name="search_bar" eval="True"/>
+        <field name="custom_handler_model_id" ref="model_account_deferred_expense_report_handler"/>
         <field name="column_ids">
             <record id="deferred_expense_current" model="account.report.column">
                 <field name="name">Current</field>
@@ -36,6 +33,8 @@
         <field name="filter_unfold_all" eval="True"/>
         <field name="filter_hierarchy">by_default</field>
         <field name="default_opening_date_filter">previous_month</field>
+        <field name="search_bar" eval="True"/>
+        <field name="custom_handler_model_id" ref="model_account_deferred_revenue_report_handler"/>
         <field name="column_ids">
             <record id="deferred_revenue_current" model="account.report.column">
                 <field name="name">Current</field>

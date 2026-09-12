@@ -1,82 +1,101 @@
 # -*- coding: utf-8 -*-
-# msolutions - Community-compatible accounting distribution.
-"""
-``res.partner`` extensions that Enterprise ``account_reports`` provided.
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-``account_followup`` overrides :meth:`_get_followup_responsible` and calls
-``super()``; without this base implementation the Payment Reminder mail template
-fails to render during installation.  The customer-statement / follow-up entry
-points are kept so the ported buttons resolve.
-"""
-
-from odoo import models
+from odoo import api, fields, models, _
 
 
 class ResPartner(models.Model):
-    _inherit = "res.partner"
+    _inherit = 'res.partner'
+
+    account_represented_company_ids = fields.One2many('res.company', 'account_representative_id')
 
     def _get_followup_responsible(self, multiple_responsible=False):
-        """Default follow-up responsible.
-
-        Returns ``self.env.user``; ``account_followup`` refines this using the
-        partner's salesperson, invoice user and company settings.
-        """
-        if multiple_responsible:
-            return self.env.user
         return self.env.user
 
-    def _get_partner_account_report_attachment(self, report, options=None):
-        """Render *report* for this partner and store it as an attachment."""
-        self.ensure_one()
-        if self.lang:
-            report = report.with_context(lang=self.lang)
-        if not options:
-            options = report.get_options({
-                "partner_ids": (self | self.commercial_partner_id).ids,
-                "unfold_all": len(self.ids) == 1,
-            })
-        export = report.export_to_pdf(options) if hasattr(report, "export_to_pdf") else None
-        if not export:
-            return self.env["ir.attachment"]
-        return self.env["ir.attachment"].create([{
-            "name": f"{self.name} - {export.get('file_name', 'report.pdf')}",
-            "res_model": self._name,
-            "res_id": self.id,
-            "type": "binary",
-            "raw": export.get("file_content", b""),
-            "mimetype": "application/pdf",
-        }])
-
     def open_customer_statement(self):
-        return self._open_account_report("account_reports.customer_statement_report")
+        action = self.env["ir.actions.actions"]._for_xml_id("account_reports.action_account_report_customer_statement")
+        action['params'] = {
+            'options': {
+                'partner_ids': (self | self.commercial_partner_id).ids,
+                'unfold_all': len(self.ids) == 1,
+            },
+            'ignore_session': True,
+        }
+        return action
 
     def open_follow_up_report(self):
-        return self._open_account_report("account_reports.followup_report")
-
-    def _open_account_report(self, report_xmlid):
-        report = self.env.ref(report_xmlid, raise_if_not_found=False)
-        if not report:
-            return False
-        return {
-            "type": "ir.actions.client",
-            "tag": "account_report",
-            "name": report.display_name,
-            "params": {
-                "options": {
-                    "partner_ids": (self | self.commercial_partner_id).ids,
-                    "unfold_all": len(self.ids) == 1,
-                },
-                "ignore_session": True,
+        action = self.env["ir.actions.actions"]._for_xml_id("account_reports.action_account_report_followup")
+        action['params'] = {
+            'options': {
+                'partner_ids': (self | self.commercial_partner_id).ids,
+                'unfold_all': len(self.ids) == 1,
             },
-            "context": {"report_id": report.id},
+            'ignore_session': True,
         }
+        return action
 
     def open_partner(self):
         return {
-            "type": "ir.actions.act_window",
-            "res_model": "res.partner",
-            "res_id": self.id,
-            "views": [[False, "form"]],
-            "view_mode": "form",
-            "target": "current",
+            'type': 'ir.actions.act_window',
+            'res_model': 'res.partner',
+            'res_id': self.id,
+            'views': [[False, 'form']],
+            'view_mode': 'form',
+            'target': 'current',
         }
+
+    @api.depends_context('show_more_partner_info')
+    def _compute_display_name(self):
+        if not self.env.context.get('show_more_partner_info'):
+            return super()._compute_display_name()
+        for partner in self:
+            res = ""
+            if partner.vat:
+                res += f" {partner.vat},"
+            if partner.country_id:
+                res += f" {partner.country_id.code},"
+            partner.display_name = f"{partner.name} - " + res
+
+    def _get_partner_account_report_attachment(self, report, options=None):
+        self.ensure_one()
+        if self.lang:
+            # Print the followup in the customer's language
+            report = report.with_context(lang=self.lang)
+
+        if not options:
+            options = report.get_options({
+                'forced_companies': self.env.company.search([('id', 'child_of', self.env.context.get('allowed_company_ids', self.env.company.id))]).ids,
+                'partner_ids': self.ids,
+                'unfold_all': True,
+                'unreconciled': True,
+                'all_entries': False,
+            })
+        attachment_file = report.export_to_pdf(options)
+        return self.env['ir.attachment'].create([
+            {
+                'name': f"{self.name} - {attachment_file['file_name']}",
+                'res_model': self._name,
+                'res_id': self.id,
+                'type': 'binary',
+                'raw': attachment_file['file_content'],
+                'mimetype': 'application/pdf',
+            },
+        ])
+
+    def set_commercial_partner_main(self):
+        self.ensure_one()
+
+        main_partner = self
+        duplicated_partners = self.env['res.partner'].search([
+            ('vat', '=', main_partner.vat),
+            ('id', '!=', main_partner.id)
+        ])
+        # Update commercial partner of all duplicates
+        duplicated_partners.write({
+            'is_company': False,
+            'parent_id': main_partner.id,
+            'type': 'invoice',
+        })
+        duplicated_partners_vat = self.env.context.get('duplicated_partners_vat', [])
+        remaining_vats = [pvat for pvat in duplicated_partners_vat if pvat != main_partner.vat]
+        return self.env['account.ec.sales.report.handler']._get_duplicated_vat_partners(remaining_vats)

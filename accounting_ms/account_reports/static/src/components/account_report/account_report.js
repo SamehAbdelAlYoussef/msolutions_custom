@@ -1,149 +1,138 @@
-/** @odoo-module **/
-/*
- * msolutions - Community-compatible accounting distribution.
- *
- * `AccountReport` renders an `account.report` produced by the Community report
- * engine (`account.report.get_report_data`). Enterprise ships this component in
- * account_reports; this is the Community replacement.
- *
- * The component is intentionally data-driven: everything it draws comes from
- * the `options` / `lines` payload, so any report defined in the database is
- * rendered without report-specific code.
- */
-import { Component, onWillStart, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { ControlPanel } from "@web/search/control_panel/control_panel";
 
+import { Component, onWillStart, useRef, useState, useSubEnv } from "@odoo/owl";
+
+import { AccountReportController } from "@account_reports/components/account_report/controller";
+import { AccountReportButtonsBar } from "@account_reports/components/account_report/buttons_bar/buttons_bar";
+import { AccountReportCogMenu } from "@account_reports/components/account_report/cog_menu/cog_menu";
+import { AccountReportEllipsis } from "@account_reports/components/account_report/ellipsis/ellipsis";
+import { AccountReportFilters } from "@account_reports/components/account_report/filters/filters";
+import { AccountReportHeader } from "@account_reports/components/account_report/header/header";
+import { AccountReportLine } from "@account_reports/components/account_report/line/line";
+import { AccountReportLineCell } from "@account_reports/components/account_report/line_cell/line_cell";
+import { AccountReportLineName } from "@account_reports/components/account_report/line_name/line_name";
+import { AccountReportSearchBar } from "@account_reports/components/account_report/search_bar/search_bar";
+import { AccountReportChatter } from "@account_reports/components/mail/chatter";
+import { standardActionServiceProps } from "@web/webclient/actions/action_service";
+import { useSetupAction } from "@web/search/action_hook";
+
+
 export class AccountReport extends Component {
     static template = "account_reports.AccountReport";
-    static props = { "*": true };
-    static components = { ControlPanel };
+    static props = { ...standardActionServiceProps };
+    static components = {
+        ControlPanel,
+        AccountReportButtonsBar,
+        AccountReportCogMenu,
+        AccountReportSearchBar,
+        AccountReportChatter,
+    };
 
-    static _customComponents = {};
-
-    static registerCustomComponent(component) {
-        if (component && component.name) {
-            AccountReport._customComponents[component.name] = component;
-        }
-    }
-
-    static getCustomComponent(name) {
-        return AccountReport._customComponents[name] || null;
-    }
+    static customizableComponents = [
+        AccountReportEllipsis,
+        AccountReportFilters,
+        AccountReportHeader,
+        AccountReportLine,
+        AccountReportLineCell,
+        AccountReportLineName,
+    ];
+    static defaultComponentsMap = [];
 
     setup() {
-        this.orm = useService("orm");
-        this.action = useService("action");
-        this.notification = useService("notification");
-        this.state = useState({
-            loading: true,
-            error: false,
-            lines: [],
-            options: {},
-            unfolded: [],
-            unfoldAll: false,
-        });
-        onWillStart(() => this.load());
-    }
-
-    get reportId() {
-        const action = this.props.action || {};
-        const params = action.params || {};
-        const context = action.context || {};
-        return params.report_id || context.report_id || false;
-    }
-
-    get columns() {
-        return this.state.options.columns || [];
-    }
-
-    get dateFrom() {
-        return (this.state.options.date || {}).date_from || "";
-    }
-
-    get dateTo() {
-        return (this.state.options.date || {}).date_to || "";
-    }
-
-    async load(extra) {
-        if (!this.reportId) {
-            this.state.loading = false;
-            this.state.error = true;
-            return;
-        }
-        this.state.loading = true;
-        this.state.error = false;
-        const previous = {
-            unfolded_lines: this.state.unfolded,
-            unfold_all: this.state.unfoldAll,
-        };
-        // Only send a date range once we have one: an empty `date_from` would be
-        // parsed server side. On the first load we let the server pick the
-        // default period from the report's `default_opening_date_filter`.
-        const current = this.state.options.date;
-        const date =
-            (extra && extra.date) ||
-            (current && current.date_from && current.date_to ? current : null);
-        if (date) {
-            previous.date = date;
-        }
-        try {
-            const data = await this.orm.call("account.report", "get_report_data", [this.reportId], {
-                previous_options: previous,
-            });
-            this.state.options = data.options || {};
-            this.state.lines = data.lines || [];
-        } catch (error) {
-            this.state.error = true;
-            if (this.notification) {
-                this.notification.add(error.message || String(error), { type: "danger" });
+        this.rootRef = useRef("root");
+        useSetupAction({
+            rootRef: this.rootRef,
+            getLocalState: () => {
+                return {
+                    keep_journal_groups_options: true,  // used when using the breadcrumb
+                };
             }
+        })
+        if (this.props?.state?.keep_journal_groups_options !== undefined) {
+            this.props.action.keep_journal_groups_options = true;
         }
-        this.state.loading = false;
+
+        // Can not use 'control-panel-bottom-right' slot without this, as viewSwitcherEntries doesn't exist here.
+        this.env.config.viewSwitcherEntries = [];
+
+        this.orm = useService("orm");
+        this.actionService = useService("action");
+        this.ui = useService("ui");
+        this.controller = useState(new AccountReportController(this.props.action));
+        this.initialQuery = this.props.action.context.default_filter_accounts || '';
+
+        for (const customizableComponent of AccountReport.customizableComponents)
+            AccountReport.defaultComponentsMap[customizableComponent.name] = customizableComponent;
+
+        onWillStart(async () => {
+            await this.controller.load(this.env);
+        });
+
+        useSubEnv({
+            controller: this.controller,
+            component: this.getComponent.bind(this),
+            template: this.getTemplate.bind(this),
+        });
     }
 
-    async onDateChange(ev) {
-        const date = Object.assign({}, this.state.options.date);
-        date[ev.target.name] = ev.target.value;
-        date.filter = "custom";
-        await this.load({ date });
+    // -----------------------------------------------------------------------------------------------------------------
+    // Custom overrides
+    // -----------------------------------------------------------------------------------------------------------------
+    static registerCustomComponent(customComponent) {
+        registry.category("account_reports_custom_components").add(customComponent.name, customComponent);
     }
 
-    async toggleLine(line) {
-        if (!line.unfoldable) {
-            return;
-        }
-        const unfolded = new Set(this.state.unfolded);
-        if (unfolded.has(line.id)) {
-            unfolded.delete(line.id);
-        } else {
-            unfolded.add(line.id);
-        }
-        this.state.unfolded = [...unfolded];
-        await this.load();
+    get cssCustomClass() {
+        return this.controller.options.custom_display_config.css_custom_class || "";
     }
 
-    async toggleUnfoldAll() {
-        this.state.unfoldAll = !this.state.unfoldAll;
-        await this.load();
+    getComponent(name) {
+        const customComponents = this.controller.options.custom_display_config.components;
+
+        if (customComponents && customComponents[name])
+            return registry.category("account_reports_custom_components").get(customComponents[name]);
+
+        return AccountReport.defaultComponentsMap[name];
     }
 
-    /** Row classes, mirroring Enterprise (`line_level_N`, `unfolded`, `total`). */
-    lineClasses(line) {
-        const classes = [`line_level_${line.level}`];
-        if (line.unfolded) {
-            classes.push("unfolded");
+    getTemplate(name) {
+        const customTemplates = this.controller.options.custom_display_config.templates;
+
+        if (customTemplates && customTemplates[name])
+            return customTemplates[name];
+
+        return `account_reports.${ name }Customizable`;
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Table
+    // -----------------------------------------------------------------------------------------------------------------
+    get tableClasses() {
+        let classes = "";
+
+        if (this.controller.options.columns.length > 1) {
+            classes += " striped";
         }
-        if (line.level === 0) {
-            classes.push("total");
+
+        if (this.controller.options['horizontal_split'])
+            classes += " w-50 mx-2";
+
+        return classes;
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Chatter
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @param {KeyboardEvent} ev
+     */
+    onKeydown(ev) {
+        if (ev.key === "Escape") {
+            this.controller.closeChatter();
         }
-        return classes.join(" ");
     }
 }
 
-if (!registry.category("actions").contains("account_report")) {
-    registry.category("actions").add("account_report", AccountReport);
-}
-
-export default AccountReport;
+registry.category("actions").add("account_report", AccountReport);

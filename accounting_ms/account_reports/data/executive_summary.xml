@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    msolutions - ported from Odoo Enterprise `account_reports/data/%s`.
-    Enterprise-only fields were stripped so the file loads on Community.
-    The evaluation engine lives in account_reports/models/account_report.py.
--->
 <odoo auto_sequence="1">
     <record id="executive_summary" model="account.report">
         <field name="name">Executive Summary</field>
@@ -29,6 +24,7 @@
                                 <field name="engine">domain</field>
                                 <field name="formula" eval="[('account_id.account_type', 'in', ('asset_cash', 'liability_credit_card')), ('debit', '&gt;', 0.0)]"/>
                                 <field name="subformula">sum</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -42,6 +38,7 @@
                                 <field name="formula" eval="[('account_id.account_type', 'in', ('asset_cash', 'liability_credit_card')), ('credit', '&gt;', 0.0)]"/>
                                 <field name="subformula">sum</field>
                                 <field name="green_on_positive" eval="False"/>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -52,6 +49,7 @@
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">CR.balance + CS.balance</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -64,6 +62,7 @@
                                 <field name="formula" eval="[('account_id.account_type', 'in', ('asset_cash', 'liability_credit_card'))]"/>
                                 <field name="date_scope">from_beginning</field>
                                 <field name="subformula">sum</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -82,6 +81,7 @@
                                 <field name="formula">REV.balance</field>
                                 <field name="date_scope">strict_range</field>
                                 <field name="subformula">cross_report(account_reports.profit_and_loss)</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -96,6 +96,7 @@
                                 <field name="date_scope">strict_range</field>
                                 <field name="subformula">cross_report(account_reports.profit_and_loss)</field>
                                 <field name="green_on_positive" eval="False"/>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -108,6 +109,7 @@
                                 <field name="formula">GRP.balance</field>
                                 <field name="date_scope">strict_range</field>
                                 <field name="subformula">cross_report(account_reports.profit_and_loss)</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -121,6 +123,7 @@
                                 <field name="date_scope">strict_range</field>
                                 <field name="subformula">cross_report(account_reports.profit_and_loss)</field>
                                 <field name="green_on_positive" eval="False"/>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -134,6 +137,7 @@
                                 <field name="formula">NEP.balance</field>
                                 <field name="date_scope">strict_range</field>
                                 <field name="subformula">cross_report(account_reports.profit_and_loss)</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -153,6 +157,7 @@
                                 <field name="formula" eval="[('account_id.account_type', '=', 'asset_receivable')]"/>
                                 <field name="date_scope">from_beginning</field>
                                 <field name="subformula">sum</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -167,6 +172,7 @@
                                 <field name="date_scope">from_beginning</field>
                                 <field name="subformula">sum</field>
                                 <field name="green_on_positive" eval="False"/>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -180,6 +186,7 @@
                                 <field name="formula">TA.balance - L.balance</field>
                                 <field name="date_scope">from_beginning</field>
                                 <field name="subformula">cross_report(account_reports.balance_sheet)</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -199,6 +206,7 @@
                                 <field name="formula">GPMARGIN0.grp / GPMARGIN0.opinc * 100</field>
                                 <field name="subformula">ignore_zero_division</field>
                                 <field name="figure_type">percentage</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                             <record id="account_financial_report_executivesummary_gpmargin0_grp" model="account.report.expression">
                                 <field name="label">grp</field>
@@ -226,6 +234,7 @@
                                 <field name="formula">NPMARGIN0.nep / NPMARGIN0.rev * 100</field>
                                 <field name="subformula">ignore_zero_division</field>
                                 <field name="figure_type">percentage</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                             <record id="account_financial_report_executivesummary_npmargin0_nep" model="account.report.expression">
                                 <field name="label">nep</field>
@@ -253,6 +262,7 @@
                                 <field name="formula">ROI.nep / ROI.ta * 100</field>
                                 <field name="subformula">ignore_zero_division</field>
                                 <field name="figure_type">percentage</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                             <record id="account_financial_report_executivesummary_return_investment0_nep" model="account.report.expression">
                                 <field name="label">nep</field>
@@ -287,6 +297,7 @@
                                 <field name="subformula">ignore_zero_division</field>
                                 <field name="green_on_positive" eval="False"/>
                                 <field name="figure_type">float</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                             <record id="account_financial_report_executivesummary_avdebt0_opinc" model="account.report.expression">
                                 <field name="label">opinc</field>
@@ -299,6 +310,7 @@
                                 <field name="label">NDays</field>
                                 <field name="engine">custom</field>
                                 <field name="formula">_report_custom_engine_executive_summary_ndays</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -313,6 +325,7 @@
                                 <field name="subformula">ignore_zero_division</field>
                                 <field name="green_on_positive" eval="False"/>
                                 <field name="figure_type">float</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                             <record id="account_financial_report_executivesummary_avgcre0_cos" model="account.report.expression">
                                 <field name="label">cos</field>
@@ -332,6 +345,7 @@
                                 <field name="label">NDays</field>
                                 <field name="engine">custom</field>
                                 <field name="formula">_report_custom_engine_executive_summary_ndays</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -342,6 +356,7 @@
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">DEB.balance + CRE.balance</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                         </field>
                     </record>
@@ -355,6 +370,7 @@
                                 <field name="formula">CATL.ca / CATL.cl</field>
                                 <field name="subformula">ignore_zero_division</field>
                                 <field name="figure_type">float</field>
+                                <field name="auditable" eval="False"/>
                             </record>
                             <record id="account_financial_report_executivesummary_ca_to_l0_ca" model="account.report.expression">
                                 <field name="label">ca</field>

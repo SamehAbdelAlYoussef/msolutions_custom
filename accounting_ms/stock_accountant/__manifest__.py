@@ -9,9 +9,12 @@
     'author': 'msolutions',
     'website': 'https://msolutions.example.com',
     'license': 'OPL-1',
-    'depends': ['account', 'stock_account'],
-    'data': ['views/res_config_settings_views.xml'],
+    'depends': ['account', 'stock_account', 'account_accountant', 'account_reports'],
+    'data': [
+        'report/stock_valuation_report.xml',
+        'views/res_config_settings_views.xml',
+    ],
     'installable': True,
     'application': False,
-    'auto_install': False,
+    'auto_install': True,
     'icon': '/stock_accountant/static/description/icon.png'}

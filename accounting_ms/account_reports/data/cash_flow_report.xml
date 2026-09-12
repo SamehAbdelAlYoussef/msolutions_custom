@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    msolutions - ported from Odoo Enterprise `account_reports/data/%s`.
-    Enterprise-only fields were stripped so the file loads on Community.
-    The evaluation engine lives in account_reports/models/account_report.py.
--->
 <odoo auto_sequence="1">
     <record id="cash_flow_report" model="account.report">
         <field name="name">Cash Flow Statement</field>
@@ -13,6 +8,7 @@
         <field name="filter_period_comparison" eval="False"/>
         <field name="filter_multi_company">selector</field>
         <field name="currency_translation">current</field>
+        <field name="custom_handler_model_id" ref="model_account_cash_flow_report_handler"/>
         <field name="column_ids">
             <record id="cash_flow_report_balance" model="account.report.column">
                 <field name="name">Balance</field>

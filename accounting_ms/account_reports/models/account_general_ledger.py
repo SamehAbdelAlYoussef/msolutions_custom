@@ -1,162 +1,435 @@
-# -*- coding: utf-8 -*-
-# msolutions - Community-compatible accounting distribution.
-"""
-General Ledger custom handler.
+import json
 
-Enterprise defines the General Ledger as a single `account.report.line` whose
-expressions all use the `custom` engine (`_report_custom_engine_general_ledger`)
-and lets a Python handler generate one line per account plus its journal items.
+from collections import defaultdict
+from itertools import groupby
 
-This is the Community implementation of that handler. It produces the same
-output shape as Enterprise:
-
-    account                 Debit       Credit      Balance
-        <journal item>      Debit       Credit      Balance
-    ...
-    Total                   Debit       Credit      Balance
-"""
-
-from odoo import models
-
-# The report line this handler drives (the only line of the report).
-GL_LINE_XMLID = "account_reports.general_ledger_custom_engine_line"
+from odoo import models, fields, _
+from odoo.tools import SQL
 
 
 class AccountGeneralLedgerReportHandler(models.AbstractModel):
-    _name = "account.general.ledger.report.handler"
-    _inherit = ["account.report.custom.handler"]
-    _description = "General Ledger Report Custom Handler"
+    _name = 'account.general.ledger.report.handler'
+    _inherit = ['account.report.custom.handler']
+    _description = 'General Ledger Custom Handler'
 
-    # ------------------------------------------------------------------
-    # Options
-    # ------------------------------------------------------------------
     def _custom_options_initializer(self, report, options, previous_options):
         super()._custom_options_initializer(report, options, previous_options=previous_options)
-        # The General Ledger is a detail report: it is meaningless with a
-        # comparison column, and it always shows its journal items on demand.
-        options.setdefault("filters", {})
-        options["filters"]["show_period_comparison"] = False
+        # Remove multi-currency columns if needed
+        if self.env.user.has_group('base.group_multi_currency'):
+            options['multi_currency'] = True
+        else:
+            options['columns'] = [
+                column for column in options['columns']
+                if column['expression_label'] != 'amount_currency'
+            ]
 
-    # ------------------------------------------------------------------
-    # Line generation
-    # ------------------------------------------------------------------
-    def _dynamic_lines_generator(self, report, options, all_column_groups_expression_totals=None, warnings=None):
-        domain = report._get_options_domain(options, "strict_range")
-        columns = options.get("columns") or []
-        unfolded = set(options.get("unfolded_lines") or [])
-        unfold_all = bool(options.get("unfold_all"))
+        # Automatically unfold the report when printing it, unless some specific lines have been unfolded
+        options['unfold_all'] = (options['export_mode'] == 'print' and not options.get('unfolded_lines')) or options['unfold_all']
 
-        report_line = self.env.ref(GL_LINE_XMLID, raise_if_not_found=False)
-        root_id = report._get_generic_line_id("account.report.line", report_line.id if report_line else 0)
+        options['custom_display_config'] = {
+            'templates': {
+                'AccountReportLineName': 'account_reports.GeneralLedgerLineName',
+            },
+        }
 
-        lines = []
-        totals = {"debit": 0.0, "credit": 0.0, "balance": 0.0}
+    def _caret_options_initializer(self):
+        default_caret = self.env['account.report']._caret_options_initializer_default()
 
-        groups = self.env["account.move.line"]._read_group(
-            domain,
-            groupby=["account_id"],
-            aggregates=["debit:sum", "credit:sum", "balance:sum"],
-        )
-        for account, debit, credit, balance in groups:
-            if not account:
-                continue
-            debit = debit or 0.0
-            credit = credit or 0.0
-            balance = balance or 0.0
-            totals["debit"] += debit
-            totals["credit"] += credit
-            totals["balance"] += balance
+        return {
+            **default_caret,
+            'id_with_accumulated_balance_caret': [
+                {'name': _("View Journal Entry"), 'action': 'caret_option_open_record_form_custom_id_groupby', 'action_param': 'move_id'},
+            ]
+        }
 
-            line_id = f"{root_id}|account.account,{account.id}"
-            expanded = unfold_all or line_id in unfolded
-            lines.append({
-                "id": line_id,
-                "name": f"{account.code} {account.name}" if account.code else account.name,
-                "code": account.code,
-                "level": 0,
-                "columns": self._columns(report, options, columns, {
-                    "debit": debit, "credit": credit, "balance": balance,
-                }),
-                "unfoldable": True,
-                "unfolded": expanded,
-                "foldable": False,
-                "action_id": False,
-                "account_id": account.id,
-            })
-            if not expanded:
-                continue
+    def caret_option_open_record_form_custom_id_groupby(self, options, params):
+        report = self.env['account.report'].browse(options['report_id'])
+        _model, aml_key = report._get_model_info_from_id(params['line_id'])
+        record_id = json.loads(aml_key)[1]
 
-            running = 0.0
-            amls = self.env["account.move.line"].search(
-                domain + [("account_id", "=", account.id)], order="date, id"
+        record = self.env['account.move.line'].browse(record_id)
+        target_record = record[params['action_param']] if 'action_param' in params else record
+
+        view_id = report._resolve_caret_option_view(target_record)
+
+        action = {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'views': [(view_id, 'form')],  # view_id will be False in case the default view is needed
+            'res_model': target_record._name,
+            'res_id': target_record.id,
+            'context': self.env.context,
+        }
+
+        if view_id is not None:
+            action['view_id'] = view_id
+
+        return action
+
+    def _get_custom_groupby_map(self):
+        def custom_label_builder(grouping_keys):
+            """
+            Batch label builder used to rename balance lines.
+            """
+            keys_names_in_sequence = {}
+
+            ids_to_browse = []
+            aml_keys = []
+            for grouping_key in grouping_keys:
+                if 'balance_line' in grouping_key:
+                    keys_names_in_sequence[grouping_key] = _("Initial Balance")
+                else:
+                    combined_key = json.loads(grouping_key)
+                    ids_to_browse.append(combined_key[1])
+                    aml_keys.append(grouping_key)
+
+            records_unsorted = self.env['account.move.line'].browse(ids_to_browse)
+            for record, aml_key in zip(records_unsorted, aml_keys):
+                keys_names_in_sequence[aml_key] = record.display_name
+
+            return keys_names_in_sequence
+
+        def domain_builder(grouping_key):
+            if 'balance_line' in grouping_key:
+                return []
+            grouping_key_array = json.loads(grouping_key)
+            return [('id', '=', grouping_key_array[1]), ('date', '=', grouping_key_array[0])]
+
+        return {
+            'id_with_accumulated_balance': {
+                'model': None,
+                'domain_builder': domain_builder,
+                'caret_builder': lambda grouping_key: None if 'balance_line' in grouping_key else 'id_with_accumulated_balance_caret',
+                'label_builder': custom_label_builder,
+            },
+            'account_or_unaff_id': {
+                'model': 'account.account',
+                'domain_builder': lambda grouping_key: [('account_id', '=', grouping_key)]
+            }
+        }
+
+    def _report_custom_engine_general_ledger(self, expressions, options, date_scope, current_groupby, next_groupby, offset=0, limit=None, warnings=None):
+        def get_grouping_key(row, groupby):
+            if groupby == 'id_with_accumulated_balance':
+                if not row['id']:
+                    return f"balance_line_{row['account_id']}"
+                else:
+                    return json.dumps([fields.Date.to_string(row['date']), row['id']])
+            elif groupby == 'account_or_unaff_id':
+                return row['account_id']
+            return row[groupby] if groupby else None
+
+        report = self.env['account.report'].browse(options['report_id'])
+        options_date_from = fields.Date.from_string(options['date']['date_from'])
+        current_fiscalyear_date_from = self.env.company.compute_fiscalyear_dates(options_date_from)['date_from']
+
+        # We want to exclude move lines from expense and income accounts before the fiscal year for every groupby under account_or_unaff_id
+        additional_domain = [
+            '|',
+            ('account_id.include_initial_balance', '=', True),
+            ('date', '>=', current_fiscalyear_date_from),
+        ] if any(field == 'account_id' for field, _op, _val in options.get('forced_domain', [])) else []
+
+        report_query = report._get_report_query(options, 'from_beginning', additional_domain)
+
+        if options.get('export_mode') == 'print' and options.get('filter_search_bar') and current_groupby not in ('id_with_accumulated_balance', 'id'):
+            search_bar_sql = SQL(
+                """
+                AND result_account.id = ANY(%(search_bar_account_query)s)
+                """,
+                search_bar_account_query=self.env['account.account']._search([
+                    ('display_name', 'ilike', options.get('filter_search_bar')),
+                    *self.env['account.account']._check_company_domain(self.env['account.report'].get_report_company_ids(options)),
+                ]).select(SQL.identifier('id'))
             )
-            for aml in amls:
-                running += aml.balance
-                lines.append({
-                    "id": f"{line_id}|account.move.line,{aml.id}",
-                    "name": self._aml_name(aml),
-                    "level": 1,
-                    "columns": self._columns(report, options, columns, {
-                        "date": aml.date,
-                        "partner_name": aml.partner_id.display_name or "",
-                        "amount_currency": self._amount_currency(aml),
-                        "debit": aml.debit,
-                        "credit": aml.credit,
-                        "balance": running,
-                    }),
-                    "unfoldable": False,
-                    "unfolded": False,
-                    "foldable": False,
-                    "action_id": False,
-                    "move_line_id": aml.id,
+        else:
+            search_bar_sql = SQL()
+
+        additional_select = SQL("")
+        groupby = []
+        if current_groupby == 'id_with_accumulated_balance':
+            account_code_select = self.env['account.account']._field_to_sql('result_account', 'code', report_query)
+            account_name_select = self.env['account.account']._field_to_sql('result_account', 'name')
+            additional_select = SQL("""
+                CASE
+                    WHEN account_move_line.date >= %(date)s THEN account_move_line.id
+                    ELSE NULL
+                END AS id,
+                CASE
+                    WHEN account_move_line.date >= %(date)s THEN account_move_line.date
+                    ELSE NULL
+                END AS date,
+                MIN(move.name) AS move_name,
+
+                SUM(account_move_line.amount_currency) AS amount_currency,
+                MIN(partner.name) AS partner_name,
+                MIN(account_move_line.currency_id) AS currency_id,
+                MIN(result_account.id) AS account_id,
+
+                MIN(account_move_line.name) AS line_name,
+                MIN(%(account_name_select)s) AS account_name,
+                MIN(%(account_code_select)s) AS account_code,
+                """,
+                date=fields.Date.from_string(options['date']['date_from']),
+                account_name_select=account_name_select,
+                account_code_select=account_code_select,
+            )
+            groupby = [SQL("1"), SQL("2"), SQL("account_id")]
+        elif current_groupby == 'account_or_unaff_id':
+            additional_select = SQL("""
+                result_account.id AS account_id,
+                result_account.account_type AS account_type,
+                SUM(account_move_line.amount_currency) AS amount_currency,
+                result_account.currency_id AS currency_id,
+            """)
+            groupby = [SQL("result_account.id"), SQL("result_account.currency_id")]
+        elif current_groupby:
+            additional_select = SQL("%s,", self.env['account.move.line']._field_to_sql('account_move_line', current_groupby, report_query))
+            groupby = [SQL("%s", self.env['account.move.line']._field_to_sql('account_move_line', current_groupby, report_query))]
+
+        query = SQL(
+            """
+            SELECT
+                %(additional_select)s
+                COALESCE(SUM(%(select_debit)s), 0.0) AS debit,
+                COALESCE(SUM(%(select_credit)s), 0.0) AS credit,
+                COALESCE(SUM(%(select_balance)s), 0.0) AS balance
+            FROM %(from_clause)s
+
+            LEFT JOIN res_partner partner ON partner.id = account_move_line.partner_id
+            JOIN account_account account ON account.id = account_move_line.account_id
+            JOIN account_account result_account ON result_account.id = (
+                CASE
+                    WHEN account.account_type ILIKE ANY(ARRAY['income%%', 'expense%%'])
+                        AND account_move_line.date < %(fiscalyear_start)s
+                    THEN (
+                            %(unaffected_earnings_accounts_per_company)s::jsonb
+                            ->>(account_move_line.company_id::text)
+                    )::int
+                    ELSE account_move_line.account_id
+                END
+            )
+
+            JOIN account_move move ON move.id = account_move_line.move_id
+            %(currency_table_join)s
+
+            WHERE %(where_clause)s
+            %(search_bar_sql)s
+
+            %(additional_groupby)s
+            %(orderby_clause)s
+
+            %(offset_clause)s
+            LIMIT %(limit)s
+            """,
+            additional_select=additional_select,
+            fiscalyear_start=current_fiscalyear_date_from,
+            unaffected_earnings_accounts_per_company=json.dumps(self.env['account.report']._get_unaffected_earnings_accounts_per_company(options)),
+            select_balance=report._currency_table_apply_rate(SQL("account_move_line.balance")),
+            select_debit=report._currency_table_apply_rate(SQL("account_move_line.debit")),
+            select_credit=report._currency_table_apply_rate(SQL("account_move_line.credit")),
+            from_clause=report_query.from_clause,
+            currency_table_join=report._currency_table_aml_join(options),
+            where_clause=report_query.where_clause,
+            search_bar_sql=search_bar_sql,
+            additional_groupby=SQL("GROUP BY %s", SQL(",").join(groupby)) if groupby else SQL(),
+            orderby_clause=SQL("ORDER BY 2 NULLS FIRST, move_name, 1 NULLS FIRST") if current_groupby == 'id_with_accumulated_balance' else SQL(),
+            offset_clause=SQL("OFFSET %s", offset) if offset else SQL(),
+            limit=limit
+        )
+
+        rows_by_key = defaultdict(lambda: {
+            'date': None,
+            'partner_name': None,
+            'amount_currency': None,
+            'currency_id': self.env.company.currency_id.id,
+            'debit': 0,
+            'credit': 0,
+            'balance': 0,
+            'has_sublines': True,
+        })
+
+        for row in self.env.execute_query_dict(query):
+            aml_key = get_grouping_key(row, current_groupby)
+
+            if aml_key not in rows_by_key:
+                rows_by_key[aml_key].update({
+                    'debit': row['debit'],
+                    'credit': row['credit'],
+                    'balance': row['balance'],
                 })
 
-        if lines:
-            lines.append({
-                "id": f"{root_id}|total",
-                "name": "Total",
-                "level": 0,
-                "columns": self._columns(report, options, columns, totals),
-                "unfoldable": False,
-                "unfolded": False,
-                "foldable": False,
-                "action_id": False,
-            })
-        return lines
+                if current_groupby == 'id_with_accumulated_balance':
+                    rows_by_key[aml_key]['has_sublines'] = False
+                    rows_by_key[aml_key]['account_id'] = row['account_id']  # Needed for batching
 
-    # ------------------------------------------------------------------
-    # Helpers
-    # ------------------------------------------------------------------
-    @staticmethod
-    def _aml_name(aml):
-        return aml.name or aml.move_id.name or aml.ref or ""
+                    if 'balance_line' not in aml_key:
+                        rows_by_key[aml_key]['date'] = row['date']
+                        rows_by_key[aml_key]['partner_name'] = row['partner_name']
+                        rows_by_key[aml_key]['line_name'] = row['line_name']
+                        rows_by_key[aml_key]['account_code'] = row['account_code']
+                        rows_by_key[aml_key]['account_name'] = row['account_name']
+                        rows_by_key[aml_key]['move_name'] = row['move_name']
+                    if row['currency_id'] != self.env.company.currency_id.id:
+                        rows_by_key[aml_key]['amount_currency'] = row['amount_currency']
+                        rows_by_key[aml_key]['currency_id'] = row['currency_id']
+                elif current_groupby == 'account_or_unaff_id':
+                    # Unaffected earnings accounts should not be unfoldable
+                    rows_by_key[aml_key]['has_sublines'] = row['account_type'] != 'equity_unaffected'
+                    if row.get('currency_id'):
+                        rows_by_key[aml_key]['amount_currency'] = row['amount_currency']
+                        rows_by_key[aml_key]['currency_id'] = row['currency_id']
+            else:
+                rows_by_key[aml_key]['debit'] += row['debit']
+                rows_by_key[aml_key]['credit'] += row['credit']
+                rows_by_key[aml_key]['balance'] += row['balance']
+                if row.get('currency_id'):
+                    rows_by_key[aml_key]['currency_id'] += row['currency_id']
 
-    @staticmethod
-    def _amount_currency(aml):
-        """Only meaningful when the journal item is in a foreign currency."""
-        company_currency = aml.company_id.currency_id
-        if aml.currency_id and aml.currency_id != company_currency:
-            return aml.amount_currency
-        return ""
+        if not current_groupby:
+            return rows_by_key[None]  # None is the key for total line as there is no groupby
 
-    def _columns(self, report, options, columns, values):
-        """Build the cell list for one line, honouring each column's expression."""
-        cells = []
-        for column in columns:
-            value = values.get(column["expression_label"], "")
-            cells.append(report._build_column_dict(value, column, options))
-        return cells
+        return [(key, entry) for key, entry in rows_by_key.items()]
 
-    # ------------------------------------------------------------------
-    # Custom engine (the static expression of the report line)
-    # ------------------------------------------------------------------
-    def _report_custom_engine_general_ledger(self, expressions, options, date_scope,
-                                             current_groupby, next_groupby, offset=0,
-                                             limit=None, warnings=None):
-        """Required by the report line's `custom` expressions.
-
-        The lines themselves are produced by `_dynamic_lines_generator`; this
-        entry point only has to answer for a single (line, label) pair, which is
-        used when the client asks for one expression in isolation.
+    def _report_expand_unfoldable_line_with_groupby(self, line_dict_id, groupby, options, progress, offset, unfold_all_batch_data=None):
         """
-        return {expression.label: 0.0 for expression in expressions}
+        Shadows the function from account_report.
+
+        This allows us to use progress efficiently to compute the accumulated balance with partial expand capabilities
+        """
+        report = self.env['account.report'].browse(options['report_id'])
+        result = report._report_expand_unfoldable_line_with_groupby(line_dict_id, groupby, options, progress, offset, unfold_all_batch_data)
+        if groupby != 'id_with_accumulated_balance':
+            return result
+
+        colname_to_idx = defaultdict(dict)
+        for idx, col in enumerate(options.get('columns', [])):
+            colname_to_idx[col['column_group_key']][col['expression_label']] = idx
+
+        if options['export_mode'] is None:
+            limit_to_load = report.load_more_limit or None
+        else:
+            limit_to_load = None
+            offset = 0
+
+        processed_lines = result['lines']
+
+        has_balance_line = False
+        col_group_keys = options['column_groups']
+        accumulated_balance_by_colgroup = progress.get('accumulated_balance_by_colgroup', {
+            col_group_key: 0.0
+            for col_group_key in col_group_keys
+        })
+        for col_group_key in col_group_keys:
+            for line in processed_lines:
+                line_balance = line['columns'][colname_to_idx[col_group_key]['balance']]['no_format']
+                accumulated_balance_by_colgroup[col_group_key] += line_balance
+                if line['name'] == 'balance_line':
+                    has_balance_line = True
+                    line['name'] = _("Initial Balance")
+                else:
+                    line['columns'][colname_to_idx[col_group_key]['balance']] = report._build_column_dict(accumulated_balance_by_colgroup[col_group_key], line['columns'][colname_to_idx[col_group_key]['balance']], options)
+
+        return {
+            **result,
+            'lines': processed_lines,
+            'offset_increment': limit_to_load - 1 if has_balance_line and limit_to_load else len(processed_lines),
+            'progress': {
+                **progress,
+                'accumulated_balance_by_colgroup': accumulated_balance_by_colgroup,
+            },
+        }
+
+    def _custom_line_postprocessor(self, report, options, lines):
+        """
+        This post processor move the total line below the report as it should always be under in the general ledger
+        """
+        general_ledger_custom_engine_line = self.env.ref('account_reports.general_ledger_custom_engine_line')
+        processed_lines = []
+        main_line_dict = None
+        account_move_lines = []
+        for line in lines:
+            markup, model, res_id = report._parse_line_id(line['id'])[-1]
+            if model == 'account.report.line' and res_id == general_ledger_custom_engine_line.id:
+                main_line_dict = line
+            else:
+                processed_lines.append(line)
+
+            if (
+                model is None and markup == {'groupby': 'id_with_accumulated_balance'}
+                and not res_id.startswith('balance_line_') and options.get('export_mode') != 'file'
+            ):
+                line['chatter'] = {'id': json.loads(res_id)[1]}
+                account_move_lines.append(line)
+
+        if account_move_lines:
+            line_ids = (l['chatter']['id'] for l in account_move_lines)
+            account_moves = {
+                line['id']: line['move_id'][0]
+                for line in self.env['account.move.line'].browse(line_ids).read(['id', 'move_id'])
+            }
+            for line in account_move_lines:
+                line['chatter']['id'] = account_moves[line['chatter']['id']]
+                line['chatter']['model'] = 'account.move'
+
+        if self.env.company.totals_below_sections and not options.get('ignore_totals_below_sections'):
+            return processed_lines
+
+        if main_line_dict:
+            processed_lines.append({
+                'id': report._get_generic_line_id(None, None, 'total'),
+                'name': _("Total General Ledger"),
+                'columns': main_line_dict['columns'],
+                'level': 1
+            })
+
+        return processed_lines
+
+    def _custom_unfold_all_batch_data_generator(self, report, options, lines_to_expand_by_function):
+        """ Generate the custom engine's results for each full-sub-groupby-key that
+            would be created when doing an unfold-all on the report.
+        """
+
+        results = {}  # In the form {full_sub_groupby_key: all_column_group_expression_totals for this groupby computation}
+
+        for line_to_expand in lines_to_expand_by_function.get('_report_expand_unfoldable_line_with_groupby', []):
+            report_line_id = report._get_res_id_from_line_id(line_to_expand['id'], 'account.report.line')
+            report_line = self.env['account.report.line'].browse(report_line_id)
+
+            expressions = report_line.expression_ids.filtered(
+                lambda x: x.engine == 'custom' and x.formula == '_report_custom_engine_general_ledger'
+            )
+            if not expressions:
+                continue
+
+            for column_group_key, column_group_options in report._split_options_per_column_group(options).items():
+                for date_scope, expressions_by_date_scope in groupby(expressions, lambda e: e.date_scope):
+                    expressions_by_date_scope = list(expressions_by_date_scope)
+                    # Get the custom engine results for the given groupby level.
+                    engine_account_lines = self._report_custom_engine_general_ledger(expressions_by_date_scope, column_group_options, date_scope, 'account_or_unaff_id', 'id_with_accumulated_balance')
+                    account_expression_totals = results.setdefault(f"[{report_line_id}]=>account_or_unaff_id", {})\
+                                                        .setdefault(column_group_key, {expression: {'value': [], 'sublines_info': set()} for expression in expressions_by_date_scope})
+                    for account_id, engine_account_result_dict in engine_account_lines:
+                        for expression in expressions_by_date_scope:
+                            account_expression_totals[expression]['value'].append(
+                                (account_id, engine_account_result_dict[expression.subformula])
+                            )
+                            if engine_account_result_dict['has_sublines']:
+                                account_expression_totals[expression]['sublines_info'].add(account_id)
+
+                    engine_aml_lines = self._report_custom_engine_general_ledger(expressions_by_date_scope, column_group_options, date_scope, 'id_with_accumulated_balance', None)
+                    aml_data_by_account = {}
+                    for grouping_key, engine_result_dict in engine_aml_lines:
+                        engine_result_dict['grouping_key'] = grouping_key
+                        aml_data_by_account.setdefault(engine_result_dict['account_id'], []).append(engine_result_dict)
+
+                    for account_id, engine_result_list in aml_data_by_account.items():
+                        account_aml_expression_totals = results.setdefault(f"[{report_line_id}]account_or_unaff_id:{account_id}=>id_with_accumulated_balance", {})\
+                                                            .setdefault(column_group_key, {expression: {'value': [], 'sublines_info': set()} for expression in expressions_by_date_scope})
+                        for engine_result_dict in engine_result_list:
+                            for expression in expressions_by_date_scope:
+                                account_aml_expression_totals[expression]['value'].append(
+                                    (engine_result_dict['grouping_key'], engine_result_dict[expression.subformula])
+                                )
+
+        return results

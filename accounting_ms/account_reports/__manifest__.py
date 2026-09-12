@@ -1,47 +1,106 @@
 # -*- coding: utf-8 -*-
-# msolutions - Community-compatible accounting distribution.
+# msolutions - branded Community accounting distribution.
 # Technical name `account_reports` is intentionally preserved: it is a Python
-# import path (`odoo.addons.account_reports...`) and the xml-id namespace that
-# the ported modules reference. Only the metadata is re-branded.
+# import path and the xml-id namespace that ported modules reference.
 {   'name': 'msolutions Reports Engine',
     'version': '19.0.1.0.0',
     'category': 'msolutions Accounting',
-    'summary': 'Financial report runtime, return models and xml-id compatibility surface for the msolutions '
-               'accounting suite on Odoo Community.',
-    'description': '\n'
-                   'msolutions Reports Engine\n'
-                   '=========================\n'
-                   'Provides the Community replacement for the Enterprise ``account_reports``\n'
-                   'runtime:\n'
-                   '\n'
-                   '* extends the Community ``account.report`` data models with the rendering engine\n'
-                   '  (options, line ids, column dictionaries, prefix grouping);\n'
-                   '* declares ``account.report.custom.handler`` and the ``account.return`` family;\n'
-                   '* declares ``account.tax.unit``;\n'
-                   '* re-declares the xml-ids consumed by every ported module so their views, data\n'
-                   '  and menus load without ``External ID not found``.\n',
+    'summary': 'View and create accounting reports',
+    'description': """
+Accounting Reports
+==================
+Full port of the Enterprise account_reports module for Odoo Community.
+    """,
     'author': 'msolutions',
     'website': 'https://msolutions.example.com',
     'license': 'OPL-1',
-    'depends': ['base', 'web', 'account'],
-    'data': [   'security/ir.model.access.csv',
-                'views/account_report_views.xml',
-                'data/account_report_data.xml',
-                'data/balance_sheet.xml',
-                'data/profit_and_loss.xml',
-                'data/cash_flow_report.xml',
-                'data/executive_summary.xml',
-                'data/aged_partner_balance.xml',
-                'data/partner_ledger.xml',
-                'data/deferred_reports.xml',
-                'data/journal_report.xml',
-                'data/multicurrency_revaluation_report.xml',
-                'data/general_ledger.xml',
-                'data/account_report_actions.xml',
-                'data/menuitems.xml',
-                'data/account_return_data.xml'],
-    'assets': {'web.assets_backend': ['account_reports/static/src/**/*']},
+    'depends': ['account_accountant'],
+    'data': [
+        'security/account_reports_security.xml',
+        'security/ir.model.access.csv',
+        'data/pdf_export_templates.xml',
+        'data/customer_reports_pdf_export_templates.xml',
+        'data/balance_sheet.xml',
+        'data/cash_flow_report.xml',
+        'data/executive_summary.xml',
+        'data/profit_and_loss.xml',
+        'data/bank_reconciliation_report.xml',
+        'data/aged_partner_balance.xml',
+        'data/general_ledger.xml',
+        'data/trial_balance.xml',
+        'data/sales_report.xml',
+        'data/partner_ledger.xml',
+        'data/customer_statement.xml',
+        'data/followup_report.xml',
+        'data/multicurrency_revaluation_report.xml',
+        'data/deferred_reports.xml',
+        'data/journal_report.xml',
+        'data/generic_tax_report.xml',
+        'views/account_report_view.xml',
+        'data/account_report_actions.xml',
+        'data/report_send_cron.xml',
+        'data/annual_statements.xml',
+        'data/mail_templates.xml',
+        'data/ir_cron.xml',
+        'wizard/return_creation_wizard.xml',
+        'views/account_move_views.xml',
+        'views/res_company_views.xml',
+        'views/account_return_views.xml',
+        'views/account_return_check_views.xml',
+        'views/account_journal_dashboard_view.xml',
+        'views/res_config_settings_views.xml',
+        'views/res_partner_views.xml',
+        'views/report_template.xml',
+        'wizard/account_report_send.xml',
+        'wizard/multicurrency_revaluation.xml',
+        'wizard/report_export_wizard.xml',
+        'wizard/account_report_file_download_error_wizard.xml',
+        'wizard/fiscal_year.xml',
+        'wizard/return_submission_wizard.xml',
+        'wizard/return_generic_payment_wizard.xml',
+        'views/account_account_views.xml',
+        'views/account_tax_views.xml',
+        'views/account_return_type_views.xml',
+        'views/account_return_check_template_views.xml',
+        'views/account_audit_views.xml',
+        'data/account_return_data.xml',
+        'data/menuitems.xml',
+        'data/account_return_check_template.xml',
+    ],
+    'post_init_hook': '_account_reports_post_init',
     'installable': True,
     'application': False,
     'auto_install': False,
+    'assets': {
+        'account_reports.assets_pdf_export': [
+            ('include', 'web._assets_helpers'),
+            'web/static/src/scss/pre_variables.scss',
+            'web/static/lib/bootstrap/scss/_variables.scss',
+            'web/static/lib/bootstrap/scss/_variables-dark.scss',
+            'web/static/lib/bootstrap/scss/_maps.scss',
+            ('include', 'web._assets_bootstrap_backend'),
+            'web/static/fonts/fonts.scss',
+            'account_reports/static/src/scss/**/*',
+        ],
+        'web.report_assets_common': [
+            'account_reports/static/src/scss/account_pdf_export_template.scss',
+        ],
+        'web.assets_backend': [
+            'account_reports/static/src/components/**/*',
+            'account_reports/static/src/js/**/*',
+            'account_reports/static/src/views/**/*',
+            'account_reports/static/src/widgets/**/*',
+            'account_reports/static/src/scss/account_return.scss',
+        ],
+        'web.assets_web_dark': [
+            'account_reports/static/src/scss/*.dark.scss',
+        ],
+        'web.assets_unit_tests': [
+            'account_reports/static/tests/*.js',
+            'account_reports/static/tests/account_report/**/*.js',
+        ],
+        'web.assets_tests': [
+            'account_reports/static/tests/tours/**/*',
+        ],
+    },
     'icon': '/account_reports/static/description/icon.png'}
