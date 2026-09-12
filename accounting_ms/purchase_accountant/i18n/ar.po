@@ -19,112 +19,112 @@ msgstr ""
 #: model:ir.actions.act_window,name:purchase_accountant.purchase_order_line_accrual_bill_to_receive_action
 #: model:ir.ui.menu,name:purchase_accountant.menu_purchase_order_line_accrual_bill_to_receives_action
 msgid "Bill To Receive"
-msgstr ""
+msgstr "فواتير للاستلام"
 
 #. module: purchase_accountant
 #: model:ir.model.fields,field_description:purchase_accountant.field_purchase_order_line__bill_to_receive
 msgid "Bill to Receive"
-msgstr ""
+msgstr "فاتورة للاستلام"
 
 #. module: purchase_accountant
 #: model_terms:ir.ui.view,arch_db:purchase_accountant.purchase_order_line_view_list
 msgid "Billed"
-msgstr ""
+msgstr "مُفوتَر"
 
 #. module: purchase_accountant
 #: model:ir.actions.act_window,name:purchase_accountant.purchase_order_line_accrual_prepaid_expenses_action
 #: model:ir.ui.menu,name:purchase_accountant.menu_purchase_order_line_accrual_prepaid_expenses_action
 msgid "Billed Not Received"
-msgstr ""
+msgstr "مُفوتَر ولم يُستلم"
 
 #. module: purchase_accountant
 #: model_terms:ir.ui.view,arch_db:purchase_accountant.purchase_order_line_view_search
 msgid "Company"
-msgstr ""
+msgstr "الشركة"
 
 #. module: purchase_accountant
 #: model_terms:ir.ui.view,arch_db:purchase_accountant.purchase_order_line_view_list
 msgid "Create Accrual Entries"
-msgstr ""
+msgstr "إنشاء قيود الاستحقاق"
 
 #. module: purchase_accountant
 #: model:ir.model.fields,field_description:purchase_accountant.field_purchase_order_line__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "اسم العرض"
 
 #. module: purchase_accountant
 #: model_terms:ir.ui.view,arch_db:purchase_accountant.purchase_order_line_view_search
 msgid "For the Last 365 Days"
-msgstr ""
+msgstr "للأيام الـ 365 الماضية"
 
 #. module: purchase_accountant
 #: model_terms:ir.ui.view,arch_db:purchase_accountant.purchase_order_line_view_search
 msgid "Goods"
-msgstr ""
+msgstr "بضائع"
 
 #. module: purchase_accountant
 #: model:ir.model.fields,field_description:purchase_accountant.field_purchase_order_line__id
 msgid "ID"
-msgstr ""
+msgstr "المُعرف"
 
 #. module: purchase_accountant
 #. odoo-python
 #: code:addons/purchase_accountant/models/purchase_order_line.py:0
 msgid "Only a check to True is supported"
-msgstr ""
+msgstr "يُدعم التحقق بـ True فقط"
 
 #. module: purchase_accountant
 #: model_terms:ir.ui.view,arch_db:purchase_accountant.purchase_order_line_view_search
 msgid "Only goods lines"
-msgstr ""
+msgstr "بنود البضائع فقط"
 
 #. module: purchase_accountant
 #: model_terms:ir.ui.view,arch_db:purchase_accountant.purchase_order_line_view_search
 msgid "Only service lines"
-msgstr ""
+msgstr "بنود الخدمات فقط"
 
 #. module: purchase_accountant
 #: model_terms:ir.ui.view,arch_db:purchase_accountant.purchase_order_line_view_search
 msgid "Order Reference"
-msgstr ""
+msgstr "مرجع الطلب"
 
 #. module: purchase_accountant
 #: model:ir.model.fields,field_description:purchase_accountant.field_purchase_order_line__prepaid_expense
 msgid "Prepaid Expense"
-msgstr ""
+msgstr "مصروف مدفوع مسبقاً"
 
 #. module: purchase_accountant
 #: model:ir.model.fields,field_description:purchase_accountant.field_purchase_order_line__product_categ_id
 #: model_terms:ir.ui.view,arch_db:purchase_accountant.purchase_order_line_view_search
 msgid "Product Category"
-msgstr ""
+msgstr "فئة المنتج"
 
 #. module: purchase_accountant
 #: model:ir.model,name:purchase_accountant.model_purchase_order_line
 msgid "Purchase Order Line"
-msgstr ""
+msgstr "بند أمر الشراء"
 
 #. module: purchase_accountant
 #: model_terms:ir.ui.view,arch_db:purchase_accountant.purchase_order_line_view_search
 msgid "Purchase Order Lines processed during last 365 days"
-msgstr ""
+msgstr "بنود أوامر الشراء المعالجة خلال آخر 365 يوم"
 
 #. module: purchase_accountant
 #: model:ir.ui.menu,name:purchase_accountant.purchase_accountant_accrual_menu
 msgid "Purchases"
-msgstr ""
+msgstr "المشتريات"
 
 #. module: purchase_accountant
 #: model_terms:ir.ui.view,arch_db:purchase_accountant.purchase_order_line_view_list
 msgid "Received"
-msgstr ""
+msgstr "مُستلَم"
 
 #. module: purchase_accountant
 #: model_terms:ir.ui.view,arch_db:purchase_accountant.purchase_order_line_view_search
 msgid "Service"
-msgstr ""
+msgstr "خدمة"
 
 #. module: purchase_accountant
 #: model_terms:ir.ui.view,arch_db:purchase_accountant.purchase_order_line_view_search
 msgid "Vendor"
-msgstr ""
+msgstr "المورد"

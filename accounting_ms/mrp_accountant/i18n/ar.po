@@ -44,9 +44,9 @@ msgstr "التصنيع"
 #. module: mrp_accountant
 #: model:ir.model.fields,field_description:mrp_accountant.field_res_config_settings__account_production_wip_account_id
 msgid "WIP Account"
-msgstr ""
+msgstr "حساب الإنتاج قيد التنفيذ"
 
 #. module: mrp_accountant
 #: model:ir.model.fields,field_description:mrp_accountant.field_res_config_settings__account_production_wip_overhead_account_id
 msgid "WIP Overhead Account"
-msgstr ""
+msgstr "حساب تكاليف الإنتاج الإضافية"
