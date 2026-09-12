@@ -193,8 +193,8 @@ class AccountDeferredReportHandler(models.AbstractModel):
     ###########################
 
     def _custom_options_initializer(self, report, options, previous_options):
-        super()._custom_options_initializer(report, options, previous_options=previous_options)
-
+        # super() base class just does pass — skip to avoid Community MRO limitation
+        # with abstract model _inherit chain and Python __class__ cell binding.
         options_per_col_group = report._split_options_per_column_group(options)
         for column_dict in options['columns']:
             column_options = options_per_col_group[column_dict['column_group_key']]

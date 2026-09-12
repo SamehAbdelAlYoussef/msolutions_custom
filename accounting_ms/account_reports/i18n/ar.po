@@ -7632,3 +7632,8 @@ msgstr "-> إعادة التعيين لأسعار أودو"
 
 #~ msgid "⇒ Journal Items"
 #~ msgstr "⇒ عناصر اليومية "
+
+#. module: account_reports
+#: model:account.report,name:account_reports.account_financial_report_0
+msgid "Fiscal Report"
+msgstr "التقرير المالي الإجمالي"
