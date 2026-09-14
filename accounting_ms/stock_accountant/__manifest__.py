@@ -13,6 +13,7 @@
     'data': [
         'report/stock_valuation_report.xml',
         'views/res_config_settings_views.xml',
+        'views/product_category_views.xml',
     ],
     'installable': True,
     'application': False,

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Enterprise-style tabbed layout for product.category form.
+        Placed in stock_accountant (depends on account + stock_account + account_accountant)
+        so ALL required fields are guaranteed to be in the model registry at validation time.
+
+        Tabs produced:
+          Tab 1 - المحاسبة:       income, expense, stock accounts, avatax
+          Tab 2 - اللوجستيات:     removal strategy, routes
+          Tab 3 - تقييم المخزون:  costing method, valuation type
+    -->
+
+    <!-- 1. Replace account_property flat group with a 3-tab notebook.
+            Priority 30 runs AFTER:
+              account.view_category_property_form         (priority default ~16) - income/expense
+              stock_account.view_category_property_form   (priority default ~16) - stock accounts
+            so account_property already contains all 5 account fields when we replace it.
+            We reference only KNOWN fields at this inheritance level. -->
+    <record id="product_category_form_tabs_main" model="ir.ui.view">
+        <field name="name">product.category.form.tabs.main</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="account.view_category_property_form"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='account_property']" position="replace">
+                <notebook>
+                    <page string="المحاسبة" name="accounting" groups="account.group_account_readonly">
+                        <group string="حصائل الحساب">
+                            <field name="property_account_income_categ_id" string="حساب الدخل"/>
+                            <field name="property_account_expense_categ_id" string="حساب النفقات"/>
+                            <field name="property_stock_valuation_account_id"
+                                   string="حساب المخزون" options="{'no_create': True}"/>
+                            <field name="account_stock_variation_id"
+                                   string="فرق المخزون" options="{'no_create': True}"/>
+                            <field name="property_price_difference_account_id"
+                                   string="حساب فرق السعر" options="{'no_create': True}"
+                                   invisible="not (property_cost_method == 'standard' and property_valuation == 'real_time')"/>
+                            <field name="avatax_category_id" string="فئة Avatax"/>
+                        </group>
+                    </page>
+
+                    <page string="اللوجستيات" name="logistics_tab">
+                        <group>
+                            <group string="إعدادات اللوجستيات">
+                                <field name="route_ids" widget="many2many_tags"
+                                       groups="stock.group_adv_location" string="المسارات"/>
+                                <field name="removal_strategy_id"
+                                       options="{'no_create': True}"
+                                       string="استراتيجية الإزالة"/>
+                            </group>
+                        </group>
+                    </page>
+
+                    <page string="تقييم المخزون" name="inventory_valuation_tab">
+                        <group>
+                            <group string="إعدادات التقييم">
+                                <field name="property_cost_method" required="True"
+                                       string="طريقة حساب التكاليف"/>
+                                <field name="property_valuation"
+                                       groups="account.group_account_readonly,stock.group_stock_manager"
+                                       string="تقييم المخزون"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- 2. Hide the flat logistics group (now in tab 2 above). -->
+    <record id="product_category_hide_logistics" model="ir.ui.view">
+        <field name="name">product.category.hide.logistics</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="stock.product_category_form_view_inherit"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='logistics']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- 3. Hide the flat Inventory Valuation group (now in tab 3). -->
+    <record id="product_category_hide_valuation" model="ir.ui.view">
+        <field name="name">product.category.hide.valuation</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="stock_account.view_category_property_form_stock"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='property_cost_method']/.." position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- 4. Hide avatax_category_id in the header (now shown in tab 1). -->
+    <record id="product_category_hide_avatax_header" model="ir.ui.view">
+        <field name="name">product.category.hide.avatax.header</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="account_avatax.product_category_form_inherit"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='avatax_category_id']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
