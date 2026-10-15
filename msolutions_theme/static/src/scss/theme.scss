@@ -23,8 +23,9 @@
   --ms-maxw: 1180px;
   --ms-nav-h: 76px;
 
-  --ms-display: "Reem Kufi", "IBM Plex Sans Arabic", "Segoe UI", sans-serif;
-  --ms-body: "IBM Plex Sans Arabic", "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  // System font per owner preference (the "old" default look, no web-font download).
+  --ms-display: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+  --ms-body: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
 }
 
 // ---- frontend base ---------------------------------------------------

@@ -26,7 +26,8 @@ website editor keeps working), self-hosted fonts, and SEO metadata.
     ],
     "assets": {
         "web.assets_frontend": [
-            "msolutions_theme/static/src/scss/fonts.scss",
+            # fonts.scss (self-hosted Reem Kufi / IBM Plex) intentionally not loaded —
+            # the site keeps the default system font per the owner's preference.
             "msolutions_theme/static/src/scss/theme.scss",
             "msolutions_theme/static/src/js/hero_reveal.js",
         ],
