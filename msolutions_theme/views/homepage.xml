@@ -120,6 +120,39 @@
                 </div>
             </section>
 
+            <!-- ============ تعرّف علينا ============ -->
+            <section id="ms-whyus" class="ms-section" data-name="About us">
+                <div class="ms-wrap">
+                    <div class="ms-whyus-head ms-reveal">
+                        <span class="ms-eyebrow">تعرّف علينا</span>
+                        <h2 class="ms-title">لماذا «مانجر سوليوشنز»؟</h2>
+                        <p class="ms-lead">نجمع بين الدقّة المحاسبية والخبرة الميدانية الحقيقية لنبني معك أساسًا ماليًا وإداريًا تثق به.</p>
+                    </div>
+                    <div class="ms-whyus-grid ms-stagger">
+                        <div class="ms-why">
+                            <span class="ms-why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+                            <h3>خبرة ميدانية حقيقية</h3>
+                            <p>من داخل مصانع ومعارض الأثاث في مصر، لا استشارات نظرية فقط.</p>
+                        </div>
+                        <div class="ms-why">
+                            <span class="ms-why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 3v18M4 7.5l8 4.5 8-4.5"/></svg></span>
+                            <h3>إتقان Odoo ERP</h3>
+                            <p>تطبيق وتشغيل فعلي للنظام، مُصمّم على طبيعة نشاطك.</p>
+                        </div>
+                        <div class="ms-why">
+                            <span class="ms-why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 3C19.5 16.5 12 21 12 21z"/></svg></span>
+                            <h3>شريك في نجاحك</h3>
+                            <p>هدفنا أن نكون جزءًا من نموّك، لا مجرّد خدمة تنتهي.</p>
+                        </div>
+                        <div class="ms-why">
+                            <span class="ms-why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5-7-11a7 7 0 1 1 14 0c0 6-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+                            <h3>فهم للسوق المصري</h3>
+                            <p>حلول عملية تناسب تحدّياتك الحقيقية على أرض الواقع.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- ============ ③ القطاعات ============ -->
             <section id="ms-sectors" class="ms-section ms-sectors" data-name="Sectors">
                 <div class="ms-wrap">
@@ -227,21 +260,21 @@
                     <p class="ms-lead">فيديوهات قصيرة تعرّفك على «مانجر سوليوشنز» وطريقة عملنا.</p>
                     <div class="ms-videos">
                         <div class="ms-video">
-                            <video class="ms-video-el" src="/msolutions_theme/static/src/video/v1.mp4" muted="muted" loop="loop" playsinline="playsinline" preload="metadata"></video>
+                            <video class="ms-video-el" src="/msolutions_theme/static/src/video/v1.mp4" muted="muted" loop="loop" playsinline="playsinline" preload="none"></video>
                             <button class="ms-video-sound" type="button" aria-label="تشغيل الصوت">
                                 <svg class="ms-ic ms-ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M22 9l-5 6M17 9l5 6"/></svg>
                                 <svg class="ms-ic ms-ic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11"/></svg>
                             </button>
                         </div>
                         <div class="ms-video">
-                            <video class="ms-video-el" src="/msolutions_theme/static/src/video/v2.mp4" muted="muted" loop="loop" playsinline="playsinline" preload="metadata"></video>
+                            <video class="ms-video-el" src="/msolutions_theme/static/src/video/v2.mp4" muted="muted" loop="loop" playsinline="playsinline" preload="none"></video>
                             <button class="ms-video-sound" type="button" aria-label="تشغيل الصوت">
                                 <svg class="ms-ic ms-ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M22 9l-5 6M17 9l5 6"/></svg>
                                 <svg class="ms-ic ms-ic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11"/></svg>
                             </button>
                         </div>
                         <div class="ms-video">
-                            <video class="ms-video-el" src="/msolutions_theme/static/src/video/v3.mp4" muted="muted" loop="loop" playsinline="playsinline" preload="metadata"></video>
+                            <video class="ms-video-el" src="/msolutions_theme/static/src/video/v3.mp4" muted="muted" loop="loop" playsinline="playsinline" preload="none"></video>
                             <button class="ms-video-sound" type="button" aria-label="تشغيل الصوت">
                                 <svg class="ms-ic ms-ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M22 9l-5 6M17 9l5 6"/></svg>
                                 <svg class="ms-ic ms-ic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11"/></svg>
