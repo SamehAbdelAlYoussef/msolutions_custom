@@ -116,12 +116,16 @@
 }
 #wrapwrap > header#top.o_header_affixed { box-shadow: 0 1px 0 var(--ms-line), 0 10px 30px rgba(18, 43, 68, 0.06); }
 
-// Brand the standard header CTA + any primary button (Odoo default palette was purple)
-#wrapwrap .btn-primary, #wrapwrap .btn-fill-primary {
+// Brand the standard header CTA + any primary button (Odoo default palette was purple).
+// Explicit background + !important because Odoo sets .btn-primary background directly.
+#wrapwrap .btn-primary, #wrapwrap .btn-fill-primary, #wrapwrap .btn_cta {
   --bs-btn-bg: var(--ms-forest); --bs-btn-border-color: var(--ms-forest);
   --bs-btn-hover-bg: var(--ms-brass); --bs-btn-hover-border-color: var(--ms-brass);
-  --bs-btn-active-bg: var(--ms-brass); --bs-btn-active-border-color: var(--ms-brass);
-  --bs-btn-color: #fff; --bs-btn-hover-color: #231a0d; --bs-btn-active-color: #231a0d;
+  --bs-btn-color: #fff; --bs-btn-hover-color: #231a0d;
+  background-color: var(--ms-forest) !important; border-color: var(--ms-forest) !important; color: #fff !important;
+}
+#wrapwrap .btn-primary:hover, #wrapwrap .btn-fill-primary:hover, #wrapwrap .btn_cta:hover {
+  background-color: var(--ms-brass) !important; border-color: var(--ms-brass) !important; color: #231a0d !important;
 }
 // Brand accents (links/text-primary) away from the default purple
 #wrapwrap .text-primary, #wrapwrap a.text-primary { color: var(--ms-forest) !important; }
