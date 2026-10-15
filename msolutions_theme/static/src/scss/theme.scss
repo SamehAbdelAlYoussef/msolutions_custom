@@ -196,6 +196,33 @@
 .ms-cta-actions { display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap; }
 
 // =====================================================================
+//  PACKAGES / pricing — three tiers, middle one featured
+// =====================================================================
+.ms-plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; margin-top: 2.6rem; align-items: stretch; }
+.ms-plan {
+  background: var(--ms-paper); border: 1px solid var(--ms-line); border-radius: 2px;
+  padding: 2rem 1.8rem; display: flex; flex-direction: column; position: relative;
+}
+.ms-plan-featured { border: 1.5px solid var(--ms-brass); box-shadow: 0 18px 44px rgba(20, 58, 44, 0.1); }
+.ms-plan-featured::before { content: ""; position: absolute; inset-inline: -1px; top: -1px; height: 3px; background: var(--ms-brass); }
+.ms-plan-badge {
+  position: absolute; top: -0.85rem; inset-inline-start: 1.6rem;
+  background: var(--ms-brass); color: #231a0d; font-size: 0.8rem; font-weight: 600;
+  padding: 0.25rem 0.75rem; border-radius: 2px;
+}
+.ms-plan-name { font-size: 1.3rem; margin: 0 0 0.6rem; }
+.ms-plan-price { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 1.3rem; padding-bottom: 1.3rem; border-bottom: 1px solid var(--ms-line); }
+.ms-plan-num { font-family: var(--ms-display); font-size: 2.4rem; font-weight: 600; color: var(--ms-forest); font-feature-settings: "tnum" 1; }
+.ms-plan-per { font-size: 0.9rem; color: var(--ms-ink-soft); }
+.ms-plan-feats { list-style: none; padding: 0; margin: 0 0 1.7rem; display: grid; gap: 0.75rem; }
+.ms-plan-feats li { position: relative; padding-inline-start: 1.65rem; color: var(--ms-ink); font-size: 0.98rem; line-height: 1.5; }
+.ms-plan-feats li::before {
+  content: ""; position: absolute; inset-inline-start: 0.2rem; top: 0.15em;
+  width: 6px; height: 11px; border: solid var(--ms-brass); border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.ms-plan-cta { margin-top: auto; justify-content: center; }
+
+// =====================================================================
 //  FOOTER — styled on the inherited footer_custom markup
 // =====================================================================
 #wrapwrap footer {
@@ -228,6 +255,7 @@
   .ms-lead { font-size: 1.15rem; }
   .ms-about-grid { grid-template-columns: 1fr; gap: 2.25rem; }
   .ms-services-grid { grid-template-columns: 1fr; }
+  .ms-plans { grid-template-columns: 1fr; }
 }
 
 // =====================================================================

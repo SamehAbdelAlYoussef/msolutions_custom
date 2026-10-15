@@ -32,15 +32,22 @@ def post_init_hook(env):
     except Exception as e:  # noqa: BLE001
         _logger.warning("msolutions_theme: could not activate ar_001: %s", e)
 
-    ar = env["res.lang"].search([("code", "=", "ar_001")], limit=1)
+    # English stays available too (bilingual site, Arabic default).
+    try:
+        env["res.lang"]._activate_lang("en_US")
+    except Exception as e:  # noqa: BLE001
+        _logger.warning("msolutions_theme: could not activate en_US: %s", e)
 
-    # 2) Point every website at Arabic by default and make it available.
+    ar = env["res.lang"].search([("code", "=", "ar_001")], limit=1)
+    en = env["res.lang"].search([("code", "=", "en_US")], limit=1)
+
+    # 2) Make the site bilingual (Arabic + English), Arabic as default.
     for website in env["website"].search([]):
         try:
+            for lang in (ar, en):
+                if lang and lang not in website.language_ids:
+                    website.language_ids = [(4, lang.id)]
             if ar:
-                langs = website.language_ids
-                if ar not in langs:
-                    website.language_ids = [(4, ar.id)]
                 website.default_lang_id = ar.id
             website.name = "Manager Solutions"
         except Exception as e:  # noqa: BLE001

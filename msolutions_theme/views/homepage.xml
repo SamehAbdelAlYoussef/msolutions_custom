@@ -111,7 +111,50 @@
                 </div>
             </section>
 
-            <!-- ============ ③ شركاؤنا ============ -->
+            <!-- ============ ③ الباقات ============ -->
+            <section id="ms-packages" class="ms-section" data-name="Packages">
+                <div class="ms-wrap">
+                    <span class="ms-eyebrow">باقات الاشتراك</span>
+                    <h2 class="ms-title">اختر الباقة التي تناسب نموّ شركتك</h2>
+                    <p class="ms-lead">ثلاث باقات متدرّجة، من تشغيل البرنامج وإدخال البيانات إلى المراجعة الميدانية والتحليل الشهري.</p>
+                    <div class="ms-plans">
+                        <div class="ms-plan">
+                            <h3 class="ms-plan-name">الباقة الأساسية</h3>
+                            <div class="ms-plan-price"><span class="ms-plan-num">12,900</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
+                            <ul class="ms-plan-feats">
+                                <li>تطبيق وتشغيل البرنامج (Odoo)</li>
+                                <li>إدخال البيانات (داتا إنتري)</li>
+                            </ul>
+                            <a href="/#ms-cta" class="ms-btn ms-btn-ghost ms-plan-cta">اختر الباقة</a>
+                        </div>
+                        <div class="ms-plan ms-plan-featured">
+                            <span class="ms-plan-badge">الأكثر طلبًا</span>
+                            <h3 class="ms-plan-name">الباقة المتقدّمة</h3>
+                            <div class="ms-plan-price"><span class="ms-plan-num">15,900</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
+                            <ul class="ms-plan-feats">
+                                <li>تطبيق وتشغيل البرنامج (Odoo)</li>
+                                <li>إدخال البيانات (داتا إنتري)</li>
+                                <li>مراجعة مالية أونلاين</li>
+                            </ul>
+                            <a href="/#ms-cta" class="ms-btn ms-btn-primary ms-plan-cta">اختر الباقة</a>
+                        </div>
+                        <div class="ms-plan">
+                            <h3 class="ms-plan-name">الباقة الشاملة</h3>
+                            <div class="ms-plan-price"><span class="ms-plan-num">24,900</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
+                            <ul class="ms-plan-feats">
+                                <li>تطبيق وتشغيل البرنامج (Odoo)</li>
+                                <li>إدخال البيانات (داتا إنتري)</li>
+                                <li>مراجعة ميدانية — أربع زيارات شهرية</li>
+                                <li>تحليل شهري لنتائج الأعمال</li>
+                                <li>تقديم التوصيات اللازمة</li>
+                            </ul>
+                            <a href="/#ms-cta" class="ms-btn ms-btn-ghost ms-plan-cta">اختر الباقة</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ ④ شركاؤنا ============ -->
             <section id="ms-partners" class="ms-section" data-name="Partners">
                 <div class="ms-wrap">
                     <div class="ms-partners-head">
