@@ -35,7 +35,22 @@
         Array.prototype.forEach.call(els, function (el) { io.observe(el); });
     }
 
-    function init() { drawHero(); initReveal(); }
+    function brandContact() {
+        // Replace Odoo's placeholder header phone/email with the real ones.
+        var TEL = "+201131316911", TEL_DISP = "01131316911", EMAIL = "info@msolutions-eg.com";
+        Array.prototype.forEach.call(document.querySelectorAll('a[href="tel:+1 555-555-5556"]'), function (a) {
+            a.setAttribute("href", "tel:" + TEL);
+            var t = a.querySelector(".o_force_ltr small") || a.querySelector(".o_force_ltr") || a.querySelector("small");
+            if (t) { t.textContent = TEL_DISP; } else { a.textContent = TEL_DISP; }
+        });
+        Array.prototype.forEach.call(document.querySelectorAll('a[href^="mailto:info@yourcompany"]'), function (a) {
+            a.setAttribute("href", "mailto:" + EMAIL);
+            var t = a.querySelector(".o_force_ltr small") || a.querySelector(".o_force_ltr") || a.querySelector("small");
+            if (t) { t.textContent = EMAIL; } else { a.textContent = EMAIL; }
+        });
+    }
+
+    function init() { drawHero(); initReveal(); brandContact(); }
     if (document.readyState !== "loading") init();
     else document.addEventListener("DOMContentLoaded", init);
 })();

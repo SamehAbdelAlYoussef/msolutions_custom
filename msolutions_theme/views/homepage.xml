@@ -218,6 +218,26 @@
                 </div>
             </section>
 
+            <!-- ============ فيديوهات / تيك توك ============ -->
+            <section id="ms-media" class="ms-section ms-services" data-name="Videos">
+                <div class="ms-wrap">
+                    <span class="ms-eyebrow">تعرّف علينا</span>
+                    <h2 class="ms-title">شاهدنا على تيك توك</h2>
+                    <p class="ms-lead">فيديوهات قصيرة تعرّفك على «مانجر سوليوشنز» وطريقة عملنا.</p>
+                    <div class="ms-videos">
+                        <div class="ms-video">
+                            <iframe src="https://www.tiktok.com/embed/v2/7661241373957426452" title="Manager Solutions — TikTok" loading="lazy" allow="encrypted-media; fullscreen; picture-in-picture" allowfullscreen="allowfullscreen" scrolling="no"></iframe>
+                        </div>
+                        <div class="ms-video">
+                            <iframe src="https://www.tiktok.com/embed/v2/7660122100790840596" title="Manager Solutions — TikTok" loading="lazy" allow="encrypted-media; fullscreen; picture-in-picture" allowfullscreen="allowfullscreen" scrolling="no"></iframe>
+                        </div>
+                        <div class="ms-video">
+                            <iframe src="https://www.tiktok.com/embed/v2/7662348968944323861" title="Manager Solutions — TikTok" loading="lazy" allow="encrypted-media; fullscreen; picture-in-picture" allowfullscreen="allowfullscreen" scrolling="no"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- ============ CTA ============ -->
             <section id="ms-cta" class="ms-section ms-cta ms-on-dark" data-name="Call to action">
                 <div class="ms-wrap">

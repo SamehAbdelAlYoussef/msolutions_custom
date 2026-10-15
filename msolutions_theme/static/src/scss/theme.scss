@@ -307,6 +307,13 @@
 .ms-plan-cta { margin-top: auto; justify-content: center; }
 
 // =====================================================================
+//  VIDEOS — TikTok embeds
+// =====================================================================
+.ms-videos { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-top: 2.6rem; }
+.ms-video { width: 325px; max-width: 100%; }
+.ms-video iframe { width: 100%; height: 575px; border: 0; border-radius: 14px; display: block; background: var(--ms-panel); box-shadow: 0 16px 36px rgba(18, 43, 68, 0.12); }
+
+// =====================================================================
 //  FOOTER — styled on the inherited footer_custom markup
 // =====================================================================
 #wrapwrap footer {
