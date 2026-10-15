@@ -6,21 +6,21 @@
 // =====================================================================
 
 :root {
-  // Palette tuned to the copper logo: copper accent + warm espresso + cream.
-  --ms-ink: #2a1e14;        // espresso — body text
-  --ms-ink-soft: #5c4d3d;   // muted text (warm, legible)
-  --ms-forest: #33261a;     // primary dark ground (warm espresso)
-  --ms-forest-deep: #241a10;
+  // Trust palette: deep navy (finance/trust) + copper accent (matches the logo) + cream.
+  --ms-ink: #1b2836;        // navy-charcoal — body text
+  --ms-ink-soft: #4f5e6e;   // muted text (legible)
+  --ms-forest: #142c45;     // primary dark ground (deep navy — conveys trust)
+  --ms-forest-deep: #0d1f32;
   --ms-brass: #b07a4e;      // logo copper — signature accent
-  --ms-brass-bright: #c9945e;
-  --ms-paper: #fbf8f3;      // base background (warm paper)
-  --ms-panel: #f2ebe0;      // raised panels
-  --ms-paper-dim: #f6f0e7;
-  --ms-line: rgba(42, 30, 20, 0.14);
-  --ms-line-strong: rgba(42, 30, 20, 0.28);
-  --ms-on-dark: #f4ece0;
-  --ms-on-dark-soft: rgba(244, 236, 224, 0.72);
-  --ms-line-dark: rgba(244, 236, 224, 0.16);
+  --ms-brass-bright: #cb9862;
+  --ms-paper: #fafaf7;      // base background
+  --ms-panel: #edf0f1;      // raised panels
+  --ms-paper-dim: #f3f4f3;
+  --ms-line: rgba(27, 40, 54, 0.14);
+  --ms-line-strong: rgba(27, 40, 54, 0.26);
+  --ms-on-dark: #eaf1f8;
+  --ms-on-dark-soft: rgba(234, 241, 248, 0.72);
+  --ms-line-dark: rgba(234, 241, 248, 0.16);
   --ms-maxw: 1180px;
   --ms-nav-h: 76px;
 
@@ -114,7 +114,7 @@
     &:hover { background: var(--ms-forest-deep); color: #fff; }
   }
 }
-#wrapwrap > header#top.o_header_affixed { box-shadow: 0 1px 0 var(--ms-line), 0 10px 30px rgba(20, 58, 44, 0.06); }
+#wrapwrap > header#top.o_header_affixed { box-shadow: 0 1px 0 var(--ms-line), 0 10px 30px rgba(18, 43, 68, 0.06); }
 
 // Brand the standard header CTA + any primary button (Odoo default palette was purple)
 #wrapwrap .btn-primary, #wrapwrap .btn-fill-primary {
@@ -183,7 +183,7 @@
   display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 1rem; align-items: center;
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
-.ms-pillar:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(20, 58, 44, 0.09); }
+.ms-pillar:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(18, 43, 68, 0.09); }
 .ms-pillar h3 { font-size: 1.15rem; margin: 0; grid-column: 2; }
 .ms-pillar p { margin: 0; font-size: 0.97rem; color: var(--ms-ink-soft); grid-column: 2; }
 .ms-pillar .ms-pillar-k {
@@ -205,7 +205,7 @@
   border-top: 3px solid var(--ms-brass);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
-.ms-svc:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(20, 58, 44, 0.08); }
+.ms-svc:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(18, 43, 68, 0.08); }
 .ms-svc h3 { font-size: 1.3rem; margin: 0.4rem 0 0.6rem; }
 .ms-svc p { margin: 0; color: var(--ms-ink-soft); font-size: 0.99rem; }
 .ms-svc .ms-svc-mark { width: 30px; height: 30px; color: var(--ms-forest); }
@@ -230,7 +230,7 @@
   padding: 0.55rem 1.4rem 0.55rem 0.55rem; white-space: nowrap;
   transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
 }
-.ms-partner:hover { border-color: var(--ms-brass); box-shadow: 0 10px 26px rgba(20, 58, 44, 0.12); transform: translateY(-3px); }
+.ms-partner:hover { border-color: var(--ms-brass); box-shadow: 0 10px 26px rgba(18, 43, 68, 0.12); transform: translateY(-3px); }
 .ms-partner-mono {
   flex: none; width: 46px; height: 46px; border-radius: 50%; background: var(--ms-forest);
   color: var(--ms-brass-bright); font-weight: 700; font-size: 1.25rem;
@@ -257,7 +257,7 @@
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 .ms-sector::before { content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 3px; background: var(--ms-brass); transform: scaleX(0); transition: transform 0.22s ease; }
-.ms-sector:hover { transform: translateY(-5px); border-color: var(--ms-brass); box-shadow: 0 16px 38px rgba(20, 58, 44, 0.1); }
+.ms-sector:hover { transform: translateY(-5px); border-color: var(--ms-brass); box-shadow: 0 16px 38px rgba(18, 43, 68, 0.1); }
 .ms-sector:hover::before { transform: scaleX(1); }
 .ms-sector-ic { display: grid; place-items: center; width: 62px; height: 62px; margin: 0 auto 1rem; border-radius: 16px; background: var(--ms-paper-dim); color: var(--ms-brass); transition: transform 0.22s ease, background 0.22s ease, color 0.22s ease; }
 .ms-sector-ic svg { width: 29px; height: 29px; display: block; }
@@ -274,7 +274,7 @@
   background: var(--ms-paper); border: 1px solid var(--ms-line); border-radius: 2px;
   padding: 2rem 1.8rem; display: flex; flex-direction: column; position: relative;
 }
-.ms-plan-featured { border: 1.5px solid var(--ms-brass); box-shadow: 0 18px 44px rgba(20, 58, 44, 0.1); }
+.ms-plan-featured { border: 1.5px solid var(--ms-brass); box-shadow: 0 18px 44px rgba(18, 43, 68, 0.1); }
 .ms-plan-featured::before { content: ""; position: absolute; inset-inline: -1px; top: -1px; height: 3px; background: var(--ms-brass); }
 .ms-plan-badge {
   position: absolute; top: -0.85rem; inset-inline-start: 1.6rem;
