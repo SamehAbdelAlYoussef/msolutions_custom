@@ -9,7 +9,8 @@ a distinctive Arabic/RTL landing page, a redesigned navbar and footer built by
 website editor keeps working), self-hosted fonts, and SEO metadata.
 """,
     "version": "19.0.1.0.0",
-    "category": "Website/Theme",
+    "category": "Theme/Corporate",
+    "sequence": 100,
     "author": "Manager Solutions",
     "website": "https://msolutions-eg.com",
     "license": "LGPL-3",
@@ -18,6 +19,10 @@ website editor keeps working), self-hosted fonts, and SEO metadata.
         "data/website_menu.xml",
         "views/footer.xml",
         "views/homepage.xml",
+    ],
+    "images": [
+        "static/description/ms_poster.webp",
+        "static/description/ms_screenshot.webp",
     ],
     "assets": {
         "web.assets_frontend": [

@@ -2,6 +2,8 @@
 import base64
 import logging
 
+from . import models
+
 _logger = logging.getLogger(__name__)
 
 # Brass "balance & measure" mark + wordmark. Kept as SVG so it stays crisp at
