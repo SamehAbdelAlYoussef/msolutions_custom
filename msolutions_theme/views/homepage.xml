@@ -39,25 +39,18 @@
                             </div>
                         </div>
                         <div class="ms-hero-art" aria-hidden="true">
-                            <svg viewBox="0 0 360 320" fill="none" stroke="#c9945e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <!-- measured ruler -->
-                                <path data-draw="1" d="M48 96 V244"/>
-                                <path d="M48 96 h12 M48 133 h7 M48 170 h7 M48 207 h7 M48 244 h12" stroke-width="1.5"/>
-                                <!-- base + post -->
-                                <path data-draw="1" d="M150 262 H220"/>
-                                <path data-draw="1" d="M185 262 V104"/>
-                                <!-- fulcrum -->
-                                <path d="M185 92 l-9 15 h18 z" fill="#c9945e" stroke="none"/>
-                                <!-- beam (balanced, slight tilt) -->
-                                <path data-draw="1" d="M104 100 L266 116"/>
-                                <!-- left pan -->
-                                <path data-draw="1" d="M110 101 V150"/>
-                                <path data-draw="1" d="M86 150 a24 9 0 0 0 48 0"/>
-                                <circle cx="110" cy="150" r="3" fill="#c9945e" stroke="none"/>
-                                <!-- right pan -->
-                                <path data-draw="1" d="M260 115 V164"/>
-                                <path data-draw="1" d="M236 164 a24 9 0 0 0 48 0"/>
-                                <circle cx="260" cy="164" r="3" fill="#c9945e" stroke="none"/>
+                            <svg viewBox="0 0 108 98" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <!-- logo mark: growth "M" + ascending bars + arrow -->
+                                <g fill="#cb9862">
+                                    <rect x="38" y="60" width="9" height="26" rx="2"/>
+                                    <rect x="53" y="50" width="9" height="36" rx="2"/>
+                                    <rect x="68" y="40" width="9" height="46" rx="2"/>
+                                </g>
+                                <g stroke="#cb9862" stroke-width="13" fill="none">
+                                    <path data-draw="1" d="M16 86 V28"/>
+                                    <path data-draw="1" d="M16 28 L45 74 L70 36 L93 15"/>
+                                </g>
+                                <path d="M78 12 L101 8 L97 33 Z" fill="#cb9862"/>
                             </svg>
                         </div>
                     </div>
