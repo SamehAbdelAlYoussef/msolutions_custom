@@ -41,16 +41,16 @@
                         <div class="ms-hero-art" aria-hidden="true">
                             <svg viewBox="0 0 108 98" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <!-- logo mark: growth "M" + ascending bars + arrow -->
-                                <g fill="#cb9862">
-                                    <rect x="38" y="60" width="9" height="26" rx="2"/>
-                                    <rect x="53" y="50" width="9" height="36" rx="2"/>
-                                    <rect x="68" y="40" width="9" height="46" rx="2"/>
+                                <g fill="#b07a4e">
+                                    <rect class="ms-mark-bar" x="38" y="60" width="9" height="26" rx="2"/>
+                                    <rect class="ms-mark-bar" x="53" y="50" width="9" height="36" rx="2"/>
+                                    <rect class="ms-mark-bar" x="68" y="40" width="9" height="46" rx="2"/>
                                 </g>
-                                <g stroke="#cb9862" stroke-width="13" fill="none">
+                                <g stroke="#b07a4e" stroke-width="13" fill="none">
                                     <path data-draw="1" d="M16 86 V28"/>
                                     <path data-draw="1" d="M16 28 L45 74 L70 36 L93 15"/>
                                 </g>
-                                <path d="M78 12 L101 8 L97 33 Z" fill="#cb9862"/>
+                                <path class="ms-mark-arrow" d="M78 12 L101 8 L97 33 Z" fill="#b07a4e"/>
                             </svg>
                         </div>
                     </div>
