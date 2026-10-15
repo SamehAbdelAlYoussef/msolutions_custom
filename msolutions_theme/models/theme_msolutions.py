@@ -12,7 +12,7 @@ class ThemeUtils(models.AbstractModel):
 
     _inherit = "theme.utils"
 
-    def _theme_msolutions_post_copy(self, mod):
+    def _msolutions_theme_post_copy(self, mod):
         # Brand chrome: standard header + the inherited (restyled) footer.
         self.enable_view("website.template_header_default")
         self.enable_view("website.footer_custom")
