@@ -24,7 +24,7 @@
 
     function initReveal() {
         if (reduce || !("IntersectionObserver" in window)) return;
-        var els = document.querySelectorAll(".ms-reveal, .ms-stagger");
+        var els = document.querySelectorAll(".ms-reveal, .ms-stagger, .ms-vlines");
         if (!els.length) return;
         document.documentElement.classList.add("ms-anim");
         var io = new IntersectionObserver(function (entries) {

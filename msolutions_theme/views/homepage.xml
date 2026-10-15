@@ -90,6 +90,7 @@
 
             <!-- ============ ② خدماتنا ============ -->
             <section id="ms-services" class="ms-section ms-services" data-name="Services">
+                <div class="ms-vlines" aria-hidden="true"><span></span><span></span><span></span></div>
                 <div class="ms-wrap">
                     <span class="ms-eyebrow">خدماتنا</span>
                     <h2 class="ms-title">أربع خدمات تبني أساسًا ماليًا متينًا</h2>

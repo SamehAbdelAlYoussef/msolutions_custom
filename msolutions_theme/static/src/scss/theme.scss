@@ -34,8 +34,8 @@
   font-family: var(--ms-body);
   color: var(--ms-ink);
   background: var(--ms-paper);
-  font-size: 1.0625rem;
-  line-height: 1.85;
+  font-size: 1.15rem;
+  line-height: 1.9;
   font-feature-settings: "tnum" 0;
   -webkit-font-smoothing: antialiased;
 }
@@ -55,14 +55,14 @@
 // dimension-tick label (the "measure" motif — meaningful, not decoration)
 .ms-eyebrow {
   display: inline-flex; align-items: center; gap: 0.6rem;
-  font-family: var(--ms-body); font-weight: 600; font-size: 0.9rem;
+  font-family: var(--ms-body); font-weight: 600; font-size: 0.98rem;
   color: var(--ms-brass); margin-bottom: 1.1rem;
   &::before { content: ""; width: 2px; height: 1.05em; background: var(--ms-brass); border-radius: 1px; }
 }
 .ms-on-dark .ms-eyebrow { color: var(--ms-brass-bright); }
 
 .ms-title { font-size: 2.85rem; margin: 0 0 1rem; }
-.ms-lead { font-size: 1.3rem; color: var(--ms-ink-soft); max-width: 60ch; }
+.ms-lead { font-size: 1.42rem; color: var(--ms-ink-soft); max-width: 60ch; }
 
 // buttons
 .ms-btn {
@@ -197,8 +197,8 @@
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 .ms-pillar:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(18, 43, 68, 0.09); }
-.ms-pillar h3 { font-size: 1.15rem; margin: 0; grid-column: 2; }
-.ms-pillar p { margin: 0; font-size: 0.97rem; color: var(--ms-ink-soft); grid-column: 2; }
+.ms-pillar h3 { font-size: 1.28rem; margin: 0; grid-column: 2; }
+.ms-pillar p { margin: 0; font-size: 1.08rem; color: var(--ms-ink-soft); grid-column: 2; }
 .ms-pillar .ms-pillar-k {
   grid-row: 1 / span 2; grid-column: 1; width: 44px; height: 44px; border-radius: 10px;
   background: var(--ms-paper-dim); color: var(--ms-brass); display: grid; place-items: center;
@@ -210,7 +210,19 @@
 // =====================================================================
 //  ② SERVICES — ruled panels (no identical soft-shadow cards)
 // =====================================================================
-.ms-services { background: var(--ms-paper-dim); border-block: 1px solid var(--ms-line); }
+.ms-services { background: var(--ms-paper-dim); border-block: 1px solid var(--ms-line); position: relative; overflow: hidden; }
+// three brand-colour vertical lines down the left, spanning the section, drawing in on scroll
+.ms-vlines { position: absolute; top: 0; bottom: 0; left: 0; display: flex; gap: 9px; padding-inline-start: 20px; pointer-events: none; z-index: 0; }
+.ms-vlines span { width: 3px; height: 100%; background: var(--ms-forest); border-radius: 2px; }
+.ms-vlines span:nth-child(1) { opacity: 0.95; }
+.ms-vlines span:nth-child(2) { opacity: 0.6; }
+.ms-vlines span:nth-child(3) { background: var(--ms-brass); opacity: 0.9; }
+.ms-services > .ms-wrap { position: relative; z-index: 1; }
+.ms-anim .ms-vlines span { transform: scaleY(0); transform-origin: top; transition: transform 1s cubic-bezier(.22,.61,.36,1); }
+.ms-anim .ms-vlines.is-in span { transform: scaleY(1); }
+.ms-anim .ms-vlines.is-in span:nth-child(2) { transition-delay: 0.15s; }
+.ms-anim .ms-vlines.is-in span:nth-child(3) { transition-delay: 0.3s; }
+@media (max-width: 860px) { .ms-vlines { display: none; } }
 .ms-services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.4rem; margin-top: 2.5rem; }
 .ms-svc {
   background: var(--ms-paper); padding: 1.9rem 1.8rem 2rem; position: relative;
@@ -219,8 +231,8 @@
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 .ms-svc:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(18, 43, 68, 0.08); }
-.ms-svc h3 { font-size: 1.3rem; margin: 0.4rem 0 0.6rem; }
-.ms-svc p { margin: 0; color: var(--ms-ink-soft); font-size: 0.99rem; }
+.ms-svc h3 { font-size: 1.45rem; margin: 0.4rem 0 0.6rem; }
+.ms-svc p { margin: 0; color: var(--ms-ink-soft); font-size: 1.12rem; }
 .ms-svc .ms-svc-mark { width: 30px; height: 30px; color: var(--ms-forest); }
 .ms-svc .ms-svc-mark svg { width: 100%; height: 100%; display: block; }
 
@@ -250,7 +262,7 @@
   display: grid; place-items: center; transition: background 0.22s ease, color 0.22s ease;
 }
 .ms-partner:hover .ms-partner-mono { background: var(--ms-brass); color: #231a0d; }
-.ms-partner-name { font-weight: 600; font-size: 1rem; color: var(--ms-ink); line-height: 1.2; }
+.ms-partner-name { font-weight: 600; font-size: 1.1rem; color: var(--ms-ink); line-height: 1.25; }
 
 // CTA band
 .ms-cta { background: var(--ms-forest-deep); color: var(--ms-on-dark); text-align: center; }
@@ -275,7 +287,7 @@
 .ms-sector-ic { display: grid; place-items: center; width: 62px; height: 62px; margin: 0 auto 1rem; border-radius: 16px; background: var(--ms-paper-dim); color: var(--ms-brass); transition: transform 0.22s ease, background 0.22s ease, color 0.22s ease; }
 .ms-sector-ic svg { width: 29px; height: 29px; display: block; }
 .ms-sector:hover .ms-sector-ic { transform: scale(1.06); background: var(--ms-forest); color: var(--ms-brass-bright); }
-.ms-sector-name { font-weight: 600; font-size: 1.03rem; color: var(--ms-ink); }
+.ms-sector-name { font-weight: 600; font-size: 1.14rem; color: var(--ms-ink); }
 @media (max-width: 1100px) { .ms-sectors-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 620px) { .ms-sectors-grid { grid-template-columns: repeat(2, 1fr); } }
 
@@ -294,12 +306,12 @@
   background: var(--ms-brass); color: #231a0d; font-size: 0.8rem; font-weight: 600;
   padding: 0.25rem 0.75rem; border-radius: 2px;
 }
-.ms-plan-name { font-size: 1.3rem; margin: 0 0 0.6rem; }
+.ms-plan-name { font-size: 1.45rem; margin: 0 0 0.6rem; }
 .ms-plan-price { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 1.3rem; padding-bottom: 1.3rem; border-bottom: 1px solid var(--ms-line); }
 .ms-plan-num { font-family: var(--ms-display); font-size: 2.4rem; font-weight: 600; color: var(--ms-forest); font-feature-settings: "tnum" 1; }
-.ms-plan-per { font-size: 0.9rem; color: var(--ms-ink-soft); }
+.ms-plan-per { font-size: 1rem; color: var(--ms-ink-soft); }
 .ms-plan-feats { list-style: none; padding: 0; margin: 0 0 1.7rem; display: grid; gap: 0.75rem; }
-.ms-plan-feats li { position: relative; padding-inline-start: 1.65rem; color: var(--ms-ink); font-size: 0.98rem; line-height: 1.5; }
+.ms-plan-feats li { position: relative; padding-inline-start: 1.65rem; color: var(--ms-ink); font-size: 1.08rem; line-height: 1.5; }
 .ms-plan-feats li::before {
   content: ""; position: absolute; inset-inline-start: 0.2rem; top: 0.15em;
   width: 6px; height: 11px; border: solid var(--ms-brass); border-width: 0 2px 2px 0; transform: rotate(45deg);
@@ -346,7 +358,7 @@
   .ms-hero-art { grid-row: 1; max-width: 230px; }
   .ms-hero h1 { font-size: 2.5rem; }
   .ms-title { font-size: 2rem; }
-  .ms-lead { font-size: 1.15rem; }
+  .ms-lead { font-size: 1.24rem; }
   .ms-about-grid { grid-template-columns: 1fr; gap: 2.25rem; }
   .ms-services-grid { grid-template-columns: 1fr; }
   .ms-plans { grid-template-columns: 1fr; }
