@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Rename the default Home entry; add the section anchors + CTA.
+         These are ordinary website.menu records, fully editable afterwards. -->
+    <record id="website.menu_home" model="website.menu">
+        <field name="name">الرئيسية</field>
+        <field name="sequence" type="int">10</field>
+    </record>
+
+    <record id="ms_menu_about" model="website.menu">
+        <field name="name">من نحن</field>
+        <field name="url">/#ms-about</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">20</field>
+    </record>
+
+    <record id="ms_menu_services" model="website.menu">
+        <field name="name">خدماتنا</field>
+        <field name="url">/#ms-services</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">30</field>
+    </record>
+
+    <record id="ms_menu_partners" model="website.menu">
+        <field name="name">شركاؤنا</field>
+        <field name="url">/#ms-partners</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">40</field>
+    </record>
+
+    <record id="ms_menu_cta" model="website.menu">
+        <field name="name">احجز استشارة</field>
+        <field name="url">/#ms-cta</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">50</field>
+    </record>
+</odoo>

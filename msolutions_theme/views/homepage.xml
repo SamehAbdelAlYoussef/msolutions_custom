@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================================================================
+         Landing page: three sections injected inside the standard,
+         still-editable homepage structure (#wrap stays an oe_structure).
+         ================================================================ -->
+    <template id="ms_homepage" inherit_id="website.homepage" name="Manager Solutions — Home">
+        <xpath expr="//div[@id='wrap']" position="attributes">
+            <attribute name="class">oe_structure oe_structure_solo ms-site</attribute>
+        </xpath>
+        <xpath expr="//div[@id='wrap']" position="inside">
+
+            <!-- ============ HERO ============ -->
+            <section class="ms-hero" data-name="Hero">
+                <div class="ms-wrap">
+                    <div class="ms-hero-grid">
+                        <div class="ms-hero-copy">
+                            <span class="ms-eyebrow">مانجر سوليوشنز — حلول مالية وإدارية</span>
+                            <h1>دقّة المحاسبة وخبرة الميدان،<br/><span class="ms-accent">في شريكٍ واحد.</span></h1>
+                            <p class="ms-lead">نقدّم حلولًا متكاملة للمراجعة والإدارة المالية، مصمّمة لدعم نموّ الشركات الصغيرة والمتوسطة — مع خبرة عميقة في تطبيق وتشغيل نظام Odoo ERP.</p>
+                            <div class="ms-hero-actions">
+                                <a href="/#ms-cta" class="ms-btn ms-btn-primary">احجز استشارة</a>
+                                <a href="/#ms-about" class="ms-btn ms-btn-ghost">تعرّف علينا</a>
+                            </div>
+                        </div>
+                        <div class="ms-hero-art" aria-hidden="true">
+                            <svg viewBox="0 0 360 320" fill="none" stroke="#c99a4e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <!-- measured ruler -->
+                                <path data-draw="1" d="M48 96 V244"/>
+                                <path d="M48 96 h12 M48 133 h7 M48 170 h7 M48 207 h7 M48 244 h12" stroke-width="1.5"/>
+                                <!-- base + post -->
+                                <path data-draw="1" d="M150 262 H220"/>
+                                <path data-draw="1" d="M185 262 V104"/>
+                                <!-- fulcrum -->
+                                <path d="M185 92 l-9 15 h18 z" fill="#c99a4e" stroke="none"/>
+                                <!-- beam (balanced, slight tilt) -->
+                                <path data-draw="1" d="M104 100 L266 116"/>
+                                <!-- left pan -->
+                                <path data-draw="1" d="M110 101 V150"/>
+                                <path data-draw="1" d="M86 150 a24 9 0 0 0 48 0"/>
+                                <circle cx="110" cy="150" r="3" fill="#c99a4e" stroke="none"/>
+                                <!-- right pan -->
+                                <path data-draw="1" d="M260 115 V164"/>
+                                <path data-draw="1" d="M236 164 a24 9 0 0 0 48 0"/>
+                                <circle cx="260" cy="164" r="3" fill="#c99a4e" stroke="none"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ ① من نحن ============ -->
+            <section id="ms-about" class="ms-section" data-name="About">
+                <div class="ms-wrap">
+                    <div class="ms-about-grid">
+                        <div class="ms-about-body">
+                            <span class="ms-eyebrow">من نحن</span>
+                            <h2 class="ms-title">خبرة تجمع بين المال والصناعة</h2>
+                            <p>نمتلك خبرة قوية في تطبيق وتشغيل نظام Odoo ERP، ونساعد الشركات على التحوّل الرقمي وتنظيم عملياتها المالية والإدارية بكفاءة وسهولة.</p>
+                            <p>فريقنا يمتلك خبرة طويلة في إدارة وتشغيل مصانع ومعارض الأثاث في مصر، وهو ما يجعلنا نفهم السوق عن قُرب، ونقدّم حلولًا عملية تناسب التحدّيات الحقيقية.</p>
+                        </div>
+                        <div class="ms-pillars">
+                            <div class="ms-pillar">
+                                <div class="ms-pillar-k"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 14.5 8 8 14.5 1.5 8Z"/></svg></div>
+                                <h3>تحوّل رقمي منظّم</h3>
+                                <p>ننقل عملياتك إلى نظام واحد واضح، بدل الملفات المتفرّقة.</p>
+                            </div>
+                            <div class="ms-pillar">
+                                <div class="ms-pillar-k"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 14.5 8 8 14.5 1.5 8Z"/></svg></div>
+                                <h3>خبرة من داخل الميدان</h3>
+                                <p>من مصانع ومعارض الأثاث، لا من الورق فقط.</p>
+                            </div>
+                            <div class="ms-pillar">
+                                <div class="ms-pillar-k"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 14.5 8 8 14.5 1.5 8Z"/></svg></div>
+                                <h3>قرارات أدقّ</h3>
+                                <p>بيانات مالية واضحة، في وقتها، تدعم كل قرار.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ ② خدماتنا ============ -->
+            <section id="ms-services" class="ms-section ms-services" data-name="Services">
+                <div class="ms-wrap">
+                    <span class="ms-eyebrow">خدماتنا</span>
+                    <h2 class="ms-title">أربع خدمات تبني أساسًا ماليًا متينًا</h2>
+                    <p class="ms-lead">من إدارة الحسابات اليومية إلى تشغيل نظام متكامل يدير نشاطك بالكامل.</p>
+                    <div class="ms-services-grid">
+                        <div class="ms-svc">
+                            <div class="ms-svc-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="24" height="16" rx="1.5"/><path d="M4 26h24M11 22v4m10-4v4M9 12h6m-6 4h10"/></svg></div>
+                            <h3>المحاسبة عن بُعد</h3>
+                            <p>إدارة حساباتك بالكامل عن بُعد، بفريق محترف وتقارير منتظمة تصلك في موعدها.</p>
+                        </div>
+                        <div class="ms-svc">
+                            <div class="ms-svc-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l6 6M11 14h6m-6-3h4m-4 6h5"/></svg></div>
+                            <h3>المراجعة المالية</h3>
+                            <p>مراجعة دقيقة لحساباتك تكشف الفجوات مبكرًا وتحمي مالك من المخاطر.</p>
+                        </div>
+                        <div class="ms-svc">
+                            <div class="ms-svc-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4v24M6 10l10-6 10 6M8 13v8m16-8v8"/><circle cx="16" cy="16" r="2.4"/></svg></div>
+                            <h3>الاستشارات المالية والإدارية</h3>
+                            <p>رؤية عملية لقراراتك المالية والتشغيلية، مبنية على أرقام لا تخمين.</p>
+                        </div>
+                        <div class="ms-svc">
+                            <div class="ms-svc-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><circle cx="24" cy="8" r="3"/><circle cx="16" cy="24" r="3"/><path d="M8 11v4a3 3 0 003 3h10a3 3 0 003-3v-4M16 18v3"/></svg></div>
+                            <h3>تطبيق وتشغيل أنظمة ERP</h3>
+                            <p>تطبيق وتشغيل Odoo خصيصًا لطبيعة نشاطك، حتى يعمل النظام كما تحتاجه تمامًا.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ ③ شركاؤنا ============ -->
+            <section id="ms-partners" class="ms-section" data-name="Partners">
+                <div class="ms-wrap">
+                    <div class="ms-partners-head">
+                        <span class="ms-eyebrow">شركاء النجاح</span>
+                        <h2 class="ms-title">شركات وثقت في «مانجر سوليوشنز»</h2>
+                        <p class="ms-lead">تشرّفنا بالتعاون مع نخبة من الشركات في مجالات الأثاث والملابس والتكييفات والأدوات المنزلية والأحذية.</p>
+                    </div>
+                    <div class="ms-roster">
+                        <span>iFruit</span>
+                        <span>مينون للأثاث</span>
+                        <span>جراند للأثاث</span>
+                        <span>مينفلكس للملابس</span>
+                        <span>وائل محمد للتكييفات</span>
+                        <span>القدس للأدوات المنزلية</span>
+                        <span>جلوريا للأثاث</span>
+                        <span>Ezora للأثاث</span>
+                        <span>نورماندي للأحذية</span>
+                        <span>الموحّدون للأثاث</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ CTA ============ -->
+            <section id="ms-cta" class="ms-section ms-cta ms-on-dark" data-name="Call to action">
+                <div class="ms-wrap">
+                    <span class="ms-eyebrow">لنبدأ</span>
+                    <h2 class="ms-title">خلّينا نكون شريك نجاحك</h2>
+                    <p class="ms-lead">هدفنا ليس تقديم خدمة فحسب، بل أن نكون شريكًا حقيقيًا في نجاح شركتك.</p>
+                    <div class="ms-cta-actions">
+                        <a href="/contactus" class="ms-btn ms-btn-primary">تواصل معنا</a>
+                        <a href="/#ms-services" class="ms-btn ms-btn-ghost">استعرض الخدمات</a>
+                    </div>
+                </div>
+            </section>
+
+        </xpath>
+    </template>
+
+    <!-- ================================================================
+         SEO: Organization structured data in <head> (the inheritance
+         chain resolves web.layout's head, so //head matches here).
+         ================================================================ -->
+    <template id="ms_head_seo" inherit_id="website.layout" name="Manager Solutions — head SEO">
+        <xpath expr="//head" position="inside">
+            <script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Manager Solutions",
+    "url": "https://msolutions-eg.com",
+    "description": "حلول متكاملة في المراجعة والإدارة المالية وتطبيق وتشغيل Odoo ERP للشركات الصغيرة والمتوسطة في مصر.",
+    "areaServed": "EG",
+    "knowsAbout": ["المحاسبة عن بعد", "المراجعة المالية", "الاستشارات المالية والإدارية", "Odoo ERP"]
+}</script>
+        </xpath>
+    </template>
+
+    <!-- SEO metadata on the homepage record. -->
+    <record id="website.homepage_page" model="website.page">
+        <field name="website_meta_title">مانجر سوليوشنز | حلول المراجعة والإدارة المالية وتطبيق Odoo ERP</field>
+        <field name="website_meta_description">مانجر سوليوشنز تقدّم المحاسبة عن بُعد، المراجعة المالية، الاستشارات، وتطبيق وتشغيل Odoo ERP للشركات الصغيرة والمتوسطة في مصر.</field>
+        <field name="website_meta_keywords">محاسبة عن بعد, مراجعة مالية, استشارات مالية, Odoo, ERP, مصر</field>
+    </record>
+</odoo>

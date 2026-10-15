@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Redesign the footer by inheriting the standard footer_custom and
+         swapping its inner content. #footer stays an editable oe_structure,
+         so the website editor keeps working. The standard template is kept. -->
+    <template id="ms_footer" inherit_id="website.footer_custom" name="Manager Solutions — Footer">
+        <xpath expr="//div[@id='footer']/section" position="replace">
+            <section class="s_text_block pt40 pb24" data-snippet="s_text_block" data-name="Footer">
+                <div class="container">
+                    <div class="row gy-4">
+                        <div class="col-lg-4 col-md-12">
+                            <div class="ms-foot-brand">مانجر سوليوشنز</div>
+                            <p class="mt-2 mb-0" style="max-width:40ch;">شريكك في المراجعة والإدارة المالية وتطبيق أنظمة Odoo ERP — بخبرة من داخل السوق المصري.</p>
+                        </div>
+                        <div class="col-lg-2 col-6">
+                            <h6>روابط سريعة</h6>
+                            <ul class="list-unstyled mb-0">
+                                <li><a href="/">الرئيسية</a></li>
+                                <li><a href="/#ms-about">من نحن</a></li>
+                                <li><a href="/#ms-services">خدماتنا</a></li>
+                                <li><a href="/#ms-partners">شركاؤنا</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-3 col-6">
+                            <h6>خدماتنا</h6>
+                            <ul class="list-unstyled mb-0">
+                                <li><a href="/#ms-services">المحاسبة عن بُعد</a></li>
+                                <li><a href="/#ms-services">المراجعة المالية</a></li>
+                                <li><a href="/#ms-services">الاستشارات المالية والإدارية</a></li>
+                                <li><a href="/#ms-services">تطبيق وتشغيل ERP</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-3 col-md-12">
+                            <h6>تواصل معنا</h6>
+                            <ul class="list-unstyled mb-2">
+                                <li><i class="fa fa-envelope fa-fw me-2"/><a href="mailto:info@msolutions-eg.com">info@msolutions-eg.com</a></li>
+                                <li><i class="fa fa-comment fa-fw me-2"/><a href="/contactus">نموذج التواصل</a></li>
+                            </ul>
+                            <div class="s_social_media text-start o_not_editable" data-snippet="s_social_media" data-name="Social Media" contenteditable="false">
+                                <a href="/website/social/linkedin" class="s_social_media_linkedin" target="_blank" aria-label="LinkedIn"><i class="fa fa-linkedin rounded-circle shadow-sm o_editable_media"/></a>
+                                <a href="/website/social/facebook" class="s_social_media_facebook" target="_blank" aria-label="Facebook"><i class="fa fa-facebook rounded-circle shadow-sm o_editable_media"/></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ms-foot-copy mt-4 pt-3 d-flex flex-wrap justify-content-between">
+                        <span>© 2026 مانجر سوليوشنز. جميع الحقوق محفوظة.</span>
+                        <span>حلول المراجعة والإدارة المالية — مصر</span>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+</odoo>
