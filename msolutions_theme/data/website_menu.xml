@@ -39,7 +39,7 @@
         <field name="name">شركاؤنا</field>
         <field name="url">/#ms-partners</field>
         <field name="parent_id" ref="website.main_menu"/>
-        <field name="sequence" type="int">40</field>
+        <field name="sequence" type="int">33</field>
     </record>
 
     <record id="ms_menu_cta" model="website.menu">

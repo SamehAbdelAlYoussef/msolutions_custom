@@ -13,13 +13,13 @@
             <!-- ============ HERO ============ -->
             <section class="ms-hero" data-name="Hero">
                 <div class="ms-hero-bg" aria-hidden="true">
-                    <svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#c99a4e">
+                    <svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#c9945e">
                         <g opacity="0.16" stroke-width="2" stroke-linecap="round">
                             <path class="ms-flow" d="M-20 560 C 240 520, 470 420, 1220 150"/>
                             <path class="ms-flow ms-flow-2" d="M-20 620 C 300 585, 560 470, 1220 250"/>
                             <path class="ms-flow ms-flow-3" d="M-20 500 C 210 470, 520 350, 1220 60"/>
                         </g>
-                        <g stroke="none" fill="#c99a4e">
+                        <g stroke="none" fill="#c9945e">
                             <circle class="ms-spark" cx="200" cy="470" r="3.5"/>
                             <circle class="ms-spark ms-spark-2" cx="470" cy="420" r="3"/>
                             <circle class="ms-spark ms-spark-3" cx="780" cy="300" r="3.5"/>
@@ -39,7 +39,7 @@
                             </div>
                         </div>
                         <div class="ms-hero-art" aria-hidden="true">
-                            <svg viewBox="0 0 360 320" fill="none" stroke="#c99a4e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg viewBox="0 0 360 320" fill="none" stroke="#c9945e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <!-- measured ruler -->
                                 <path data-draw="1" d="M48 96 V244"/>
                                 <path d="M48 96 h12 M48 133 h7 M48 170 h7 M48 207 h7 M48 244 h12" stroke-width="1.5"/>
@@ -47,17 +47,17 @@
                                 <path data-draw="1" d="M150 262 H220"/>
                                 <path data-draw="1" d="M185 262 V104"/>
                                 <!-- fulcrum -->
-                                <path d="M185 92 l-9 15 h18 z" fill="#c99a4e" stroke="none"/>
+                                <path d="M185 92 l-9 15 h18 z" fill="#c9945e" stroke="none"/>
                                 <!-- beam (balanced, slight tilt) -->
                                 <path data-draw="1" d="M104 100 L266 116"/>
                                 <!-- left pan -->
                                 <path data-draw="1" d="M110 101 V150"/>
                                 <path data-draw="1" d="M86 150 a24 9 0 0 0 48 0"/>
-                                <circle cx="110" cy="150" r="3" fill="#c99a4e" stroke="none"/>
+                                <circle cx="110" cy="150" r="3" fill="#c9945e" stroke="none"/>
                                 <!-- right pan -->
                                 <path data-draw="1" d="M260 115 V164"/>
                                 <path data-draw="1" d="M236 164 a24 9 0 0 0 48 0"/>
-                                <circle cx="260" cy="164" r="3" fill="#c99a4e" stroke="none"/>
+                                <circle cx="260" cy="164" r="3" fill="#c9945e" stroke="none"/>
                             </svg>
                         </div>
                     </div>
@@ -147,6 +147,41 @@
                 </div>
             </section>
 
+            <!-- ============ ③ شركاؤنا ============ -->
+            <section id="ms-partners" class="ms-section" data-name="Partners">
+                <div class="ms-wrap">
+                    <div class="ms-partners-head ms-reveal">
+                        <span class="ms-eyebrow">شركاء النجاح</span>
+                        <h2 class="ms-title">شركات وثقت في «مانجر سوليوشنز»</h2>
+                        <p class="ms-lead">تشرّفنا بالتعاون مع نخبة من الشركات في مجالات الأثاث والملابس والتكييفات والأدوات المنزلية والأحذية.</p>
+                    </div>
+                </div>
+                <div class="ms-marquee">
+                    <div class="ms-marquee-track">
+                        <div class="ms-partner"><span class="ms-partner-mono">i</span><span class="ms-partner-name">iFruit</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">م</span><span class="ms-partner-name">مينون للأثاث</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">ج</span><span class="ms-partner-name">جراند للأثاث</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">م</span><span class="ms-partner-name">مينفلكس للملابس</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">و</span><span class="ms-partner-name">وائل محمد للتكييفات</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">ق</span><span class="ms-partner-name">القدس للأدوات المنزلية</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">ج</span><span class="ms-partner-name">جلوريا للأثاث</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">E</span><span class="ms-partner-name">Ezora للأثاث</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">ن</span><span class="ms-partner-name">نورماندي للأحذية</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">م</span><span class="ms-partner-name">الموحّدون للأثاث</span></div>
+                        <div class="ms-partner" aria-hidden="true"><span class="ms-partner-mono">i</span><span class="ms-partner-name">iFruit</span></div>
+                        <div class="ms-partner" aria-hidden="true"><span class="ms-partner-mono">م</span><span class="ms-partner-name">مينون للأثاث</span></div>
+                        <div class="ms-partner" aria-hidden="true"><span class="ms-partner-mono">ج</span><span class="ms-partner-name">جراند للأثاث</span></div>
+                        <div class="ms-partner" aria-hidden="true"><span class="ms-partner-mono">م</span><span class="ms-partner-name">مينفلكس للملابس</span></div>
+                        <div class="ms-partner" aria-hidden="true"><span class="ms-partner-mono">و</span><span class="ms-partner-name">وائل محمد للتكييفات</span></div>
+                        <div class="ms-partner" aria-hidden="true"><span class="ms-partner-mono">ق</span><span class="ms-partner-name">القدس للأدوات المنزلية</span></div>
+                        <div class="ms-partner" aria-hidden="true"><span class="ms-partner-mono">ج</span><span class="ms-partner-name">جلوريا للأثاث</span></div>
+                        <div class="ms-partner" aria-hidden="true"><span class="ms-partner-mono">E</span><span class="ms-partner-name">Ezora للأثاث</span></div>
+                        <div class="ms-partner" aria-hidden="true"><span class="ms-partner-mono">ن</span><span class="ms-partner-name">نورماندي للأحذية</span></div>
+                        <div class="ms-partner" aria-hidden="true"><span class="ms-partner-mono">م</span><span class="ms-partner-name">الموحّدون للأثاث</span></div>
+                    </div>
+                </div>
+            </section>
+
             <!-- ============ ④ الباقات ============ -->
             <section id="ms-packages" class="ms-section" data-name="Packages">
                 <div class="ms-wrap">
@@ -186,29 +221,6 @@
                             </ul>
                             <a href="/#ms-cta" class="ms-btn ms-btn-ghost ms-plan-cta">اختر الباقة</a>
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ============ ④ شركاؤنا ============ -->
-            <section id="ms-partners" class="ms-section" data-name="Partners">
-                <div class="ms-wrap">
-                    <div class="ms-partners-head ms-reveal">
-                        <span class="ms-eyebrow">شركاء النجاح</span>
-                        <h2 class="ms-title">شركات وثقت في «مانجر سوليوشنز»</h2>
-                        <p class="ms-lead">تشرّفنا بالتعاون مع نخبة من الشركات في مجالات الأثاث والملابس والتكييفات والأدوات المنزلية والأحذية.</p>
-                    </div>
-                    <div class="ms-roster ms-stagger">
-                        <div class="ms-partner"><span class="ms-partner-mono">i</span><span class="ms-partner-name">iFruit</span></div>
-                        <div class="ms-partner"><span class="ms-partner-mono">م</span><span class="ms-partner-name">مينون للأثاث</span></div>
-                        <div class="ms-partner"><span class="ms-partner-mono">ج</span><span class="ms-partner-name">جراند للأثاث</span></div>
-                        <div class="ms-partner"><span class="ms-partner-mono">م</span><span class="ms-partner-name">مينفلكس للملابس</span></div>
-                        <div class="ms-partner"><span class="ms-partner-mono">و</span><span class="ms-partner-name">وائل محمد للتكييفات</span></div>
-                        <div class="ms-partner"><span class="ms-partner-mono">ق</span><span class="ms-partner-name">القدس للأدوات المنزلية</span></div>
-                        <div class="ms-partner"><span class="ms-partner-mono">ج</span><span class="ms-partner-name">جلوريا للأثاث</span></div>
-                        <div class="ms-partner"><span class="ms-partner-mono">E</span><span class="ms-partner-name">Ezora للأثاث</span></div>
-                        <div class="ms-partner"><span class="ms-partner-mono">ن</span><span class="ms-partner-name">نورماندي للأحذية</span></div>
-                        <div class="ms-partner"><span class="ms-partner-mono">م</span><span class="ms-partner-name">الموحّدون للأثاث</span></div>
                     </div>
                 </div>
             </section>
