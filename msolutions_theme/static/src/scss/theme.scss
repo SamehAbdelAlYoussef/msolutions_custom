@@ -215,7 +215,7 @@
 // Focus background: a spotlight glow + concentric rings that expand when the
 // section scrolls into view, drawing attention to the service cards.
 .ms-focus { position: absolute; inset: 0; z-index: 0; pointer-events: none; display: grid; place-items: center; overflow: hidden; }
-.ms-focus::before { content: ""; width: min(88vw, 820px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(176, 122, 78, 0.20), rgba(13, 43, 82, 0.06) 45%, transparent 68%); }
+.ms-focus::before { content: ""; width: 82vw; max-width: 820px; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(176, 122, 78, 0.20), rgba(13, 43, 82, 0.06) 45%, transparent 68%); }
 .ms-focus span { position: absolute; width: 320px; aspect-ratio: 1; border-radius: 50%; border: 1.5px solid rgba(13, 43, 82, 0.12); }
 .ms-focus span:nth-child(2) { width: 560px; border-color: rgba(176, 122, 78, 0.18); }
 .ms-services > .ms-wrap { position: relative; z-index: 1; }
