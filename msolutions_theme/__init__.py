@@ -56,3 +56,20 @@ def post_init_hook(env):
             company.country_id = eg.id
     except Exception as e:  # noqa: BLE001
         _logger.warning("msolutions_theme: company config failed: %s", e)
+
+    # 4) Homepage SEO — applied to whatever page answers at '/'.
+    try:
+        for page in env["website.page"].search([("url", "=", "/")]):
+            page.website_meta_title = (
+                "مانجر سوليوشنز | المراجعة والإدارة المالية وتطبيق Odoo ERP"
+            )
+            page.website_meta_description = (
+                "مانجر سوليوشنز تقدّم المحاسبة عن بُعد، المراجعة المالية، "
+                "الاستشارات المالية والإدارية، وتطبيق وتشغيل Odoo ERP "
+                "للشركات الصغيرة والمتوسطة في مصر."
+            )
+            page.website_meta_keywords = (
+                "محاسبة عن بعد, مراجعة مالية, استشارات مالية, Odoo, ERP, مصر"
+            )
+    except Exception as e:  # noqa: BLE001
+        _logger.warning("msolutions_theme: homepage SEO failed: %s", e)
