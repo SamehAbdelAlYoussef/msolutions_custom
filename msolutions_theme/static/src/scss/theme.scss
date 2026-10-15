@@ -212,11 +212,11 @@
 // =====================================================================
 .ms-services { background: var(--ms-paper-dim); border-block: 1px solid var(--ms-line); position: relative; overflow: hidden; }
 // three brand-colour vertical lines down the left, spanning the section, drawing in on scroll
-.ms-vlines { position: absolute; top: 0; bottom: 0; left: 0; display: flex; gap: 9px; padding-inline-start: 20px; pointer-events: none; z-index: 0; }
-.ms-vlines span { width: 3px; height: 100%; background: var(--ms-forest); border-radius: 2px; }
-.ms-vlines span:nth-child(1) { opacity: 0.95; }
-.ms-vlines span:nth-child(2) { opacity: 0.6; }
-.ms-vlines span:nth-child(3) { background: var(--ms-brass); opacity: 0.9; }
+.ms-vlines { position: absolute; top: 0; bottom: 0; left: 0; right: auto; display: flex; gap: 13px; padding-left: 30px; direction: ltr; pointer-events: none; z-index: 0; }
+.ms-vlines span { width: 6px; height: 100%; background: var(--ms-forest); border-radius: 3px; }
+.ms-vlines span:nth-child(1) { opacity: 1; }
+.ms-vlines span:nth-child(2) { opacity: 0.68; }
+.ms-vlines span:nth-child(3) { opacity: 0.42; }
 .ms-services > .ms-wrap { position: relative; z-index: 1; }
 .ms-anim .ms-vlines span { transform: scaleY(0); transform-origin: top; transition: transform 1s cubic-bezier(.22,.61,.36,1); }
 .ms-anim .ms-vlines.is-in span { transform: scaleY(1); }
@@ -321,9 +321,9 @@
 // =====================================================================
 //  VIDEOS — TikTok embeds
 // =====================================================================
-.ms-videos { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-top: 2.6rem; }
-.ms-video { width: 325px; max-width: 100%; }
-.ms-video iframe { width: 100%; height: 575px; border: 0; border-radius: 14px; display: block; background: var(--ms-panel); box-shadow: 0 16px 36px rgba(18, 43, 68, 0.12); }
+.ms-videos { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 1.2rem; margin-top: 2.6rem; }
+.ms-videos .tiktok-embed { margin: 0 !important; }
+.ms-videos iframe { border-radius: 14px; box-shadow: 0 16px 36px rgba(18, 43, 68, 0.12); }
 
 // =====================================================================
 //  FOOTER — styled on the inherited footer_custom markup
