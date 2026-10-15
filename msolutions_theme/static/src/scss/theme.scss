@@ -228,41 +228,21 @@
 // =====================================================================
 //  SECTORS — industries we serve, rich tiles on an attracting dark ground
 // =====================================================================
-.ms-sectors {
-  background: linear-gradient(158deg, var(--ms-forest) 0%, var(--ms-forest-deep) 100%);
-  color: var(--ms-on-dark); position: relative; overflow: hidden;
-}
-.ms-sectors-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-.ms-sectors-bg::before {
-  content: ""; position: absolute; inset: 0;
-  background-image: linear-gradient(var(--ms-line-dark) 1px, transparent 1px), linear-gradient(90deg, var(--ms-line-dark) 1px, transparent 1px);
-  background-size: 50px 50px; opacity: 0.55;
-  -webkit-mask-image: radial-gradient(ellipse at 72% -10%, #000, transparent 72%);
-  mask-image: radial-gradient(ellipse at 72% -10%, #000, transparent 72%);
-}
-.ms-sectors-bg::after {
-  content: ""; position: absolute; width: 560px; height: 560px; top: -180px; inset-inline-start: -140px;
-  background: radial-gradient(circle, rgba(181, 133, 58, 0.22), transparent 70%);
-  animation: ms-glow 9s ease-in-out infinite alternate;
-}
-@keyframes ms-glow { from { opacity: 0.6; transform: translate(0, 0); } to { opacity: 1; transform: translate(50px, 36px); } }
-.ms-sectors .ms-wrap { position: relative; z-index: 1; }
-.ms-sectors .ms-title { color: var(--ms-on-dark); }
-.ms-sectors .ms-lead { color: var(--ms-on-dark-soft); }
-.ms-sectors-grid { margin-top: 2.6rem; display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; }
+.ms-sectors { background: var(--ms-paper); border-block: 1px solid var(--ms-line); position: relative; }
+.ms-sectors-bg { display: none; }
+.ms-sectors-grid { margin-top: 2.6rem; display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.1rem; }
 .ms-sector {
-  position: relative; border-radius: 10px; padding: 1.7rem 1rem 1.5rem; text-align: center; overflow: hidden;
-  background: linear-gradient(155deg, rgba(243, 238, 227, 0.08), rgba(243, 238, 227, 0.02));
-  border: 1px solid var(--ms-line-dark);
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  position: relative; border-radius: 12px; padding: 1.8rem 1rem 1.6rem; text-align: center; overflow: hidden;
+  background: var(--ms-paper); border: 1px solid var(--ms-line);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
-.ms-sector::before { content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 3px; background: var(--ms-brass); transform: scaleX(0); transition: transform 0.25s ease; }
-.ms-sector:hover { transform: translateY(-6px); border-color: var(--ms-brass); background: linear-gradient(155deg, rgba(181, 133, 58, 0.18), rgba(243, 238, 227, 0.03)); box-shadow: 0 22px 46px rgba(0, 0, 0, 0.3); }
+.ms-sector::before { content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 3px; background: var(--ms-brass); transform: scaleX(0); transition: transform 0.22s ease; }
+.ms-sector:hover { transform: translateY(-5px); border-color: var(--ms-brass); box-shadow: 0 16px 38px rgba(20, 58, 44, 0.1); }
 .ms-sector:hover::before { transform: scaleX(1); }
-.ms-sector-ic { display: grid; place-items: center; width: 58px; height: 58px; margin: 0 auto 0.95rem; border-radius: 50%; background: rgba(181, 133, 58, 0.14); color: var(--ms-brass-bright); transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease; }
-.ms-sector-ic svg { width: 28px; height: 28px; display: block; }
-.ms-sector:hover .ms-sector-ic { transform: scale(1.08) rotate(-3deg); background: var(--ms-brass); color: #231a0d; }
-.ms-sector-name { font-weight: 600; font-size: 1.02rem; color: var(--ms-on-dark); }
+.ms-sector-ic { display: grid; place-items: center; width: 62px; height: 62px; margin: 0 auto 1rem; border-radius: 16px; background: var(--ms-paper-dim); color: var(--ms-brass); transition: transform 0.22s ease, background 0.22s ease, color 0.22s ease; }
+.ms-sector-ic svg { width: 29px; height: 29px; display: block; }
+.ms-sector:hover .ms-sector-ic { transform: scale(1.06); background: var(--ms-forest); color: var(--ms-brass-bright); }
+.ms-sector-name { font-weight: 600; font-size: 1.03rem; color: var(--ms-ink); }
 @media (max-width: 1100px) { .ms-sectors-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 620px) { .ms-sectors-grid { grid-template-columns: repeat(2, 1fr); } }
 
