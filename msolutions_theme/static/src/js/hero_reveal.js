@@ -24,7 +24,7 @@
 
     function initReveal() {
         if (reduce || !("IntersectionObserver" in window)) return;
-        var els = document.querySelectorAll(".ms-reveal, .ms-stagger, .ms-vlines");
+        var els = document.querySelectorAll(".ms-reveal, .ms-stagger, .ms-focus");
         if (!els.length) return;
         document.documentElement.classList.add("ms-anim");
         var io = new IntersectionObserver(function (entries) {
@@ -50,7 +50,41 @@
         });
     }
 
-    function init() { drawHero(); initReveal(); brandContact(); }
+    function initVideos() {
+        var cards = document.querySelectorAll(".ms-video");
+        if (!cards.length) return;
+        var vids = document.querySelectorAll(".ms-video-el");
+        // Autoplay muted while in view; pause when out (saves resources).
+        if ("IntersectionObserver" in window) {
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) {
+                    if (e.isIntersecting) { e.target.play().catch(function () {}); }
+                    else { e.target.pause(); }
+                });
+            }, { threshold: 0.35 });
+            Array.prototype.forEach.call(vids, function (v) { io.observe(v); });
+        }
+        // Tap the button to turn sound on (and ensure only one plays with sound).
+        Array.prototype.forEach.call(cards, function (card) {
+            var v = card.querySelector(".ms-video-el");
+            var btn = card.querySelector(".ms-video-sound");
+            if (!v || !btn) return;
+            btn.addEventListener("click", function () {
+                if (v.muted) {
+                    Array.prototype.forEach.call(vids, function (o) { if (o !== v) { o.muted = true; } });
+                    Array.prototype.forEach.call(document.querySelectorAll(".ms-video.is-playing"), function (c) { c.classList.remove("is-playing"); });
+                    v.muted = false;
+                    v.play().catch(function () {});
+                    card.classList.add("is-playing");
+                } else {
+                    v.muted = true;
+                    card.classList.remove("is-playing");
+                }
+            });
+        });
+    }
+
+    function init() { drawHero(); initReveal(); brandContact(); initVideos(); }
     if (document.readyState !== "loading") init();
     else document.addEventListener("DOMContentLoaded", init);
 })();

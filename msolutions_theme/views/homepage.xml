@@ -90,7 +90,7 @@
 
             <!-- ============ ② خدماتنا ============ -->
             <section id="ms-services" class="ms-section ms-services" data-name="Services">
-                <div class="ms-vlines" aria-hidden="true"><span></span><span></span><span></span></div>
+                <div class="ms-focus" aria-hidden="true"><span></span><span></span></div>
                 <div class="ms-wrap">
                     <span class="ms-eyebrow">خدماتنا</span>
                     <h2 class="ms-title">أربع خدمات تبني أساسًا ماليًا متينًا</h2>
@@ -226,21 +226,27 @@
                     <h2 class="ms-title">شاهدنا على تيك توك</h2>
                     <p class="ms-lead">فيديوهات قصيرة تعرّفك على «مانجر سوليوشنز» وطريقة عملنا.</p>
                     <div class="ms-videos">
-                        <a class="ms-video" href="https://www.tiktok.com/@managersolutions_/video/7661241373957426452" target="_blank" rel="noopener">
-                            <span class="ms-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-                            <span class="ms-video-label">شاهد الفيديو</span>
-                            <span class="ms-video-handle">@managersolutions_</span>
-                        </a>
-                        <a class="ms-video" href="https://www.tiktok.com/@managersolutions_/video/7660122100790840596" target="_blank" rel="noopener">
-                            <span class="ms-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-                            <span class="ms-video-label">شاهد الفيديو</span>
-                            <span class="ms-video-handle">@managersolutions_</span>
-                        </a>
-                        <a class="ms-video" href="https://www.tiktok.com/@managersolutions_/video/7662348968944323861" target="_blank" rel="noopener">
-                            <span class="ms-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-                            <span class="ms-video-label">شاهد الفيديو</span>
-                            <span class="ms-video-handle">@managersolutions_</span>
-                        </a>
+                        <div class="ms-video">
+                            <video class="ms-video-el" src="/msolutions_theme/static/src/video/v1.mp4" muted="muted" loop="loop" playsinline="playsinline" preload="metadata"></video>
+                            <button class="ms-video-sound" type="button" aria-label="تشغيل الصوت">
+                                <svg class="ms-ic ms-ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M22 9l-5 6M17 9l5 6"/></svg>
+                                <svg class="ms-ic ms-ic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11"/></svg>
+                            </button>
+                        </div>
+                        <div class="ms-video">
+                            <video class="ms-video-el" src="/msolutions_theme/static/src/video/v2.mp4" muted="muted" loop="loop" playsinline="playsinline" preload="metadata"></video>
+                            <button class="ms-video-sound" type="button" aria-label="تشغيل الصوت">
+                                <svg class="ms-ic ms-ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M22 9l-5 6M17 9l5 6"/></svg>
+                                <svg class="ms-ic ms-ic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11"/></svg>
+                            </button>
+                        </div>
+                        <div class="ms-video">
+                            <video class="ms-video-el" src="/msolutions_theme/static/src/video/v3.mp4" muted="muted" loop="loop" playsinline="playsinline" preload="metadata"></video>
+                            <button class="ms-video-sound" type="button" aria-label="تشغيل الصوت">
+                                <svg class="ms-ic ms-ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M22 9l-5 6M17 9l5 6"/></svg>
+                                <svg class="ms-ic ms-ic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11"/></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
