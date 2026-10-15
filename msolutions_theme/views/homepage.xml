@@ -127,8 +127,7 @@
             </section>
 
             <!-- ============ ③ القطاعات ============ -->
-            <section id="ms-sectors" class="ms-section ms-sectors ms-on-dark" data-name="Sectors">
-                <div class="ms-sectors-bg" aria-hidden="true"></div>
+            <section id="ms-sectors" class="ms-section ms-sectors" data-name="Sectors">
                 <div class="ms-wrap">
                     <span class="ms-eyebrow">القطاعات التي نخدمها</span>
                     <h2 class="ms-title">خبرة تمتدّ عبر قطاعات متعددة</h2>

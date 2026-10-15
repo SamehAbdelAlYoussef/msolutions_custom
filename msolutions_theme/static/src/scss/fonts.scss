@@ -2,7 +2,10 @@
 // Reem Kufi = constructed geometric display (headings).
 // IBM Plex Sans Arabic = legible technical body/UI (Arabic + Latin).
 
-$ms-font-path: "/msolutions_theme/static/src/fonts";
+// Path is RELATIVE to this scss file: Odoo's asset pipeline resolves url()
+// against the file's own directory (/msolutions_theme/static/src/scss/), so an
+// absolute path would get that dir prepended and 404.
+$ms-font-path: "../fonts";
 
 $ms-range-latin: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
   U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
