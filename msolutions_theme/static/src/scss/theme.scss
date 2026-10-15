@@ -1,3 +1,9 @@
+// fluid(min, preferred, max): emit a literal clamp() so Odoo's sass does
+// not try to evaluate mixed units (rem vs vw) and fail.
+@function fluid($min, $pref, $max) {
+  @return unquote("clamp(#{$min}, #{$pref}, #{$max})");
+}
+
 // =====================================================================
 //  Manager Solutions — theme
 //  Concept: "precision as craft" — a balanced ledger and a well-made
@@ -45,9 +51,9 @@
 }
 
 // reusable building blocks --------------------------------------------
-.ms-wrap { max-width: var(--ms-maxw); margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2.5rem); }
+.ms-wrap { max-width: var(--ms-maxw); margin-inline: auto; padding-inline: fluid(1rem, 4vw, 2.5rem); }
 
-.ms-section { position: relative; padding-block: clamp(4rem, 8vw, 7rem); scroll-margin-top: var(--ms-nav-h); }
+.ms-section { position: relative; padding-block: fluid(4rem, 8vw, 7rem); scroll-margin-top: var(--ms-nav-h); }
 
 // dimension-tick label (the "measure" motif — meaningful, not decoration)
 .ms-eyebrow {
@@ -58,8 +64,8 @@
 }
 .ms-on-dark .ms-eyebrow { color: var(--ms-brass-bright); }
 
-.ms-title { font-size: clamp(1.75rem, 4.2vw, 2.85rem); margin: 0 0 1rem; }
-.ms-lead { font-size: clamp(1.05rem, 1.8vw, 1.3rem); color: var(--ms-ink-soft); max-width: 60ch; }
+.ms-title { font-size: fluid(1.75rem, 4.2vw, 2.85rem); margin: 0 0 1rem; }
+.ms-lead { font-size: fluid(1.05rem, 1.8vw, 1.3rem); color: var(--ms-ink-soft); max-width: 60ch; }
 
 // buttons
 .ms-btn {
@@ -84,7 +90,7 @@
   border-bottom: 1px solid var(--ms-line);
   box-shadow: none;
 
-  .navbar { min-height: var(--ms-nav-h); padding-inline: clamp(1rem, 4vw, 2.5rem); }
+  .navbar { min-height: var(--ms-nav-h); padding-inline: fluid(1rem, 4vw, 2.5rem); }
   .navbar-brand { padding: 0; img, svg { height: 38px; width: auto; } }
 
   .navbar-nav { gap: 0.35rem; align-items: center; }
@@ -131,12 +137,12 @@
 }
 .ms-hero .ms-wrap { position: relative; }
 .ms-hero-grid {
-  display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(1.5rem, 4vw, 3.5rem);
-  align-items: center; padding-block: clamp(4.5rem, 9vw, 8rem);
+  display: grid; grid-template-columns: 1.15fr 0.85fr; gap: fluid(1.5rem, 4vw, 3.5rem);
+  align-items: center; padding-block: fluid(4.5rem, 9vw, 8rem);
 }
 .ms-hero h1 {
   color: var(--ms-on-dark); margin: 0 0 1.4rem;
-  font-size: clamp(2.3rem, 7vw, 4.4rem); line-height: 1.12;
+  font-size: fluid(2.3rem, 7vw, 4.4rem); line-height: 1.12;
 }
 .ms-hero h1 .ms-accent { color: var(--ms-brass-bright); }
 .ms-hero .ms-lead { color: var(--ms-on-dark-soft); max-width: 46ch; margin-bottom: 2.1rem; }
@@ -148,7 +154,7 @@
 // =====================================================================
 //  ① ABOUT
 // =====================================================================
-.ms-about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 5vw, 4rem); align-items: start; }
+.ms-about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: fluid(1.5rem, 5vw, 4rem); align-items: start; }
 .ms-about-body p + p { margin-top: 1.1rem; }
 .ms-pillars { display: grid; gap: 1px; background: var(--ms-line); border: 1px solid var(--ms-line); }
 .ms-pillar { background: var(--ms-paper); padding: 1.4rem 1.5rem; }
