@@ -294,6 +294,8 @@
   .ms-foot-logo { height: 56px; width: auto; display: block; }
   .ms-foot-copy { border-top: 1px solid var(--ms-line-dark); color: rgba(243, 238, 227, 0.5); font-size: 0.9rem; }
 }
+// Remove Odoo's "Powered by Odoo" copyright bar (brand uses its own copyright above).
+#wrapwrap .o_footer_copyright { display: none !important; }
 
 // =====================================================================
 //  Responsive
