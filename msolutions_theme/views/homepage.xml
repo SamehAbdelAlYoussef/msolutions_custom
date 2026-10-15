@@ -12,6 +12,21 @@
 
             <!-- ============ HERO ============ -->
             <section class="ms-hero" data-name="Hero">
+                <div class="ms-hero-bg" aria-hidden="true">
+                    <svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#c99a4e">
+                        <g opacity="0.16" stroke-width="2" stroke-linecap="round">
+                            <path class="ms-flow" d="M-20 560 C 240 520, 470 420, 1220 150"/>
+                            <path class="ms-flow ms-flow-2" d="M-20 620 C 300 585, 560 470, 1220 250"/>
+                            <path class="ms-flow ms-flow-3" d="M-20 500 C 210 470, 520 350, 1220 60"/>
+                        </g>
+                        <g stroke="none" fill="#c99a4e">
+                            <circle class="ms-spark" cx="200" cy="470" r="3.5"/>
+                            <circle class="ms-spark ms-spark-2" cx="470" cy="420" r="3"/>
+                            <circle class="ms-spark ms-spark-3" cx="780" cy="300" r="3.5"/>
+                            <circle class="ms-spark ms-spark-4" cx="1020" cy="200" r="3"/>
+                        </g>
+                    </svg>
+                </div>
                 <div class="ms-wrap">
                     <div class="ms-hero-grid">
                         <div class="ms-hero-copy">
@@ -53,13 +68,13 @@
             <section id="ms-about" class="ms-section" data-name="About">
                 <div class="ms-wrap">
                     <div class="ms-about-grid">
-                        <div class="ms-about-body">
+                        <div class="ms-about-body ms-reveal">
                             <span class="ms-eyebrow">من نحن</span>
                             <h2 class="ms-title">خبرة تجمع بين المال والصناعة</h2>
                             <p>نمتلك خبرة قوية في تطبيق وتشغيل نظام Odoo ERP، ونساعد الشركات على التحوّل الرقمي وتنظيم عملياتها المالية والإدارية بكفاءة وسهولة.</p>
                             <p>فريقنا يمتلك خبرة طويلة في إدارة وتشغيل مصانع ومعارض الأثاث في مصر، وهو ما يجعلنا نفهم السوق عن قُرب، ونقدّم حلولًا عملية تناسب التحدّيات الحقيقية.</p>
                         </div>
-                        <div class="ms-pillars">
+                        <div class="ms-pillars ms-stagger">
                             <div class="ms-pillar">
                                 <div class="ms-pillar-k"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 14.5 8 8 14.5 1.5 8Z"/></svg></div>
                                 <h3>تحوّل رقمي منظّم</h3>
@@ -86,7 +101,7 @@
                     <span class="ms-eyebrow">خدماتنا</span>
                     <h2 class="ms-title">أربع خدمات تبني أساسًا ماليًا متينًا</h2>
                     <p class="ms-lead">من إدارة الحسابات اليومية إلى تشغيل نظام متكامل يدير نشاطك بالكامل.</p>
-                    <div class="ms-services-grid">
+                    <div class="ms-services-grid ms-stagger">
                         <div class="ms-svc">
                             <div class="ms-svc-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="24" height="16" rx="1.5"/><path d="M4 26h24M11 22v4m10-4v4M9 12h6m-6 4h10"/></svg></div>
                             <h3>المحاسبة عن بُعد</h3>
@@ -111,13 +126,35 @@
                 </div>
             </section>
 
-            <!-- ============ ③ الباقات ============ -->
+            <!-- ============ ③ القطاعات ============ -->
+            <section id="ms-sectors" class="ms-section ms-sectors ms-on-dark" data-name="Sectors">
+                <div class="ms-sectors-bg" aria-hidden="true"></div>
+                <div class="ms-wrap">
+                    <span class="ms-eyebrow">القطاعات التي نخدمها</span>
+                    <h2 class="ms-title">خبرة تمتدّ عبر قطاعات متعددة</h2>
+                    <p class="ms-lead">من خطوط الإنتاج إلى المعارض ونقاط البيع — نفهم طبيعة كل قطاع ونبني له الحل المناسب.</p>
+                    <div class="ms-sectors-grid ms-stagger">
+                        <div class="ms-sector"><span class="ms-sector-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V10l5 3.5V10l5 3.5V6l4 2.5V21M9 21v-3h3v3"/></svg></span><span class="ms-sector-name">التصنيع</span></div>
+                        <div class="ms-sector"><span class="ms-sector-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2M3 14a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v4H3zM6 20v1M18 20v1"/></svg></span><span class="ms-sector-name">الأثاث</span></div>
+                        <div class="ms-sector"><span class="ms-sector-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4 4 6l2 4 2-1v11h8V9l2 1 2-4-4-2-4 3z"/></svg></span><span class="ms-sector-name">الملابس</span></div>
+                        <div class="ms-sector"><span class="ms-sector-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v10h16V10M3 10l1.5-5h15L21 10a2.5 2.5 0 0 1-5 0 2.5 2.5 0 0 1-4 0 2.5 2.5 0 0 1-4 0 2.5 2.5 0 0 1-5 0M10 20v-6h4v6"/></svg></span><span class="ms-sector-name">التجزئة والمعارض</span></div>
+                        <div class="ms-sector"><span class="ms-sector-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7M5 9.5V20h14V9.5M9.5 20v-6h5v6"/></svg></span><span class="ms-sector-name">الأدوات المنزلية</span></div>
+                        <div class="ms-sector"><span class="ms-sector-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v9l-2 4a1 1 0 0 0 1 1.5h16a3 3 0 0 0-2.2-2.9L12 13V4zM5 13h4"/></svg></span><span class="ms-sector-name">الأحذية</span></div>
+                        <div class="ms-sector"><span class="ms-sector-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="9" rx="1.5"/><path d="M5 9h8M6 17s.6-1 1.6-1 1 1 2 1M12.8 17s.6-1 1.6-1 1 1 2 1"/></svg></span><span class="ms-sector-name">التكييف والتبريد</span></div>
+                        <div class="ms-sector"><span class="ms-sector-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V7l7-3v17M10 21V10l8 3v8M3 21h18M6 9v.01M6 13v.01M6 17v.01M14 14v.01M14 18v.01"/></svg></span><span class="ms-sector-name">المقاولات</span></div>
+                        <div class="ms-sector"><span class="ms-sector-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a2 2 0 0 0 4 0V3M8 10v11M17 3c-1.6 0-2.6 2-2.6 5s1 3.6 2.6 3.6m0-8.6V21"/></svg></span><span class="ms-sector-name">المطاعم والضيافة</span></div>
+                        <div class="ms-sector"><span class="ms-sector-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v8H3zM14 9h3.5L21 12.5V15h-7M7.5 18.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M18.5 18.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/></svg></span><span class="ms-sector-name">التجارة والتوزيع</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ ④ الباقات ============ -->
             <section id="ms-packages" class="ms-section" data-name="Packages">
                 <div class="ms-wrap">
                     <span class="ms-eyebrow">باقات الاشتراك</span>
                     <h2 class="ms-title">اختر الباقة التي تناسب نموّ شركتك</h2>
                     <p class="ms-lead">ثلاث باقات متدرّجة، من تشغيل البرنامج وإدخال البيانات إلى المراجعة الميدانية والتحليل الشهري.</p>
-                    <div class="ms-plans">
+                    <div class="ms-plans ms-stagger">
                         <div class="ms-plan">
                             <h3 class="ms-plan-name">الباقة الأساسية</h3>
                             <div class="ms-plan-price"><span class="ms-plan-num">12,900</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
@@ -157,22 +194,22 @@
             <!-- ============ ④ شركاؤنا ============ -->
             <section id="ms-partners" class="ms-section" data-name="Partners">
                 <div class="ms-wrap">
-                    <div class="ms-partners-head">
+                    <div class="ms-partners-head ms-reveal">
                         <span class="ms-eyebrow">شركاء النجاح</span>
                         <h2 class="ms-title">شركات وثقت في «مانجر سوليوشنز»</h2>
                         <p class="ms-lead">تشرّفنا بالتعاون مع نخبة من الشركات في مجالات الأثاث والملابس والتكييفات والأدوات المنزلية والأحذية.</p>
                     </div>
-                    <div class="ms-roster">
-                        <span>iFruit</span>
-                        <span>مينون للأثاث</span>
-                        <span>جراند للأثاث</span>
-                        <span>مينفلكس للملابس</span>
-                        <span>وائل محمد للتكييفات</span>
-                        <span>القدس للأدوات المنزلية</span>
-                        <span>جلوريا للأثاث</span>
-                        <span>Ezora للأثاث</span>
-                        <span>نورماندي للأحذية</span>
-                        <span>الموحّدون للأثاث</span>
+                    <div class="ms-roster ms-stagger">
+                        <div class="ms-partner"><span class="ms-partner-mono">i</span><span class="ms-partner-name">iFruit</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">م</span><span class="ms-partner-name">مينون للأثاث</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">ج</span><span class="ms-partner-name">جراند للأثاث</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">م</span><span class="ms-partner-name">مينفلكس للملابس</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">و</span><span class="ms-partner-name">وائل محمد للتكييفات</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">ق</span><span class="ms-partner-name">القدس للأدوات المنزلية</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">ج</span><span class="ms-partner-name">جلوريا للأثاث</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">E</span><span class="ms-partner-name">Ezora للأثاث</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">ن</span><span class="ms-partner-name">نورماندي للأحذية</span></div>
+                        <div class="ms-partner"><span class="ms-partner-mono">م</span><span class="ms-partner-name">الموحّدون للأثاث</span></div>
                     </div>
                 </div>
             </section>

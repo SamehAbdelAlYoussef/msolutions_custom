@@ -14,6 +14,13 @@
         <field name="sequence" type="int">20</field>
     </record>
 
+    <record id="ms_menu_sectors" model="website.menu">
+        <field name="name">القطاعات</field>
+        <field name="url">/#ms-sectors</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">25</field>
+    </record>
+
     <record id="ms_menu_services" model="website.menu">
         <field name="name">خدماتنا</field>
         <field name="url">/#ms-services</field>
