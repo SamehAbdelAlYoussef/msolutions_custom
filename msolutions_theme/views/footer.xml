@@ -33,7 +33,9 @@
                         <div class="col-lg-3 col-md-12">
                             <h6>تواصل معنا</h6>
                             <ul class="list-unstyled mb-2">
+                                <li><i class="fa fa-phone fa-fw me-2"/><a href="tel:+201131316911"><span dir="ltr">01131316911</span></a></li>
                                 <li><i class="fa fa-envelope fa-fw me-2"/><a href="mailto:info@msolutions-eg.com">info@msolutions-eg.com</a></li>
+                                <li><i class="fa fa-map-marker fa-fw me-2"/><a href="https://www.google.com/maps/search/%D9%85%D8%B1%D9%83%D8%B2%20%D8%A7%D9%83%D8%AA%D9%81%20%D9%84%D9%84%D8%B9%D9%84%D8%A7%D8%AC%20%D8%A7%D9%84%D8%B7%D8%A8%D9%8A%D8%B9%D9%89%20%D9%88%D8%A7%D9%84%D8%AA%D8%A3%D9%87%D9%8A%D9%84%20Active%20Physio-Clinic/@29.971181869506836,31.314685821533203,17z?hl=en" target="_blank" rel="noopener">موقعنا على الخريطة</a></li>
                                 <li><i class="fa fa-comment fa-fw me-2"/><a href="/contactus">نموذج التواصل</a></li>
                             </ul>
                             <div class="s_social_media text-start o_not_editable" data-snippet="s_social_media" data-name="Social Media" contenteditable="false">
