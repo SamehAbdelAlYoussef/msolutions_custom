@@ -255,7 +255,7 @@
                                 <li>تطبيق وتشغيل البرنامج (Odoo)</li>
                                 <li>إدخال البيانات (داتا إنتري)</li>
                             </ul>
-                            <a href="/#ms-cta" class="ms-btn ms-btn-ghost ms-plan-cta">اختر الباقة</a>
+                            <a href="#ms-signup" class="ms-btn ms-btn-ghost ms-plan-cta" data-package="الباقة الأساسية">اختر الباقة</a>
                         </div>
                         <div class="ms-plan ms-plan-featured">
                             <span class="ms-plan-badge">الأكثر طلبًا</span>
@@ -266,7 +266,7 @@
                                 <li>إدخال البيانات (داتا إنتري)</li>
                                 <li>مراجعة مالية أونلاين</li>
                             </ul>
-                            <a href="/#ms-cta" class="ms-btn ms-btn-primary ms-plan-cta">اختر الباقة</a>
+                            <a href="#ms-signup" class="ms-btn ms-btn-primary ms-plan-cta" data-package="الباقة المتقدّمة">اختر الباقة</a>
                         </div>
                         <div class="ms-plan">
                             <h3 class="ms-plan-name">الباقة الشاملة</h3>
@@ -278,7 +278,48 @@
                                 <li>تحليل شهري لنتائج الأعمال</li>
                                 <li>تقديم التوصيات اللازمة</li>
                             </ul>
-                            <a href="/#ms-cta" class="ms-btn ms-btn-ghost ms-plan-cta">اختر الباقة</a>
+                            <a href="#ms-signup" class="ms-btn ms-btn-ghost ms-plan-cta" data-package="الباقة الشاملة">اختر الباقة</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- full-width self-service signup wizard -->
+                <div id="ms-signup" class="ms-signup" hidden="hidden">
+                    <div class="ms-signup-wrap">
+                        <div class="ms-signup-info">
+                            <span class="ms-eyebrow">إنشاء حسابك الآن</span>
+                            <h3 class="ms-signup-title">ابدأ مع <span class="ms-signup-pkg">الباقة</span></h3>
+                            <p class="ms-signup-sub">جهّز نظامك المتكامل في ثوانٍ — بكل التطبيقات الأساسية جاهزة:</p>
+                            <ul class="ms-signup-feats">
+                                <li>المحاسبة (Accounting)</li>
+                                <li>إدارة العملاء (CRM)</li>
+                                <li>المبيعات (Sales)</li>
+                                <li>المشتريات (Purchase)</li>
+                                <li>المخزون (Inventory)</li>
+                            </ul>
+                        </div>
+                        <form class="ms-signup-form">
+                            <div class="ms-field"><label>اسم الشركة *</label><input type="text" name="company" autocomplete="organization" required="required"/></div>
+                            <div class="ms-field"><label>نشاط الشركة</label><input type="text" name="activity" placeholder="مثال: تجارة أثاث"/></div>
+                            <div class="ms-field"><label>رابط حسابك</label><div class="ms-subfield"><input type="text" name="subdomain" placeholder="yourco"/><span class="ms-sub-suffix">.msolutions-eg.com</span></div></div>
+                            <div class="ms-field-row">
+                                <div class="ms-field"><label>البريد الإلكتروني</label><input type="email" name="email"/></div>
+                                <div class="ms-field"><label>رقم الهاتف</label><input type="tel" name="phone"/></div>
+                            </div>
+                            <input type="text" name="company_url" class="ms-hp" tabindex="-1" autocomplete="off" aria-hidden="true"/>
+                            <input type="hidden" name="package"/>
+                            <button type="submit" class="ms-btn ms-btn-primary ms-signup-go">ابدأ الإنشاء</button>
+                            <p class="ms-signup-msg" role="alert"></p>
+                        </form>
+                        <div class="ms-signup-result" hidden="hidden">
+                            <div class="ms-res-badge">✓</div>
+                            <h3>تم إنشاء حسابك بنجاح 🎉</h3>
+                            <p>احفظ بيانات الدخول دي دلوقتي:</p>
+                            <div class="ms-res-grid">
+                                <div class="ms-res-row"><span>الرابط</span><a class="ms-res-url" target="_blank" rel="noopener"></a></div>
+                                <div class="ms-res-row"><span>المستخدم</span><b class="ms-res-login"></b></div>
+                                <div class="ms-res-row"><span>كلمة المرور</span><b class="ms-res-pass"></b></div>
+                            </div>
+                            <a class="ms-btn ms-btn-primary ms-res-open" target="_blank" rel="noopener">افتح حسابك الآن</a>
                         </div>
                     </div>
                 </div>

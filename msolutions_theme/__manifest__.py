@@ -14,7 +14,7 @@ website editor keeps working), self-hosted fonts, and SEO metadata.
     "author": "Manager Solutions",
     "website": "https://msolutions-eg.com",
     "license": "LGPL-3",
-    "depends": ["website"],
+    "depends": ["website", "msolutions_saas"],
     "data": [
         "data/website_menu.xml",
         "views/footer.xml",

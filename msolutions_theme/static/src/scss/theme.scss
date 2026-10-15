@@ -337,6 +337,46 @@
 .ms-plan-cta { margin-top: auto; justify-content: center; }
 
 // =====================================================================
+//  Self-service signup wizard (full-width band under the plans)
+// =====================================================================
+.ms-signup { margin-top: 3rem; background: linear-gradient(160deg, var(--ms-forest), var(--ms-forest-deep)); color: var(--ms-on-dark); }
+.ms-signup[hidden] { display: none; }
+.ms-signup-wrap { max-width: var(--ms-maxw); margin-inline: auto; padding: 3rem 2rem; display: grid; grid-template-columns: 1fr 1.15fr; gap: 2.5rem; align-items: start; }
+.ms-signup-info .ms-eyebrow { color: var(--ms-brass-bright); }
+.ms-signup-title { color: var(--ms-on-dark); font-size: 2rem; margin: 0 0 0.6rem; }
+.ms-signup-pkg { color: var(--ms-brass-bright); }
+.ms-signup-sub { color: var(--ms-on-dark-soft); }
+.ms-signup-feats { list-style: none; padding: 0; margin: 1.3rem 0 0; display: grid; gap: 0.75rem; }
+.ms-signup-feats li { position: relative; padding-inline-start: 1.9rem; color: var(--ms-on-dark); font-weight: 500; font-size: 1.05rem; }
+.ms-signup-feats li::before { content: ""; position: absolute; inset-inline-start: 0.3rem; top: 0.3em; width: 6px; height: 11px; border: solid var(--ms-brass-bright); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.ms-signup-form { background: var(--ms-paper); border-radius: 14px; padding: 1.8rem; display: grid; gap: 1rem; }
+.ms-field { display: grid; gap: 0.35rem; }
+.ms-field label { font-weight: 600; color: var(--ms-ink); font-size: 1rem; }
+.ms-field input { width: 100%; padding: 0.72rem 0.9rem; border: 1px solid var(--ms-line); border-radius: 8px; font: inherit; color: var(--ms-ink); background: #fff; }
+.ms-field input:focus { outline: 2px solid var(--ms-brass); outline-offset: 1px; border-color: var(--ms-brass); }
+.ms-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.ms-subfield { display: flex; align-items: stretch; border: 1px solid var(--ms-line); border-radius: 8px; overflow: hidden; background: #fff; direction: ltr; }
+.ms-subfield input { border: 0; border-radius: 0; }
+.ms-sub-suffix { background: var(--ms-panel); color: var(--ms-ink-soft); padding: 0.72rem 0.8rem; font-size: 0.92rem; white-space: nowrap; display: flex; align-items: center; }
+.ms-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.ms-signup-go { justify-content: center; margin-top: 0.4rem; }
+.ms-signup-go[disabled] { opacity: 0.7; cursor: default; }
+.ms-signup-msg { margin: 0; color: #c0392b; font-weight: 600; }
+.ms-signup-result { background: var(--ms-paper); border-radius: 14px; padding: 2rem; text-align: center; }
+.ms-signup-result[hidden] { display: none; }
+.ms-res-badge { width: 60px; height: 60px; border-radius: 50%; background: #1f7a4d; color: #fff; font-size: 2rem; display: grid; place-items: center; margin: 0 auto 1rem; }
+.ms-signup-result h3 { color: var(--ms-forest); }
+.ms-res-grid { display: grid; gap: 0.6rem; margin: 1.3rem 0; text-align: start; }
+.ms-res-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0.9rem; background: var(--ms-panel); border-radius: 8px; }
+.ms-res-row span { color: var(--ms-ink-soft); font-weight: 600; }
+.ms-res-row b, .ms-res-row a { color: var(--ms-forest); word-break: break-all; }
+.ms-res-open { justify-content: center; }
+@media (max-width: 860px) {
+  .ms-signup-wrap { grid-template-columns: 1fr; padding: 2rem 1.25rem; gap: 1.6rem; }
+  .ms-field-row { grid-template-columns: 1fr; }
+}
+
+// =====================================================================
 //  VIDEOS — TikTok embeds
 // =====================================================================
 .ms-videos { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.4rem; margin-top: 2.6rem; }

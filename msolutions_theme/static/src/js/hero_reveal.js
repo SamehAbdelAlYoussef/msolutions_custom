@@ -84,7 +84,84 @@
         });
     }
 
-    function init() { drawHero(); initReveal(); brandContact(); initVideos(); }
+    function rpc(url, params) {
+        return fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", method: "call", params: params || {} }),
+        }).then(function (r) { return r.json(); }).then(function (j) { return j.result || {}; });
+    }
+
+    function initSignup() {
+        var wiz = document.getElementById("ms-signup");
+        if (!wiz) return;
+        var form = wiz.querySelector(".ms-signup-form");
+        var result = wiz.querySelector(".ms-signup-result");
+        var pkgLabel = wiz.querySelector(".ms-signup-pkg");
+        var pkgInput = form.querySelector("[name=package]");
+        var msg = wiz.querySelector(".ms-signup-msg");
+        var go = form.querySelector(".ms-signup-go");
+        var company = form.querySelector("[name=company]");
+        var sub = form.querySelector("[name=subdomain]");
+        var subEdited = false;
+
+        Array.prototype.forEach.call(document.querySelectorAll(".ms-plan-cta"), function (a) {
+            a.addEventListener("click", function (e) {
+                e.preventDefault();
+                var pkg = a.getAttribute("data-package") || "";
+                pkgLabel.textContent = pkg;
+                pkgInput.value = pkg;
+                wiz.hidden = false;
+                result.hidden = true;
+                form.hidden = false;
+                wiz.scrollIntoView({ behavior: "smooth", block: "center" });
+                setTimeout(function () { company.focus(); }, 400);
+            });
+        });
+
+        sub.addEventListener("input", function () { subEdited = true; });
+        company.addEventListener("input", function () {
+            if (subEdited) return;
+            sub.value = (company.value || "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 30);
+        });
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            msg.textContent = "";
+            var data = {};
+            ["company", "activity", "subdomain", "email", "phone", "package", "company_url"].forEach(function (n) {
+                var el = form.querySelector("[name=" + n + "]");
+                data[n] = el ? el.value : "";
+            });
+            go.disabled = true; go.textContent = "جاري الإنشاء…";
+            rpc("/ms/signup", data).then(function (r) {
+                if (!r.ok) { msg.textContent = r.error || "حدث خطأ."; go.disabled = false; go.textContent = "ابدأ الإنشاء"; return; }
+                poll(0);
+            }).catch(function () { msg.textContent = "تعذّر الاتصال، حاول مرة أخرى."; go.disabled = false; go.textContent = "ابدأ الإنشاء"; });
+        });
+
+        function poll(n) {
+            rpc("/ms/signup/status", {}).then(function (r) {
+                if (r.state === "active") { showResult(r); return; }
+                if (r.state === "error") { msg.textContent = r.error || "تعذّر إكمال الإنشاء."; go.disabled = false; go.textContent = "ابدأ الإنشاء"; return; }
+                if (n > 40) { msg.textContent = "الإنشاء يستغرق وقتًا أطول من المعتاد، سنُعلمك قريبًا."; go.disabled = false; go.textContent = "ابدأ الإنشاء"; return; }
+                setTimeout(function () { poll(n + 1); }, 2000);
+            }).catch(function () { setTimeout(function () { poll(n + 1); }, 2500); });
+        }
+
+        function showResult(r) {
+            form.hidden = true;
+            result.hidden = false;
+            var u = result.querySelector(".ms-res-url");
+            u.textContent = r.url; u.href = r.url;
+            result.querySelector(".ms-res-login").textContent = r.login;
+            result.querySelector(".ms-res-pass").textContent = r.password;
+            result.querySelector(".ms-res-open").href = r.url;
+            result.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    }
+
+    function init() { drawHero(); initReveal(); brandContact(); initVideos(); initSignup(); }
     if (document.readyState !== "loading") init();
     else document.addEventListener("DOMContentLoaded", init);
 })();
