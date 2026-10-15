@@ -226,15 +226,21 @@
                     <h2 class="ms-title">شاهدنا على تيك توك</h2>
                     <p class="ms-lead">فيديوهات قصيرة تعرّفك على «مانجر سوليوشنز» وطريقة عملنا.</p>
                     <div class="ms-videos">
-                        <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@managersolutions_/video/7661241373957426452" data-video-id="7661241373957426452" style="max-width:325px;min-width:300px;">
-                            <section><a target="_blank" href="https://www.tiktok.com/@managersolutions_">@managersolutions_</a></section>
-                        </blockquote>
-                        <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@managersolutions_/video/7660122100790840596" data-video-id="7660122100790840596" style="max-width:325px;min-width:300px;">
-                            <section><a target="_blank" href="https://www.tiktok.com/@managersolutions_">@managersolutions_</a></section>
-                        </blockquote>
-                        <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@managersolutions_/video/7662348968944323861" data-video-id="7662348968944323861" style="max-width:325px;min-width:300px;">
-                            <section><a target="_blank" href="https://www.tiktok.com/@managersolutions_">@managersolutions_</a></section>
-                        </blockquote>
+                        <a class="ms-video" href="https://www.tiktok.com/@managersolutions_/video/7661241373957426452" target="_blank" rel="noopener">
+                            <span class="ms-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+                            <span class="ms-video-label">شاهد الفيديو</span>
+                            <span class="ms-video-handle">@managersolutions_</span>
+                        </a>
+                        <a class="ms-video" href="https://www.tiktok.com/@managersolutions_/video/7660122100790840596" target="_blank" rel="noopener">
+                            <span class="ms-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+                            <span class="ms-video-label">شاهد الفيديو</span>
+                            <span class="ms-video-handle">@managersolutions_</span>
+                        </a>
+                        <a class="ms-video" href="https://www.tiktok.com/@managersolutions_/video/7662348968944323861" target="_blank" rel="noopener">
+                            <span class="ms-video-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+                            <span class="ms-video-label">شاهد الفيديو</span>
+                            <span class="ms-video-handle">@managersolutions_</span>
+                        </a>
                     </div>
                 </div>
             </section>
@@ -270,7 +276,6 @@
     "areaServed": "EG",
     "knowsAbout": ["المحاسبة عن بعد", "المراجعة المالية", "الاستشارات المالية والإدارية", "Odoo ERP"]
 }</script>
-            <script async="async" src="https://www.tiktok.com/embed.js"></script>
         </xpath>
     </template>
 
