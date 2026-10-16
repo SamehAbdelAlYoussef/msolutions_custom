@@ -105,12 +105,23 @@
         var sub = form.querySelector("[name=subdomain]");
         var subEdited = false;
 
-        function openSheet() {
+        var sheet = wiz.querySelector(".ms-signup-sheet");
+        function openSheet(pkg) {
+            pkgLabel.textContent = pkg || "";
+            pkgInput.value = pkg || "";
+            result.hidden = true;
+            form.hidden = false;
             wiz.hidden = false;
             wiz.setAttribute("aria-hidden", "false");
-            void wiz.offsetWidth; // reflow so the slide-up transition runs
+            if (sheet) sheet.scrollTop = 0;       // always open at the top
+            void wiz.offsetWidth;                 // reflow so the slide-up transition runs
             wiz.classList.add("is-open");
             document.documentElement.style.overflow = "hidden";
+            // focus without scrolling the sheet (which pushed mobile to mid-form)
+            setTimeout(function () {
+                if (sheet) sheet.scrollTop = 0;
+                try { company.focus({ preventScroll: true }); } catch (_e) { /* no focus if unsupported */ }
+            }, 460);
         }
         function closeSheet() {
             wiz.classList.remove("is-open");
@@ -119,16 +130,12 @@
             setTimeout(function () { wiz.hidden = true; }, 450);
         }
 
-        Array.prototype.forEach.call(document.querySelectorAll(".ms-plan-cta"), function (a) {
-            a.addEventListener("click", function (e) {
+        // The whole plan card opens the wizard (not just the button).
+        Array.prototype.forEach.call(document.querySelectorAll(".ms-plan"), function (card) {
+            card.addEventListener("click", function (e) {
                 e.preventDefault();
-                var pkg = a.getAttribute("data-package") || "";
-                pkgLabel.textContent = pkg;
-                pkgInput.value = pkg;
-                result.hidden = true;
-                form.hidden = false;
-                openSheet();
-                setTimeout(function () { company.focus(); }, 450);
+                var cta = card.querySelector(".ms-plan-cta");
+                openSheet(cta ? cta.getAttribute("data-package") : "");
             });
         });
         Array.prototype.forEach.call(wiz.querySelectorAll("[data-close]"), function (el) {

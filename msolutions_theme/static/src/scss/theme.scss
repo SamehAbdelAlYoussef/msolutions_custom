@@ -315,7 +315,7 @@
 .ms-plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; margin-top: 2.6rem; align-items: stretch; }
 .ms-plan {
   background: var(--ms-paper); border: 1px solid var(--ms-line); border-radius: 2px;
-  padding: 2rem 1.8rem; display: flex; flex-direction: column; position: relative;
+  padding: 2rem 1.8rem; display: flex; flex-direction: column; position: relative; cursor: pointer;
 }
 .ms-plan-featured { border: 1.5px solid var(--ms-brass); box-shadow: 0 18px 44px rgba(18, 43, 68, 0.1); }
 .ms-plan-featured::before { content: ""; position: absolute; inset-inline: -1px; top: -1px; height: 3px; background: var(--ms-brass); }
