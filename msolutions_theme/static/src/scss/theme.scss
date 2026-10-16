@@ -106,12 +106,19 @@
   }
   .nav-item .nav-link:hover::after { transform: scaleX(1); }
 
-  // the CTA menu item (link to #ms-cta) rendered as a brass button
+  // the CTA menu item (link to #ms-cta) rendered as a navy button
   .nav-item a.nav-link[href$="#ms-cta"] {
     background: var(--ms-forest); color: var(--ms-on-dark);
     padding-inline: 1.3rem; border-radius: 2px;
     &::after { content: none; }
     &:hover { background: var(--ms-forest-deep); color: #fff; }
+  }
+  // the primary "start in seconds" item (link to #ms-start) — brass, the headline action
+  .nav-item a.nav-link[href$="#ms-start"] {
+    background: var(--ms-brass); color: #231a0d; font-weight: 700;
+    padding-inline: 1.3rem; border-radius: 2px;
+    &::after { content: none; }
+    &:hover { background: var(--ms-brass-bright); color: #231a0d; }
   }
 }
 #wrapwrap > header#top.o_header_affixed { box-shadow: 0 1px 0 var(--ms-line), 0 10px 30px rgba(18, 43, 68, 0.06); }
@@ -170,7 +177,18 @@
 }
 .ms-hero h1 .ms-accent { color: var(--ms-brass-bright); }
 .ms-hero .ms-lead { color: var(--ms-on-dark-soft); max-width: 46ch; margin-bottom: 2.1rem; }
-.ms-hero-actions { display: flex; flex-wrap: wrap; gap: 0.9rem; }
+.ms-hero-actions { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; }
+// free-trial pill in the hero actions row
+.ms-trial-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.5rem 0.95rem; border-radius: 999px; font-weight: 600; font-size: 0.98rem;
+  color: var(--ms-brass-bright); background: rgba(203, 152, 98, 0.12);
+  border: 1px solid rgba(203, 152, 98, 0.4);
+}
+.ms-trial-badge::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--ms-brass-bright); box-shadow: 0 0 0 4px rgba(203, 152, 98, 0.22);
+}
 
 .ms-hero-art { justify-self: center; width: 100%; max-width: 360px; }
 .ms-hero-art svg { width: 100%; height: auto; display: block; animation: ms-mark-in 0.8s cubic-bezier(.22,.61,.36,1) both; }
@@ -359,6 +377,12 @@
 .ms-signup-title { color: var(--ms-on-dark); font-size: 2rem; margin: 0 0 0.6rem; }
 .ms-signup-pkg { color: var(--ms-brass-bright); }
 .ms-signup-sub { color: var(--ms-on-dark-soft); }
+.ms-signup-trial {
+  display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem;
+  padding: 0.45rem 0.9rem; border-radius: 999px; font-weight: 600; font-size: 0.95rem;
+  color: var(--ms-brass-bright); background: rgba(203, 152, 98, 0.14);
+  border: 1px solid rgba(203, 152, 98, 0.42);
+}
 .ms-signup-feats { list-style: none; padding: 0; margin: 1.3rem 0 0; display: grid; gap: 0.75rem; }
 .ms-signup-feats li { position: relative; padding-inline-start: 1.9rem; color: var(--ms-on-dark); font-weight: 500; font-size: 1.05rem; }
 .ms-signup-feats li::before { content: ""; position: absolute; inset-inline-start: 0.3rem; top: 0.3em; width: 6px; height: 11px; border: solid var(--ms-brass-bright); border-width: 0 2px 2px 0; transform: rotate(45deg); }
@@ -375,7 +399,8 @@
 .ms-signup-go { justify-content: center; margin-top: 0.4rem; }
 .ms-signup-go[disabled] { opacity: 0.7; cursor: default; }
 .ms-signup-msg { margin: 0; color: #c0392b; font-weight: 600; }
-.ms-signup-result { background: var(--ms-paper); border-radius: 14px; padding: 2rem; text-align: center; }
+.ms-signup-result { background: var(--ms-paper); border-radius: 14px; padding: 2rem; text-align: center; color: var(--ms-ink); }
+.ms-signup-result p { color: var(--ms-ink-soft); }
 .ms-signup-result[hidden] { display: none; }
 .ms-res-badge { width: 60px; height: 60px; border-radius: 50%; background: #1f7a4d; color: #fff; font-size: 2rem; display: grid; place-items: center; margin: 0 auto 1rem; }
 .ms-signup-result h3 { color: var(--ms-forest); }

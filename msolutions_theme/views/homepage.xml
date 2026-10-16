@@ -34,8 +34,9 @@
                             <h1>دقّة المحاسبة وخبرة الميدان،<br/><span class="ms-accent">في شريكٍ واحد.</span></h1>
                             <p class="ms-lead">نقدّم حلولًا متكاملة للمراجعة والإدارة المالية، مصمّمة لدعم نموّ الشركات الصغيرة والمتوسطة — مع خبرة عميقة في تطبيق وتشغيل نظام Odoo ERP.</p>
                             <div class="ms-hero-actions">
-                                <a href="/#ms-cta" class="ms-btn ms-btn-primary">احجز استشارة</a>
+                                <a href="#ms-start" class="ms-btn ms-btn-primary ms-start-cta">ابدأ في ثوانٍ</a>
                                 <a href="/#ms-about" class="ms-btn ms-btn-ghost">تعرّف علينا</a>
+                                <span class="ms-trial-badge">تجربة مجانية 15 يوم</span>
                             </div>
                         </div>
                         <div class="ms-hero-art" aria-hidden="true">
@@ -300,6 +301,7 @@
                                 <li>المشتريات (Purchase)</li>
                                 <li>المخزون (Inventory)</li>
                             </ul>
+                            <span class="ms-signup-trial">✓ تجربة مجانية 15 يوم — بدون بطاقة ائتمان</span>
                         </div>
                         <form class="ms-signup-form">
                             <div class="ms-field"><label>اسم الشركة *</label><input type="text" name="company" autocomplete="organization" required="required"/></div>

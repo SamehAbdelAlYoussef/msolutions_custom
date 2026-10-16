@@ -48,4 +48,11 @@
         <field name="parent_id" ref="website.main_menu"/>
         <field name="sequence" type="int">50</field>
     </record>
+
+    <record id="ms_menu_start" model="website.menu">
+        <field name="name">ابدأ في ثوانٍ</field>
+        <field name="url">/#ms-start</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">55</field>
+    </record>
 </odoo>

@@ -138,6 +138,13 @@
                 openSheet(cta ? cta.getAttribute("data-package") : "");
             });
         });
+        // Header + hero "start in seconds" links open the wizard on the recommended plan.
+        Array.prototype.forEach.call(document.querySelectorAll('a[href$="#ms-start"]'), function (a) {
+            a.addEventListener("click", function (e) {
+                e.preventDefault();
+                openSheet("الباقة المتقدّمة");
+            });
+        });
         Array.prototype.forEach.call(wiz.querySelectorAll("[data-close]"), function (el) {
             el.addEventListener("click", closeSheet);
         });
