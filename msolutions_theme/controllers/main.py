@@ -95,8 +95,8 @@ class MsSignup(http.Controller):
                 "state_since": fields.Datetime.now(),
             })
             tenant._log(
-                "provision_queued_public",
-                "company=%s activity=%s email=%s phone=%s package=%s ip=%s"
+                "provision_queued",
+                "public signup — company=%s | activity=%s | email=%s | phone=%s | package=%s | ip=%s"
                 % (company, activity, email, phone, package, ip),
             )
             request.env.cr.commit()  # make it visible to the worker before we nudge it
