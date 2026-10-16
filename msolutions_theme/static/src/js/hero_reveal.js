@@ -105,18 +105,37 @@
         var sub = form.querySelector("[name=subdomain]");
         var subEdited = false;
 
+        function openSheet() {
+            wiz.hidden = false;
+            wiz.setAttribute("aria-hidden", "false");
+            void wiz.offsetWidth; // reflow so the slide-up transition runs
+            wiz.classList.add("is-open");
+            document.documentElement.style.overflow = "hidden";
+        }
+        function closeSheet() {
+            wiz.classList.remove("is-open");
+            wiz.setAttribute("aria-hidden", "true");
+            document.documentElement.style.overflow = "";
+            setTimeout(function () { wiz.hidden = true; }, 450);
+        }
+
         Array.prototype.forEach.call(document.querySelectorAll(".ms-plan-cta"), function (a) {
             a.addEventListener("click", function (e) {
                 e.preventDefault();
                 var pkg = a.getAttribute("data-package") || "";
                 pkgLabel.textContent = pkg;
                 pkgInput.value = pkg;
-                wiz.hidden = false;
                 result.hidden = true;
                 form.hidden = false;
-                wiz.scrollIntoView({ behavior: "smooth", block: "center" });
-                setTimeout(function () { company.focus(); }, 400);
+                openSheet();
+                setTimeout(function () { company.focus(); }, 450);
             });
+        });
+        Array.prototype.forEach.call(wiz.querySelectorAll("[data-close]"), function (el) {
+            el.addEventListener("click", closeSheet);
+        });
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && !wiz.hidden) closeSheet();
         });
 
         sub.addEventListener("input", function () { subEdited = true; });

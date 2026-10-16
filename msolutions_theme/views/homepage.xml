@@ -283,8 +283,12 @@
                     </div>
                 </div>
                 <!-- full-width self-service signup wizard -->
-                <div id="ms-signup" class="ms-signup" hidden="hidden">
-                    <div class="ms-signup-wrap">
+                <div id="ms-signup" class="ms-signup" hidden="hidden" aria-hidden="true">
+                    <div class="ms-signup-backdrop" data-close="1"></div>
+                    <div class="ms-signup-sheet" role="dialog" aria-modal="true" aria-label="إنشاء حساب">
+                        <span class="ms-sheet-handle"></span>
+                        <button type="button" class="ms-signup-close" data-close="1" aria-label="إغلاق">✕</button>
+                        <div class="ms-signup-wrap">
                         <div class="ms-signup-info">
                             <span class="ms-eyebrow">إنشاء حسابك الآن</span>
                             <h3 class="ms-signup-title">ابدأ مع <span class="ms-signup-pkg">الباقة</span></h3>
@@ -320,6 +324,7 @@
                                 <div class="ms-res-row"><span>كلمة المرور</span><b class="ms-res-pass"></b></div>
                             </div>
                             <a class="ms-btn ms-btn-primary ms-res-open" target="_blank" rel="noopener">افتح حسابك الآن</a>
+                        </div>
                         </div>
                     </div>
                 </div>

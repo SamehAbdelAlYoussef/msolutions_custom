@@ -80,6 +80,11 @@ RESERVED_NAMES = frozenset({
 PASSWORD_ALPHABET = string.ascii_letters + string.digits
 
 
+def _gen_password(n=12):
+    """A unique admin password per tenant (shown once; change on first login)."""
+    return "".join(secrets.choice(PASSWORD_ALPHABET) for _ in range(n))
+
+
 class SaasTenant(models.Model):
     _name = "saas.tenant"
     _description = "SaaS Tenant"
@@ -951,7 +956,7 @@ class SaasTenant(models.Model):
         # also what makes "clear sessions" real -- every existing signed session
         # becomes invalid the moment the secret changes.
         new_secret = str(uuid.uuid4())
-        password = "admin"
+        password = _gen_password()
         pwd_hash = _CRYPT_CONTEXT.hash(password)
         company = self.company_name or self.name
         login = self.admin_login
@@ -997,10 +1002,10 @@ class SaasTenant(models.Model):
     def _provision_odoo(self):
         """Install ``base`` and set the admin credentials."""
         self.ensure_one()
-        # Fixed credentials: password = "admin", login = admin_login (default "admin").
-        # The dashboard shows them once so the operator can hand them to the
-        # customer; the customer is expected to change the password on first login.
-        password = "admin"
+        # Generated unique credentials: login = admin_login (default "admin").
+        # The dashboard shows them once so they can be handed to the customer;
+        # the customer is expected to change the password on first login.
+        password = _gen_password()
         odoo_db._initialize_db(
             self.name,
             demo=False,

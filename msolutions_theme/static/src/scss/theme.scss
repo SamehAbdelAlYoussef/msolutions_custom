@@ -339,9 +339,22 @@
 // =====================================================================
 //  Self-service signup wizard (full-width band under the plans)
 // =====================================================================
-.ms-signup { margin-top: 3rem; background: linear-gradient(160deg, var(--ms-forest), var(--ms-forest-deep)); color: var(--ms-on-dark); }
+// Bottom-sheet overlay: slides up from the bottom (Shopify-style) over a backdrop.
+.ms-signup { position: fixed; inset: 0; z-index: 2000; display: flex; align-items: flex-end; justify-content: center; }
 .ms-signup[hidden] { display: none; }
-.ms-signup-wrap { max-width: var(--ms-maxw); margin-inline: auto; padding: 3rem 2rem; display: grid; grid-template-columns: 1fr 1.15fr; gap: 2.5rem; align-items: start; }
+.ms-signup-backdrop { position: absolute; inset: 0; background: rgba(8, 20, 34, 0.55); opacity: 0; transition: opacity 0.35s ease; }
+.ms-signup.is-open .ms-signup-backdrop { opacity: 1; }
+.ms-signup-sheet {
+  position: relative; width: 100%; max-height: 94vh; overflow-y: auto;
+  background: linear-gradient(160deg, var(--ms-forest), var(--ms-forest-deep)); color: var(--ms-on-dark);
+  border-radius: 22px 22px 0 0; box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.35); padding-bottom: 1.5rem;
+  transform: translateY(100%); transition: transform 0.42s cubic-bezier(.22,.61,.36,1);
+}
+.ms-signup.is-open .ms-signup-sheet { transform: translateY(0); }
+.ms-sheet-handle { display: block; width: 46px; height: 5px; border-radius: 3px; background: rgba(244, 236, 224, 0.3); margin: 0.9rem auto 0; }
+.ms-signup-close { position: absolute; top: 1rem; inset-inline-end: 1.2rem; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(244, 236, 224, 0.12); color: var(--ms-on-dark); font-size: 1.05rem; cursor: pointer; transition: background 0.2s ease, color 0.2s ease; z-index: 2; }
+.ms-signup-close:hover { background: var(--ms-brass); color: #231a0d; }
+.ms-signup-wrap { max-width: var(--ms-maxw); margin-inline: auto; padding: 1.5rem 2rem 2rem; display: grid; grid-template-columns: 1fr 1.15fr; gap: 2.5rem; align-items: start; }
 .ms-signup-info .ms-eyebrow { color: var(--ms-brass-bright); }
 .ms-signup-title { color: var(--ms-on-dark); font-size: 2rem; margin: 0 0 0.6rem; }
 .ms-signup-pkg { color: var(--ms-brass-bright); }
