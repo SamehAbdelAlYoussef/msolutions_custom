@@ -20,7 +20,7 @@
     -->
 
     <menuitem id="menu_msolutions_accounting_root"
-              name="msolutions Accounting"
+              name="Accounting Finance"
               sequence="1"
               web_icon="msolutions_accounting,static/description/icon.png"/>
 

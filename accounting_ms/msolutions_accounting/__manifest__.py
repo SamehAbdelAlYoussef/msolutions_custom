@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # msolutions - branded Community accounting distribution.
-{   'name': 'msolutions Accounting',
+{   'name': 'Accounting Finance',
     'version': '19.0.1.0.0',
     'category': 'msolutions Accounting',
     'summary': 'msolutions-branded Accounting suite for Odoo Community',
