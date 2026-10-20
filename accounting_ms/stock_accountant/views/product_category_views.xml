@@ -6,7 +6,7 @@
         so ALL required fields are guaranteed to be in the model registry at validation time.
 
         Tabs produced:
-          Tab 1 - المحاسبة:       income, expense, stock accounts, avatax
+          Tab 1 - المحاسبة:       income, expense, stock accounts
           Tab 2 - اللوجستيات:     removal strategy, routes
           Tab 3 - تقييم المخزون:  costing method, valuation type
     -->
@@ -36,7 +36,17 @@
                             <field name="property_price_difference_account_id"
                                    string="حساب فرق السعر" options="{'no_create': True}"
                                    invisible="not (property_cost_method == 'standard' and property_valuation == 'real_time')"/>
-                            <field name="avatax_category_id" string="فئة Avatax"/>
+                            <!-- avatax_category_id is deliberately not shown here.
+                                 It belongs to account_avatax, which is NOT a
+                                 dependency of this module. Referencing it made
+                                 every database installing stock_accountant
+                                 without Avatax fail to load with 'Field
+                                 "avatax_category_id" does not exist in model
+                                 "product.category"', and this module is
+                                 auto_install, so that meant every tenant.
+                                 To show the field in this tab, add a bridge
+                                 module depending on stock_accountant AND
+                                 account_avatax. -->
                         </group>
                     </page>
 
@@ -94,17 +104,9 @@
         </field>
     </record>
 
-    <!-- 4. Hide avatax_category_id in the header (now shown in tab 1). -->
-    <record id="product_category_hide_avatax_header" model="ir.ui.view">
-        <field name="name">product.category.hide.avatax.header</field>
-        <field name="model">product.category</field>
-        <field name="inherit_id" ref="account_avatax.product_category_form_inherit"/>
-        <field name="priority">30</field>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='avatax_category_id']" position="attributes">
-                <attribute name="invisible">True</attribute>
-            </xpath>
-        </field>
-    </record>
+    <!-- A fourth record used to hide avatax_category_id in the header. It was
+         removed with the field above: it inherited account_avatax's own view,
+         so it could not even be parsed unless Avatax was installed. It belongs
+         in a bridge module alongside the field. -->
 
 </odoo>

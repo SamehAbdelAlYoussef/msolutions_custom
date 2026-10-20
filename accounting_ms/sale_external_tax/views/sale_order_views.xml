@@ -9,6 +9,7 @@
                 <attribute name="invisible">0</attribute>
             </div>
             <div name="so_button_below_order_lines" position="inside">
+                <field name="is_tax_computed_externally" invisible="1"/>
                 <button name="button_external_tax_calculation"
                         type="object"
                         string="Compute Taxes"
