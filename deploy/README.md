@@ -39,6 +39,7 @@ does. Same day. Every time.
 | `backup_now.sh`         | `/opt/scripts/backup_now.sh`         | host side of "Backup Now": uploads a module-staged dump to B2 with restic, writes the record + result, deletes the temp (runs ~every 30s via `odoo-backup-now.timer`). Takes the SAME `flock` as the nightly (shared-inode file on the filestore); runs no `restic forget`, so manual snapshots never touch nightly retention |
 | `backup_restore.sh`     | `/opt/scripts/backup_restore.sh`     | host side of "Download an existing backup": assembles a backup's `dump.sql` + `filestore/` into the download staging dir (local copy if <7 days, else `restic restore` from B2). Same `flock`; read-only w.r.t. the backups (runs ~every 15s via `odoo-backup-restore.timer`) |
 | `rebuild_templates.sh`  | `/opt/scripts/rebuild_templates.sh`  | rebuilds all SaaS plan templates (run manually after an upgrade) |
+| `odoo_cron_watchdog.sh` | `/opt/scripts/odoo_cron_watchdog.sh` | restarts `odoo_worker` when its Odoo cron thread has died (runs every 5 min via `odoo-cron-watchdog.timer`). Odoo does not respawn a cron thread killed by an exception, and the worker runs `max_cron_threads = 1`, so one transient DB timeout silently ended every SaaS cron for two days on 2026-10-18. Counts `/proc/1/task` inside the container: 1 entry = cron is gone. Read-only apart from the restart |
 
 **Reference only — deliberately NOT identical to live:**
 
