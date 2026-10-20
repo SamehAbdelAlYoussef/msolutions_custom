@@ -126,10 +126,20 @@ class MsSignup(http.Controller):
         if not t.exists():
             return _err("تعذّر العثور على الحساب.")
         if t.state == "active":
-            # One-time reveal to the creating session only.
+            # One-time reveal to the creating session only. The dashboard no
+            # longer consumes passwords for public-signup tenants, so this is
+            # the single place that clears them -- read it, wipe the record,
+            # and keep it in this visitor's own session so a reload of the
+            # success panel still shows the credentials instead of a blank.
+            password = t.admin_password
+            if password:
+                t.admin_password = False
+                request.session["ms_tenant_pwd"] = password
+            else:
+                password = request.session.get("ms_tenant_pwd") or ""
             return {
                 "ok": True, "state": "active",
-                "url": t.url, "login": t.admin_login, "password": t.admin_password,
+                "url": t.url, "login": t.admin_login, "password": password,
             }
         if t.state == "error":
             return {"ok": True, "state": "error",

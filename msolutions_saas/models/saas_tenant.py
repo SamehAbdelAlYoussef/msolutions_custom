@@ -854,20 +854,43 @@ class SaasTenant(models.Model):
             cr.execute("SELECT 1 FROM pg_database WHERE datname = %s", (dbname,))
             return bool(cr.fetchone())
 
+    def _template_ready_named(self, dbname):
+        """True if a template database exists AND its build has finished.
+
+        _rebuild_template marks the database IS_TEMPLATE only as its last step,
+        after the module install and the ownership grants, so datistemplate is
+        the one flag that separates a finished template from one still being
+        built. Existence alone is not enough, and the gap is destructive rather
+        than merely unlucky: _provision_from_template terminates every session
+        on the source before CREATE DATABASE ... TEMPLATE, so a provision that
+        lands mid-rebuild kills the build's own connection and then clones the
+        half-installed result. That happened on 2026-10-20 -- the rebuild died
+        with "SSL connection has been closed unexpectedly" 63ms after the clone
+        began, and the tenant ended in error with "Cursor already closed".
+        """
+        connection = odoo.sql_db.db_connect("postgres")
+        with closing(connection.cursor()) as cr:
+            cr.execute(
+                "SELECT datistemplate FROM pg_database WHERE datname = %s",
+                (dbname,))
+            row = cr.fetchone()
+            return bool(row and row[0])
+
     def _template_db(self):
         """The template database to clone, or None to build from scratch.
 
-        A missing template must never break provisioning: if the plan names a
-        template that does not exist (never built, or dropped), fall back to a
-        from-scratch build rather than failing the tenant.
+        A template that is missing -- or still being rebuilt -- must never
+        break provisioning: fall back to a from-scratch build rather than
+        failing the tenant, or worse, cloning a half-built database.
         """
         self.ensure_one()
         tpl = self.plan_id.template_db if self.plan_id else False
         if not tpl:
             return None
-        if not self._database_exists_named(tpl):
+        if not self._template_ready_named(tpl):
             _logger.warning(
-                "SaaS: plan %s template %s is missing; building %s from scratch",
+                "SaaS: plan %s template %s is missing or still building; "
+                "building %s from scratch",
                 self.plan_id.name, tpl, self.name,
             )
             return None
@@ -1593,7 +1616,17 @@ class SaasTenant(models.Model):
         # If two requests race at exactly the same moment, at worst the password
         # is shown in both responses -- acceptable given the control-plane
         # context. The record never holds the password beyond the first call.
-        to_clear = tenants.filtered(lambda t: t.admin_password)
+        # A tenant created by the public signup form is excluded here: its
+        # password belongs to that visitor's /ms/signup/status poll, which is
+        # the only place it is ever shown to them. This dashboard refreshes
+        # itself, so whichever poll landed first used to win the race -- and
+        # when it was this one, the customer's "account created" panel showed
+        # the password as the string "false" (2026-10-20, tenant test33). The
+        # signup controller consumes it instead, so it is still shown once.
+        public_user = self.env.ref("base.public_user", raise_if_not_found=False)
+        public_uid = public_user.id if public_user else -1
+        to_clear = tenants.filtered(
+            lambda t: t.admin_password and t.create_uid.id != public_uid)
         password_map = {t.id: t.admin_password for t in to_clear}
         if to_clear:
             # write() is overridden on saas.audit.log, not here; this is fine.

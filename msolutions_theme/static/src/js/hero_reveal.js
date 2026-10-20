@@ -188,7 +188,10 @@
             var u = result.querySelector(".ms-res-url");
             u.textContent = r.url; u.href = r.url;
             result.querySelector(".ms-res-login").textContent = r.login;
-            result.querySelector(".ms-res-pass").textContent = r.password;
+            // Never print a falsy password: textContent would render the
+            // literal "false" to the customer (2026-10-20).
+            result.querySelector(".ms-res-pass").textContent =
+                r.password || "— اطلبها من الدعم —";
             result.querySelector(".ms-res-open").href = r.url;
             result.scrollIntoView({ behavior: "smooth", block: "center" });
         }
