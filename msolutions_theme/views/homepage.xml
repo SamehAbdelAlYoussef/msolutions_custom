@@ -242,13 +242,54 @@
                 </div>
             </section>
 
+            <!-- ============ نظام Odoo ============
+                 Plays itself once the section is on screen and pauses when it
+                 leaves (see initOdooVideo). Autoplay is only allowed muted, so
+                 the corner button is what turns the sound on. preload="none"
+                 keeps the 20 MB off anyone who never scrolls this far.
+                 WebM first (smaller), MP4 for Safari older than 14.1. -->
+            <section id="ms-odoo" class="ms-section ms-odoo ms-on-dark" data-name="Odoo">
+                <div class="ms-wrap">
+                    <span class="ms-eyebrow">النظام</span>
+                    <h2 class="ms-title">Odoo — كل أقسام شركتك في نظام واحد</h2>
+                    <p class="ms-lead">المحاسبة والمبيعات والمشتريات والمخزون وإدارة العملاء، مترابطة ببعضها وبتشتغل مع بعض. شوف النظام شغال في دقيقتين.</p>
+                </div>
+                <!-- Outside .ms-wrap so the stage can run edge to edge. -->
+                <div class="ms-odoo-stage">
+                    <div class="ms-odoo-player">
+                        <video class="ms-odoo-video" muted="muted" playsinline="playsinline"
+                               preload="none" loop="loop"
+                               poster="/msolutions_theme/static/src/video/odoo_poster.jpg">
+                            <source src="/msolutions_theme/static/src/video/odoo_overview.webm" type="video/webm"/>
+                            <source src="/msolutions_theme/static/src/video/odoo_overview.mp4" type="video/mp4"/>
+                        </video>
+                        <span class="ms-odoo-mark">
+                            <img src="/msolutions_theme/static/src/img/ms-logo.svg" alt="مانجر سوليوشنز"/>
+                        </span>
+                        <button type="button" class="ms-odoo-sound" aria-label="تشغيل الصوت">
+                            <svg class="ms-ic ms-ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M22 9l-5 6M17 9l5 6"/></svg>
+                            <svg class="ms-ic ms-ic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
             <!-- ============ ④ الباقات ============ -->
             <section id="ms-packages" class="ms-section" data-name="Packages">
                 <div class="ms-wrap">
                     <span class="ms-eyebrow">باقات الاشتراك</span>
                     <h2 class="ms-title">اختر الباقة التي تناسب نموّ شركتك</h2>
-                    <p class="ms-lead">ثلاث باقات متدرّجة، من تشغيل البرنامج وإدخال البيانات إلى المراجعة الميدانية والتحليل الشهري.</p>
+                    <p class="ms-lead">أربع باقات متدرّجة، من النظام وحده إلى تشغيل البرنامج وإدخال البيانات والمراجعة الميدانية والتحليل الشهري.</p>
                     <div class="ms-plans ms-stagger">
+                        <div class="ms-plan">
+                            <h3 class="ms-plan-name">باقة النظام</h3>
+                            <div class="ms-plan-price"><span class="ms-plan-num">3,500</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
+                            <ul class="ms-plan-feats">
+                                <li>تطبيق وتشغيل البرنامج (Odoo)</li>
+                                <li>النظام فقط — بدون خدمات مصاحبة</li>
+                            </ul>
+                            <a href="#ms-signup" class="ms-btn ms-btn-ghost ms-plan-cta" data-package="باقة النظام">اختر الباقة</a>
+                        </div>
                         <div class="ms-plan">
                             <h3 class="ms-plan-name">الباقة الأساسية</h3>
                             <div class="ms-plan-price"><span class="ms-plan-num">12,900</span><span class="ms-plan-per">ج.م / شهريًا</span></div>

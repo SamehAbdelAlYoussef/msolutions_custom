@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Contact page, rebuilt on top of website.contactus.
+
+        It INHERITS rather than replaces, and deliberately does not touch
+        <section class="s_website_form">: that snippet carries the field
+        metadata and the /website/form/ wiring that actually delivers the
+        message. Restyling around it keeps submissions working and keeps the
+        page editable in the website builder.
+
+        What it changes: the stock parallax banner becomes a branded hero, the
+        lead paragraph becomes a real heading, the side column's Odoo demo data
+        ("My Company", "3575 Fake Buena Vista Avenue") becomes our own details,
+        and a map of the office is appended.
+    -->
+    <template id="ms_contactus" inherit_id="website.contactus"
+              name="Manager Solutions — Contact Us">
+
+        <!-- 1) Branded hero in place of the stock parallax title block. -->
+        <xpath expr="//section[hasclass('s_title')]" position="replace">
+            <section class="ms-section ms-contact-hero ms-on-dark" data-name="Contact hero">
+                <div class="ms-wrap">
+                    <span class="ms-eyebrow">تواصل معنا</span>
+                    <h1 class="ms-title">خلّينا نسمع منك</h1>
+                    <p class="ms-lead">عندك سؤال عن الباقات أو عايز تشوف النظام قبل ما تقرّر؟ اختار الطريقة اللي تريحك — بنرد في نفس يوم العمل.</p>
+                    <div class="ms-contact-quick">
+                        <a class="ms-btn ms-btn-primary" href="tel:+201131316911">
+                            <i class="fa fa-phone me-2"/>اتصل بنا
+                        </a>
+                        <a class="ms-btn ms-btn-ghost" href="https://wa.me/201131316911"
+                           target="_blank" rel="noopener">
+                            <i class="fa fa-whatsapp me-2"/>واتساب
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+
+        <!-- 2) A real heading above the form instead of the stock lead copy. -->
+        <xpath expr="//section[hasclass('s_text_block')]//p[hasclass('lead')]" position="replace">
+            <div class="ms-form-head">
+                <h2 class="ms-form-title">ابعتلنا رسالة</h2>
+                <p class="ms-form-sub">املا البيانات وهنرجعلك في أقرب وقت. كل الحقول المعلّمة بـ * مطلوبة.</p>
+            </div>
+        </xpath>
+
+        <!-- 3) Our own contact details in place of the Odoo demo block. -->
+        <xpath expr="//div[hasclass('col-lg-4')][hasclass('offset-lg-1')]" position="replace">
+            <div class="col-lg-4 offset-lg-1 mt-4 mt-lg-0">
+                <div class="ms-contact-cards">
+                    <a class="ms-contact-card" href="tel:+201131316911">
+                        <span class="ms-cc-ic"><i class="fa fa-phone"/></span>
+                        <span class="ms-cc-body">
+                            <span class="ms-cc-label">تليفون</span>
+                            <span class="ms-cc-value" dir="ltr">01131316911</span>
+                        </span>
+                    </a>
+                    <a class="ms-contact-card" href="https://wa.me/201131316911"
+                       target="_blank" rel="noopener">
+                        <span class="ms-cc-ic"><i class="fa fa-whatsapp"/></span>
+                        <span class="ms-cc-body">
+                            <span class="ms-cc-label">واتساب</span>
+                            <span class="ms-cc-value">ابعت رسالة دلوقتي</span>
+                        </span>
+                    </a>
+                    <a class="ms-contact-card" href="mailto:info@msolutions-eg.com">
+                        <span class="ms-cc-ic"><i class="fa fa-envelope"/></span>
+                        <span class="ms-cc-body">
+                            <span class="ms-cc-label">البريد الإلكتروني</span>
+                            <span class="ms-cc-value" dir="ltr">info@msolutions-eg.com</span>
+                        </span>
+                    </a>
+                    <a class="ms-contact-card"
+                       href="https://maps.google.com/maps/place//data=!4m2!3m1!1s0x14583988a9b39ea1:0x7d599ff2dae8c54b"
+                       target="_blank" rel="noopener">
+                        <span class="ms-cc-ic"><i class="fa fa-map-marker"/></span>
+                        <span class="ms-cc-body">
+                            <span class="ms-cc-label">العنوان</span>
+                            <span class="ms-cc-value">برج الحجاز جراند بلازا، عزبة فهمي، القاهرة</span>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- 4) The office on a map, full width, after the form block. -->
+        <xpath expr="//section[hasclass('s_text_block')]" position="after">
+            <section class="ms-section ms-map-section" data-name="Map">
+                <div class="ms-wrap">
+                    <span class="ms-eyebrow">مكاننا</span>
+                    <h2 class="ms-title">تعالَ زورنا</h2>
+                    <p class="ms-lead">برج الحجاز جراند بلازا، عزبة فهمي، القاهرة 4235001</p>
+                </div>
+                <div class="ms-map-frame">
+                    <!-- loading="lazy": the map is below the form, and Google's
+                         embed pulls a lot of script. Nobody waits for it. -->
+                    <iframe title="موقع مانجر سوليوشنز على الخريطة"
+                            src="https://maps.google.com/maps?cid=9032426393071830347&amp;z=16&amp;output=embed"
+                            loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                            allowfullscreen="allowfullscreen"></iframe>
+                </div>
+            </section>
+        </xpath>
+
+    </template>
+</odoo>

@@ -285,6 +285,96 @@
 .ms-partner-name { font-weight: 600; font-size: 1.1rem; color: var(--ms-ink); line-height: 1.25; }
 
 // CTA band
+// =====================================================================
+//  Odoo overview section
+//  A dark band so the player reads as a screen, not a page element, and so
+//  it separates the light "partners" section above from the packages below.
+// =====================================================================
+.ms-odoo { background: var(--ms-forest-deep); color: var(--ms-on-dark); text-align: center; }
+.ms-odoo .ms-title { color: var(--ms-on-dark); }
+.ms-odoo .ms-lead { color: var(--ms-on-dark-soft); margin-inline: auto; margin-bottom: 2.6rem; }
+
+// The stage breaks out of .ms-wrap so the player runs edge to edge. A brass
+// glow sits behind it, which is what keeps a full-bleed black rectangle from
+// looking like a hole punched in the page.
+.ms-odoo-stage {
+  position: relative; margin-top: 2.4rem;
+  padding-inline: clamp(0.75rem, 2.2vw, 2.25rem);
+}
+.ms-odoo-stage::before {
+  content: ""; position: absolute; z-index: 0;
+  inset-inline: 18%; inset-block: 14% -4%;
+  background: radial-gradient(ellipse at center, rgba(176, 122, 78, 0.38), transparent 70%);
+  filter: blur(54px); pointer-events: none;
+}
+
+.ms-odoo-player {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 1201px; margin-inline: auto;
+  aspect-ratio: 16 / 9; background: #000; overflow: hidden;
+  border-radius: clamp(14px, 1.6vw, 24px);
+  border: 1px solid rgba(203, 152, 98, 0.30);
+  box-shadow: 0 40px 90px -36px rgba(0, 0, 0, 0.85),
+              0 0 0 1px rgba(234, 241, 248, 0.05) inset;
+}
+// Three sizes, by what the screen can actually show:
+//
+//   phone / small tablet (< 900px) : the rule above, full column width.
+//   laptop with a short viewport   : sized from the viewport HEIGHT, because a
+//                                    1201px 16:9 box is 676px tall and would
+//                                    not fit under the heading on a 768px
+//                                    panel once browser chrome is deducted.
+//   desktop (>= 900px, tall enough): the 1201px cap above.
+//
+// NB: do NOT write this as `min(1201px, ...)`. min() is a Sass function, Sass
+// evaluates it at compile time, it cannot compare a px to a calc(), and the
+// whole stylesheet then fails to build -- which is what broke the site once.
+// Pairing `width` with the existing `max-width` does the same job in plain CSS.
+// The aspect-ratio guard stops the computed width overflowing its column on
+// tall, narrow windows.
+@media (min-width: 900px) and (max-height: 820px) and (min-aspect-ratio: 16 / 10) {
+  .ms-odoo-player { width: calc(62vh * 16 / 9); }
+}
+.ms-odoo-video { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+// Brand watermark, diagonally opposite the sound button. It sits on the same
+// translucent slab rather than floating bare: the video is mostly light Odoo
+// screens, and a brass logo straight on white disappears.
+.ms-odoo-mark {
+  position: absolute; z-index: 2; pointer-events: none;
+  inset-block-start: clamp(12px, 1.4vw, 22px);
+  inset-inline-start: clamp(12px, 1.4vw, 22px);
+  display: grid; place-items: center;
+  padding: 0.4rem 0.75rem; border-radius: 999px;
+  background: rgba(13, 31, 50, 0.62);
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+}
+.ms-odoo-mark img { display: block; width: auto; height: clamp(20px, 2.2vw, 30px); }
+
+// Fades in once the observer has actually started playback, so the poster
+// never sits under a "sound on" button that does nothing yet.
+.ms-odoo-sound {
+  position: absolute; inset-block-end: clamp(12px, 1.4vw, 22px);
+  inset-inline-end: clamp(12px, 1.4vw, 22px);
+  width: 52px; height: 52px; border-radius: 50%; border: 0; cursor: pointer;
+  background: rgba(13, 31, 50, 0.62); color: #fff; display: grid; place-items: center;
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none;
+  transition: background 0.2s ease, transform 0.2s ease, opacity 0.35s ease;
+}
+.ms-odoo-sound svg { width: 23px; height: 23px; }
+.ms-odoo-sound:hover { background: var(--ms-brass); color: #231a0d; transform: scale(1.07); }
+.ms-odoo-player.is-live .ms-odoo-sound { opacity: 1; pointer-events: auto; }
+.ms-odoo-player .ms-ic-on { display: none; }
+.ms-odoo-player.is-unmuted .ms-ic-on { display: block; }
+.ms-odoo-player.is-unmuted .ms-ic-off { display: none; }
+.ms-odoo-player.is-unmuted .ms-odoo-sound { background: var(--ms-brass); color: #231a0d; }
+
+@media (max-width: 860px) {
+  .ms-odoo-sound { width: 44px; height: 44px; }
+  .ms-odoo-sound svg { width: 20px; height: 20px; }
+}
+
 .ms-cta { background: var(--ms-forest-deep); color: var(--ms-on-dark); text-align: center; }
 .ms-cta .ms-title { color: var(--ms-on-dark); }
 .ms-cta .ms-lead { color: var(--ms-on-dark-soft); margin-inline: auto; margin-bottom: 2rem; }
@@ -330,7 +420,7 @@
 // =====================================================================
 //  PACKAGES / pricing — three tiers, middle one featured
 // =====================================================================
-.ms-plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; margin-top: 2.6rem; align-items: stretch; }
+.ms-plans { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.4rem; margin-top: 2.6rem; align-items: stretch; }
 .ms-plan {
   background: var(--ms-paper); border: 1px solid var(--ms-line); border-radius: 2px;
   padding: 2rem 1.8rem; display: flex; flex-direction: column; position: relative; cursor: pointer;
@@ -433,6 +523,59 @@
 .ms-video.is-playing .ms-video-sound { background: var(--ms-brass); color: #231a0d; }
 
 // =====================================================================
+//  CONTACT PAGE (/contactus)
+//  Styled over the inherited website.contactus markup. The form snippet
+//  itself is untouched structurally, so only its chrome is restyled here.
+// =====================================================================
+.ms-contact-hero {
+  background: var(--ms-forest-deep); color: var(--ms-on-dark);
+  text-align: center; padding-block: 5.5rem 4.5rem;
+}
+.ms-contact-hero .ms-title { color: var(--ms-on-dark); }
+.ms-contact-hero .ms-lead { color: var(--ms-on-dark-soft); margin-inline: auto; }
+.ms-contact-quick {
+  display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;
+}
+
+.ms-form-head { margin-bottom: 1.6rem; }
+.ms-form-title { font-size: 2rem; margin: 0 0 0.4rem; }
+.ms-form-sub { color: var(--ms-ink-soft); margin: 0; }
+
+// Contact methods. Each is a link, so the whole card is the tap target --
+// on a phone the point of this page is to start a call, not read an address.
+.ms-contact-cards { display: grid; gap: 0.85rem; }
+.ms-contact-card {
+  display: flex; align-items: center; gap: 0.9rem;
+  padding: 1rem 1.1rem; text-decoration: none; color: inherit;
+  background: var(--ms-paper-dim); border: 1px solid var(--ms-line);
+  border-radius: 2px; transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+.ms-contact-card:hover {
+  border-color: var(--ms-brass); transform: translateY(-2px);
+  box-shadow: 0 12px 28px -18px rgba(18, 43, 68, 0.45);
+}
+.ms-cc-ic {
+  flex: 0 0 auto; width: 42px; height: 42px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--ms-forest); color: var(--ms-brass-bright); font-size: 1.05rem;
+}
+.ms-contact-card:hover .ms-cc-ic { background: var(--ms-brass); color: #231a0d; }
+.ms-cc-body { display: flex; flex-direction: column; min-width: 0; }
+.ms-cc-label { font-size: 0.82rem; color: var(--ms-ink-soft); }
+.ms-cc-value { font-weight: 600; overflow-wrap: anywhere; }
+
+.ms-map-section { padding-block: 4.5rem 5rem; text-align: center; background: var(--ms-paper-dim); }
+.ms-map-frame {
+  margin-top: 2.2rem; padding-inline: clamp(0.75rem, 2.2vw, 2.25rem);
+}
+.ms-map-frame iframe {
+  display: block; width: 100%; max-width: 1180px; margin-inline: auto;
+  height: clamp(280px, 42vh, 460px); border: 0;
+  border-radius: clamp(14px, 1.6vw, 24px);
+  box-shadow: 0 26px 60px -32px rgba(18, 43, 68, 0.55);
+}
+
+// =====================================================================
 //  FOOTER — styled on the inherited footer_custom markup
 // =====================================================================
 #wrapwrap footer {
@@ -456,6 +599,8 @@
   .ms-hero-grid { padding-block: 5.5rem; gap: 2.5rem; }
   .ms-hero h1 { font-size: 3.6rem; }
   .ms-title { font-size: 2.4rem; }
+  // Four plan cards do not fit a tablet width without the price line wrapping.
+  .ms-plans { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 860px) {

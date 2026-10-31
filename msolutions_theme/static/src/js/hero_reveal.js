@@ -197,7 +197,84 @@
         }
     }
 
-    function init() { drawHero(); initReveal(); brandContact(); initVideos(); initSignup(); }
+    // Odoo overview: plays by itself once the section is on screen and pauses
+    // when it leaves. Autoplay is only permitted while muted, so it starts
+    // muted and the corner button turns the sound on -- same contract as the
+    // TikTok cards above. preload="none" means nothing is fetched until the
+    // visitor actually reaches the section.
+    function initOdooVideo() {
+        var wrap = document.querySelector(".ms-odoo-player");
+        if (!wrap) return;
+        var v = wrap.querySelector(".ms-odoo-video");
+        var btn = wrap.querySelector(".ms-odoo-sound");
+        if (!v) return;
+
+        var inView = false;      // so a late user gesture only unmutes on screen
+        var forcedMute = false;  // true = muted because the browser refused sound
+
+        // Browsers reject play() with sound unless the page already has user
+        // activation, and scrolling does NOT grant it. So: ask for sound, and
+        // fall back to muted rather than not playing at all.
+        function playPreferSound() {
+            v.muted = false;
+            return v.play().then(function () {
+                forcedMute = false;
+                wrap.classList.add("is-live", "is-unmuted");
+            }).catch(function () {
+                v.muted = true;
+                forcedMute = true;
+                wrap.classList.remove("is-unmuted");
+                return v.play().then(function () { wrap.classList.add("is-live"); })
+                               .catch(function () {});
+            });
+        }
+
+        if ("IntersectionObserver" in window) {
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) {
+                    inView = e.isIntersecting;
+                    if (inView) { playPreferSound(); } else { v.pause(); }
+                });
+            }, { threshold: 0.35 });
+            io.observe(v);
+
+            // First real gesture anywhere grants activation for the rest of the
+            // visit; if we are still only muted because sound was refused, take
+            // it back. Once, and only while the section is actually on screen.
+            var claim = function () {
+                if (inView && forcedMute && v.muted) {
+                    forcedMute = false;
+                    v.muted = false;
+                    wrap.classList.add("is-unmuted");
+                    v.play().catch(function () {});
+                }
+                document.removeEventListener("pointerdown", claim, true);
+                document.removeEventListener("keydown", claim, true);
+            };
+            document.addEventListener("pointerdown", claim, true);
+            document.addEventListener("keydown", claim, true);
+        } else {
+            v.controls = true;   // no observer: let the visitor drive it
+            wrap.classList.add("is-live");
+        }
+
+        if (!btn) return;
+        btn.addEventListener("click", function () {
+            if (v.muted) {
+                // Only one thing with sound at a time -- mute the TikTok cards.
+                Array.prototype.forEach.call(document.querySelectorAll(".ms-video-el"), function (o) { o.muted = true; });
+                Array.prototype.forEach.call(document.querySelectorAll(".ms-video.is-playing"), function (c) { c.classList.remove("is-playing"); });
+                v.muted = false;
+                wrap.classList.add("is-unmuted");
+                v.play().catch(function () {});
+            } else {
+                v.muted = true;
+                wrap.classList.remove("is-unmuted");
+            }
+        });
+    }
+
+    function init() { drawHero(); initReveal(); brandContact(); initVideos(); initOdooVideo(); initSignup(); }
     if (document.readyState !== "loading") init();
     else document.addEventListener("DOMContentLoaded", init);
 })();

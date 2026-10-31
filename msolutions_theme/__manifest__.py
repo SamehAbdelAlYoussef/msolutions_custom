@@ -19,6 +19,7 @@ website editor keeps working), self-hosted fonts, and SEO metadata.
         "data/website_menu.xml",
         "views/footer.xml",
         "views/homepage.xml",
+        "views/contactus.xml",
     ],
     "images": [
         "static/description/ms_poster.webp",
