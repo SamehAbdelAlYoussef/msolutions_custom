@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_scale_scale_user,scale.scale.user,model_scale_scale,base.group_user,1,0,0,0
+access_scale_scale_sale_manager,scale.scale.sale.manager,model_scale_scale,sales_team.group_sale_manager,1,1,1,1

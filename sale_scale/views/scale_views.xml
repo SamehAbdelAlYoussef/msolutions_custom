@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_scale_scale_list" model="ir.ui.view">
+        <field name="name">scale.scale.list</field>
+        <field name="model">scale.scale</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="discount"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_scale_scale_form" model="ir.ui.view">
+        <field name="name">scale.scale.form</field>
+        <field name="model">scale.scale</field>
+        <field name="arch" type="xml">
+            <form string="Scale">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <label for="discount" string="Discount"/>
+                        <div name="discount_div">
+                            <field name="discount" class="oe_inline"/> %
+                        </div>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_scale_scale_search" model="ir.ui.view">
+        <field name="name">scale.scale.search</field>
+        <field name="model">scale.scale</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_scale_scale" model="ir.actions.act_window">
+        <field name="name">Scale</field>
+        <field name="res_model">scale.scale</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first scale
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu under Sales -->
+    <menuitem id="menu_scale_scale"
+              name="Scale"
+              parent="sale.sale_menu_root"
+              action="action_scale_scale"
+              sequence="25"/>
+
+</odoo>

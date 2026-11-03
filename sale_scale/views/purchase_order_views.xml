@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="purchase_order_form_scale" model="ir.ui.view">
+        <field name="name">purchase.order.form.scale</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Related sale orders button in header -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_related_sale_orders"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-shopping-cart"
+                        invisible="related_sale_order_count == 0">
+                    <field name="related_sale_order_count" widget="statinfo" string="Sale Orders"/>
+                </button>
+            </xpath>
+
+            <!-- Hide price_unit in list (optional hide) and form (invisible) -->
+            <xpath expr="//field[@name='order_line']/list//field[@name='price_unit']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form//field[@name='price_unit']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- customer_id + total_purchase_customer after product_id in list -->
+            <xpath expr="//field[@name='order_line']/list//field[@name='product_id']" position="after">
+                <field name="customer_id" optional="show" options="{'no_create': True}"/>
+                <field name="total_purchase_customer" optional="show"/>
+            </xpath>
+
+            <!-- customer_id + total_purchase_customer after product_id in form -->
+            <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
+                <field name="customer_id" options="{'no_create': True}"/>
+                <field name="total_purchase_customer"/>
+            </xpath>
+
+            <!-- Other scale fields before price_unit in list -->
+            <xpath expr="//field[@name='order_line']/list//field[@name='price_unit']" position="before">
+                <field name="scale_id" optional="show"/>
+                <field name="scale_discount" optional="show"/>
+                <field name="qty_after_scale_discount" optional="show"/>
+                <field name="generated_sale_line_id" column_invisible="1"/>
+            </xpath>
+            <!-- Order line form (dialog) view -->
+            <xpath expr="//field[@name='order_line']/form//field[@name='price_unit']" position="before">
+                <field name="scale_id"/>
+                <label for="scale_discount" string="Scale Discount"/>
+                <div name="scale_discount_div">
+                    <field name="scale_discount" class="oe_inline"/> %
+                </div>
+                <field name="qty_after_scale_discount"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Scale menu under Purchase -->
+    <menuitem id="menu_scale_scale_purchase"
+              name="Scale"
+              parent="purchase.menu_purchase_root"
+              action="action_scale_scale"
+              sequence="25"/>
+
+</odoo>

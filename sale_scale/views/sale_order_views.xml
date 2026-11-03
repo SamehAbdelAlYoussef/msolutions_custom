@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_order_form_scale" model="ir.ui.view">
+        <field name="name">sale.order.form.scale</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Hide price_unit in list (optional hide) and form (invisible) -->
+            <xpath expr="//field[@name='order_line']/list//field[@name='price_unit']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form//field[@name='price_unit']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Order lines list view: fields before price_unit -->
+            <xpath expr="//field[@name='order_line']/list//field[@name='price_unit']" position="before">
+                <field name="source_vendor_id" optional="show"/>
+                <field name="total_purchase_customer" optional="show"/>
+                <field name="scale_id" optional="show"/>
+                <field name="scale_discount" optional="show"/>
+                <field name="qty_after_scale_discount" optional="show"/>
+            </xpath>
+            <!-- Order line form (dialog) view -->
+            <xpath expr="//field[@name='order_line']/form//field[@name='price_unit']" position="before">
+                <field name="source_vendor_id"/>
+                <field name="total_purchase_customer"/>
+                <field name="scale_id"/>
+                <label for="scale_discount" string="Scale Discount"/>
+                <div name="scale_discount_div">
+                    <field name="scale_discount" class="oe_inline"/> %
+                </div>
+                <field name="qty_after_scale_discount"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

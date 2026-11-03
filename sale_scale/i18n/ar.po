@@ -1,0 +1,157 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sale_scale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e-20260603\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-26 09:14+0000\n"
+"PO-Revision-Date: 2026-07-26 09:14+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_scale_scale__active
+msgid "Active"
+msgstr "نشط"
+
+#. module: sale_scale
+#: model_terms:ir.ui.view,arch_db:sale_scale.view_scale_scale_search
+msgid "Archived"
+msgstr "مؤرشفة"
+
+#. module: sale_scale
+#: model_terms:ir.actions.act_window,help:sale_scale.action_scale_scale
+msgid "Create your first scale"
+msgstr "أنشئ أول ميزان"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_scale_scale__create_uid
+msgid "Created by"
+msgstr "أنشئ بواسطة"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_scale_scale__create_date
+msgid "Created on"
+msgstr "تاريخ الإنشاء"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_purchase_order_line__customer_id
+msgid "Customer"
+msgstr "العميل"
+
+#. module: sale_scale
+#: model_terms:ir.ui.view,arch_db:sale_scale.view_scale_scale_form
+msgid "Discount"
+msgstr "الخصم"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_scale_scale__display_name
+msgid "Display Name"
+msgstr "اسم العرض"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_purchase_order_line__generated_sale_line_id
+msgid "Generated Sale Line"
+msgstr "سطر البيع المُنشأ"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_scale_scale__id
+msgid "ID"
+msgstr "المعرف"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_scale_scale__write_uid
+msgid "Last Updated by"
+msgstr "آخر تحديث بواسطة"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_scale_scale__write_date
+msgid "Last Updated on"
+msgstr "آخر تحديث في"
+
+#. module: sale_scale
+#: model:ir.model,name:sale_scale.model_purchase_order
+msgid "Purchase Order"
+msgstr "أمر شراء"
+
+#. module: sale_scale
+#: model:ir.model,name:sale_scale.model_purchase_order_line
+msgid "Purchase Order Line"
+msgstr "سطر أمر الشراء"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_purchase_order_line__qty_after_scale_discount
+#: model:ir.model.fields,field_description:sale_scale.field_sale_order_line__qty_after_scale_discount
+msgid "Qty After Scale Discount"
+msgstr "الكمية بعد خصم الميزان"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_purchase_order__related_sale_order_ids
+msgid "Related Sale Orders"
+msgstr "أوامر البيع المرتبطة"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_purchase_order__related_sale_order_count
+msgid "Sale Order Count"
+msgstr "عدد أوامر البيع"
+
+#. module: sale_scale
+#: model_terms:ir.ui.view,arch_db:sale_scale.purchase_order_form_scale
+msgid "Sale Orders"
+msgstr "أوامر البيع"
+
+#. module: sale_scale
+#: model:ir.model,name:sale_scale.model_sale_order
+msgid "Sales Order"
+msgstr "أمر بيع"
+
+#. module: sale_scale
+#: model:ir.model,name:sale_scale.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "سطر أمر البيع"
+
+#. module: sale_scale
+#: model:ir.actions.act_window,name:sale_scale.action_scale_scale
+#: model:ir.model,name:sale_scale.model_scale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_purchase_order_line__scale_id
+#: model:ir.model.fields,field_description:sale_scale.field_sale_order_line__scale_id
+#: model:ir.ui.menu,name:sale_scale.menu_scale_scale
+#: model:ir.ui.menu,name:sale_scale.menu_scale_scale_purchase
+#: model_terms:ir.ui.view,arch_db:sale_scale.view_scale_scale_form
+msgid "Scale"
+msgstr "الميزان"
+
+#. module: sale_scale
+#: model_terms:ir.ui.view,arch_db:sale_scale.purchase_order_form_scale
+#: model_terms:ir.ui.view,arch_db:sale_scale.view_order_form_scale
+msgid "Scale Discount"
+msgstr "خصم الميزان"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_purchase_order_line__scale_discount
+#: model:ir.model.fields,field_description:sale_scale.field_sale_order_line__scale_discount
+#: model:ir.model.fields,field_description:sale_scale.field_scale_scale__discount
+msgid "Scale Discount %"
+msgstr "نسبة خصم الميزان %"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_scale_scale__name
+msgid "Scale Name"
+msgstr "اسم الميزان"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_purchase_order_line__total_purchase_customer
+#: model:ir.model.fields,field_description:sale_scale.field_sale_order_line__total_purchase_customer
+msgid "Total Purchase Customer"
+msgstr "إجمالي مشتريات العميل"
+
+#. module: sale_scale
+#: model:ir.model.fields,field_description:sale_scale.field_sale_order_line__source_vendor_id
+msgid "Vendor"
+msgstr "المورد"
