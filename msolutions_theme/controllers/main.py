@@ -17,7 +17,7 @@ import logging
 import re
 import time
 
-from odoo import fields, http
+from odoo import Command, fields, http
 from odoo.http import request
 
 _logger = logging.getLogger(__name__)
@@ -29,6 +29,13 @@ _RESERVED = {
     "www", "mail", "smtp", "imap", "webmail", "ns1", "ns2",
     "api", "app", "cdn", "static", "assets",
     "admin", "manage", "saas", "msolutions",
+}
+
+# Website plan key (data-plan on the pricing card) -> plan XML id. Anything not
+# listed here falls back to the Basic plan, as before.
+_PLAN_BY_KEY = {
+    "furniture": "msolutions_saas.plan_furniture",
+    "agriculture": "msolutions_saas.plan_agriculture",
 }
 
 _IP_COOLDOWN_S = 300          # one signup per IP per 5 minutes
@@ -78,7 +85,11 @@ class MsSignup(http.Controller):
         if Tenant.search_count([("name", "=", subdomain)]):
             return _err("العنوان الفرعي مستخدم بالفعل، اختر غيره.")
 
-        plan = request.env.ref("msolutions_saas.plan_basic", raise_if_not_found=False)
+        plan_key = (kw.get("plan") or "").strip()
+        plan = request.env.ref(
+            _PLAN_BY_KEY.get(plan_key, "msolutions_saas.plan_basic"),
+            raise_if_not_found=False,
+        ) or request.env.ref("msolutions_saas.plan_basic", raise_if_not_found=False)
         try:
             tenant = Tenant.create({
                 "name": subdomain,
@@ -94,10 +105,12 @@ class MsSignup(http.Controller):
                 "error_message": False,
                 "state_since": fields.Datetime.now(),
             })
+            invoice = self._create_invoice(plan, company, email, phone, subdomain)
             tenant._log(
                 "provision_queued",
-                "public signup — company=%s | activity=%s | email=%s | phone=%s | package=%s | ip=%s"
-                % (company, activity, email, phone, package, ip),
+                "public signup — company=%s | activity=%s | email=%s | phone=%s | package=%s | plan=%s | invoice=%s | ip=%s"
+                % (company, activity, email, phone, package,
+                   plan.name if plan else "-", invoice.name if invoice else "-", ip),
             )
             request.env.cr.commit()  # make it visible to the worker before we nudge it
         except Exception as e:  # noqa: BLE001
@@ -116,6 +129,40 @@ class MsSignup(http.Controller):
         _last_signup_by_ip[ip] = now
         request.session["ms_tenant_id"] = tenant.id
         return {"ok": True, "subdomain": subdomain}
+
+    def _create_invoice(self, plan, company, email, phone, subdomain):
+        """Draft customer invoice for the plan's monthly price.
+
+        Best effort: a billing problem must never block the signup, so it runs
+        in a savepoint and returns None on any failure. Plans with no price
+        (the legacy ones) create no invoice.
+        """
+        env = request.env
+        if not plan or not plan.price or "account.move" not in env:
+            return None
+        try:
+            with env.cr.savepoint():
+                Partner = env["res.partner"].sudo()
+                partner = Partner.search([("email", "=ilike", email)], limit=1) if email else Partner
+                if not partner:
+                    partner = Partner.create({
+                        "name": company,
+                        "email": email or False,
+                        "phone": phone or False,
+                        "company_type": "company",
+                    })
+                return env["account.move"].sudo().create({
+                    "move_type": "out_invoice",
+                    "partner_id": partner.id,
+                    "invoice_line_ids": [Command.create({
+                        "name": "اشتراك شهري — %s (%s)" % (plan.name, subdomain),
+                        "quantity": 1,
+                        "price_unit": plan.price,
+                    })],
+                })
+        except Exception:  # noqa: BLE001
+            _logger.exception("signup invoice failed for plan %s", plan.name)
+            return None
 
     @http.route("/ms/signup/status", type="json", auth="public", methods=["POST"], website=True)
     def status(self, **kw):

@@ -30,6 +30,12 @@ class SaasPlan(models.Model):
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
 
+    price = fields.Float(
+        string="Monthly Price",
+        help="Monthly subscription price (in the configured currency). A "
+             "public signup on a plan with a price creates a draft customer "
+             "invoice for this amount. Zero means no invoice is created.",
+    )
     template_db = fields.Char(
         string="Template Database",
         copy=False,

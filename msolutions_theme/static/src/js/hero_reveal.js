@@ -99,6 +99,7 @@
         var result = wiz.querySelector(".ms-signup-result");
         var pkgLabel = wiz.querySelector(".ms-signup-pkg");
         var pkgInput = form.querySelector("[name=package]");
+        var planInput = form.querySelector("[name=plan]");
         var msg = wiz.querySelector(".ms-signup-msg");
         var go = form.querySelector(".ms-signup-go");
         var company = form.querySelector("[name=company]");
@@ -106,9 +107,10 @@
         var subEdited = false;
 
         var sheet = wiz.querySelector(".ms-signup-sheet");
-        function openSheet(pkg) {
+        function openSheet(pkg, plan) {
             pkgLabel.textContent = pkg || "";
             pkgInput.value = pkg || "";
+            if (planInput) planInput.value = plan || "";
             result.hidden = true;
             form.hidden = false;
             wiz.hidden = false;
@@ -135,7 +137,7 @@
             card.addEventListener("click", function (e) {
                 e.preventDefault();
                 var cta = card.querySelector(".ms-plan-cta");
-                openSheet(cta ? cta.getAttribute("data-package") : "");
+                openSheet(cta ? cta.getAttribute("data-package") : "", cta ? cta.getAttribute("data-plan") : "");
             });
         });
         // Header + hero "start in seconds" links open the wizard on the recommended plan.
@@ -162,7 +164,7 @@
             e.preventDefault();
             msg.textContent = "";
             var data = {};
-            ["company", "activity", "subdomain", "email", "phone", "package", "company_url"].forEach(function (n) {
+            ["company", "activity", "subdomain", "email", "phone", "package", "plan", "company_url"].forEach(function (n) {
                 var el = form.querySelector("[name=" + n + "]");
                 data[n] = el ? el.value : "";
             });

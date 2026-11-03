@@ -20,5 +20,20 @@
             <field name="template_db">tpl_advanced</field>
             <field name="sequence">30</field>
         </record>
+        <!-- Industry plans sold from the public website. Their apps are
+             assigned on the server and the templates built with
+             rebuild_templates.sh. Price is per month. -->
+        <record id="plan_furniture" model="saas.plan">
+            <field name="name">Furniture</field>
+            <field name="template_db">tpl_furniture</field>
+            <field name="sequence">40</field>
+            <field name="price">10000</field>
+        </record>
+        <record id="plan_agriculture" model="saas.plan">
+            <field name="name">Agriculture Agents</field>
+            <field name="template_db">tpl_agriculture</field>
+            <field name="sequence">50</field>
+            <field name="price">9000</field>
+        </record>
     </data>
 </odoo>

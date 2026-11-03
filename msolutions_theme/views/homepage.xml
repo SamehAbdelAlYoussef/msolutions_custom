@@ -282,6 +282,30 @@
                             <a href="#ms-signup" class="ms-btn ms-btn-ghost ms-plan-cta" data-package="الباقة الشاملة">اختر الباقة</a>
                         </div>
                     </div>
+                    <h3 class="ms-title ms-title-sub">باقات القطاعات — نظام جاهز لنشاطك</h3>
+                    <p class="ms-lead">اختر باقة نشاطك وسيُجهَّز لك نظامك بتطبيقاته الجاهزة فورًا، مع فاتورة الاشتراك.</p>
+                    <div class="ms-plans ms-plans-2 ms-stagger">
+                        <div class="ms-plan">
+                            <h3 class="ms-plan-name">باقة الأثاث</h3>
+                            <div class="ms-plan-price"><span class="ms-plan-num">10,000</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
+                            <ul class="ms-plan-feats">
+                                <li>كل التطبيقات الأساسية (مبيعات، مشتريات، مخزون، تصنيع، محاسبة، CRM…)</li>
+                                <li>متابعة الدفعات المقدّمة على أوامر البيع وكشف مدفوعات العميل</li>
+                                <li>جاهز للعمل خلال ثوانٍ</li>
+                            </ul>
+                            <a href="#ms-signup" class="ms-btn ms-btn-primary ms-plan-cta" data-package="باقة الأثاث" data-plan="furniture">اختر الباقة</a>
+                        </div>
+                        <div class="ms-plan">
+                            <h3 class="ms-plan-name">باقة وكلاء الزراعة</h3>
+                            <div class="ms-plan-price"><span class="ms-plan-num">9,000</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
+                            <ul class="ms-plan-feats">
+                                <li>كل التطبيقات الأساسية (مبيعات، مشتريات، مخزون، تصنيع، محاسبة، CRM…)</li>
+                                <li>نظام السكيل: خصم السكيل على بنود المبيعات والمشتريات</li>
+                                <li>إنشاء أوامر البيع للعملاء تلقائيًا من أمر الشراء</li>
+                            </ul>
+                            <a href="#ms-signup" class="ms-btn ms-btn-primary ms-plan-cta" data-package="باقة وكلاء الزراعة" data-plan="agriculture">اختر الباقة</a>
+                        </div>
+                    </div>
                 </div>
                 <!-- full-width self-service signup wizard -->
                 <div id="ms-signup" class="ms-signup" hidden="hidden" aria-hidden="true">
@@ -313,6 +337,7 @@
                             </div>
                             <input type="text" name="company_url" class="ms-hp" tabindex="-1" autocomplete="off" aria-hidden="true"/>
                             <input type="hidden" name="package"/>
+                            <input type="hidden" name="plan"/>
                             <button type="submit" class="ms-btn ms-btn-primary ms-signup-go">ابدأ الإنشاء</button>
                             <p class="ms-signup-msg" role="alert"></p>
                         </form>
