@@ -251,7 +251,7 @@
                     <div class="ms-plans ms-stagger">
                         <div class="ms-plan">
                             <h3 class="ms-plan-name">الباقة الأساسية</h3>
-                            <div class="ms-plan-price"><span class="ms-plan-num">12,900</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
+                            <div class="ms-plan-price"><span class="ms-plan-num">3,500</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
                             <ul class="ms-plan-feats">
                                 <li>تطبيق وتشغيل البرنامج (Odoo)</li>
                                 <li>إدخال البيانات (داتا إنتري)</li>
@@ -259,6 +259,7 @@
                             <a href="#ms-signup" class="ms-btn ms-btn-ghost ms-plan-cta" data-package="الباقة الأساسية">اختر الباقة</a>
                         </div>
                         <div class="ms-plan">
+                            <span class="ms-plan-ico" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30v-6a6 6 0 0 1 6-6h32a6 6 0 0 1 6 6v6"/><path d="M6 36a4 4 0 0 1 8 0v4h36v-4a4 4 0 0 1 8 0v12H6z"/><path d="M12 52v4M52 52v4"/></svg></span>
                             <h3 class="ms-plan-name">باقة الأثاث</h3>
                             <div class="ms-plan-price"><span class="ms-plan-num">10,000</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
                             <ul class="ms-plan-feats">
@@ -269,6 +270,7 @@
                             <a href="#ms-signup" class="ms-btn ms-btn-primary ms-plan-cta" data-package="باقة الأثاث" data-plan="furniture">اختر الباقة</a>
                         </div>
                         <div class="ms-plan">
+                            <span class="ms-plan-ico" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 56V26"/><path d="M32 34c-8 0-12-5-12-12 8 0 12 5 12 12z"/><path d="M32 28c8 0 12-5 12-12-8 0-12 5-12 12z"/><path d="M32 44c-7 0-11-4-11-10 7 0 11 4 11 10z"/><path d="M32 40c7 0 11-4 11-10-7 0-11 4-11 10z"/><path d="M20 56h24"/></svg></span>
                             <h3 class="ms-plan-name">باقة وكلاء الزراعة</h3>
                             <div class="ms-plan-price"><span class="ms-plan-num">9,000</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
                             <ul class="ms-plan-feats">

@@ -9,6 +9,7 @@
             <field name="name">Basic</field>
             <field name="template_db">tpl_basic</field>
             <field name="sequence">10</field>
+            <field name="price">3500</field>
         </record>
         <record id="plan_business" model="saas.plan">
             <field name="name">Business</field>
