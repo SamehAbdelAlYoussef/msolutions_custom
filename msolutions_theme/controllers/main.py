@@ -86,10 +86,12 @@ class MsSignup(http.Controller):
             return _err("العنوان الفرعي مستخدم بالفعل، اختر غيره.")
 
         plan_key = (kw.get("plan") or "").strip()
-        plan = request.env.ref(
+        # sudo: the visitor is the public user, who cannot read saas.plan.
+        plan = (request.env.ref(
             _PLAN_BY_KEY.get(plan_key, "msolutions_saas.plan_basic"),
             raise_if_not_found=False,
-        ) or request.env.ref("msolutions_saas.plan_basic", raise_if_not_found=False)
+        ) or request.env.ref("msolutions_saas.plan_basic", raise_if_not_found=False))
+        plan = plan.sudo() if plan else plan
         try:
             tenant = Tenant.create({
                 "name": subdomain,
