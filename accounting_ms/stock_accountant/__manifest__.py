@@ -9,7 +9,7 @@
     'author': 'msolutions',
     'website': 'https://msolutions.example.com',
     'license': 'OPL-1',
-    'depends': ['account', 'stock_account', 'account_accountant', 'account_reports'],
+    'depends': ['account', 'stock_account', 'account_accountant', 'account_reports', 'account_avatax'],
     'data': [
         'report/stock_valuation_report.xml',
         'views/res_config_settings_views.xml',
