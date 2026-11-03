@@ -247,7 +247,7 @@
                 <div class="ms-wrap">
                     <span class="ms-eyebrow">باقات الاشتراك</span>
                     <h2 class="ms-title">اختر الباقة التي تناسب نموّ شركتك</h2>
-                    <p class="ms-lead">ثلاث باقات متدرّجة، من تشغيل البرنامج وإدخال البيانات إلى المراجعة الميدانية والتحليل الشهري.</p>
+                    <p class="ms-lead">باقات متدرّجة من تشغيل البرنامج وإدخال البيانات إلى المراجعة الميدانية والتحليل الشهري، وباقات جاهزة لنشاطك (الأثاث، وكلاء الزراعة) يُجهَّز نظامك فيها فورًا مع فاتورة الاشتراك.</p>
                     <div class="ms-plans ms-stagger">
                         <div class="ms-plan">
                             <h3 class="ms-plan-name">الباقة الأساسية</h3>
@@ -257,6 +257,26 @@
                                 <li>إدخال البيانات (داتا إنتري)</li>
                             </ul>
                             <a href="#ms-signup" class="ms-btn ms-btn-ghost ms-plan-cta" data-package="الباقة الأساسية">اختر الباقة</a>
+                        </div>
+                        <div class="ms-plan">
+                            <h3 class="ms-plan-name">باقة الأثاث</h3>
+                            <div class="ms-plan-price"><span class="ms-plan-num">10,000</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
+                            <ul class="ms-plan-feats">
+                                <li>كل التطبيقات الأساسية (مبيعات، مشتريات، مخزون، تصنيع، محاسبة، CRM…)</li>
+                                <li>متابعة الدفعات المقدّمة على أوامر البيع وكشف مدفوعات العميل</li>
+                                <li>جاهز للعمل خلال ثوانٍ</li>
+                            </ul>
+                            <a href="#ms-signup" class="ms-btn ms-btn-primary ms-plan-cta" data-package="باقة الأثاث" data-plan="furniture">اختر الباقة</a>
+                        </div>
+                        <div class="ms-plan">
+                            <h3 class="ms-plan-name">باقة وكلاء الزراعة</h3>
+                            <div class="ms-plan-price"><span class="ms-plan-num">9,000</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
+                            <ul class="ms-plan-feats">
+                                <li>كل التطبيقات الأساسية (مبيعات، مشتريات، مخزون، تصنيع، محاسبة، CRM…)</li>
+                                <li>نظام السكيل: خصم السكيل على بنود المبيعات والمشتريات</li>
+                                <li>إنشاء أوامر البيع للعملاء تلقائيًا من أمر الشراء</li>
+                            </ul>
+                            <a href="#ms-signup" class="ms-btn ms-btn-primary ms-plan-cta" data-package="باقة وكلاء الزراعة" data-plan="agriculture">اختر الباقة</a>
                         </div>
                         <div class="ms-plan ms-plan-featured">
                             <span class="ms-plan-badge">الأكثر طلبًا</span>
@@ -280,30 +300,6 @@
                                 <li>تقديم التوصيات اللازمة</li>
                             </ul>
                             <a href="#ms-signup" class="ms-btn ms-btn-ghost ms-plan-cta" data-package="الباقة الشاملة">اختر الباقة</a>
-                        </div>
-                    </div>
-                    <h3 class="ms-title ms-title-sub">باقات القطاعات — نظام جاهز لنشاطك</h3>
-                    <p class="ms-lead">اختر باقة نشاطك وسيُجهَّز لك نظامك بتطبيقاته الجاهزة فورًا، مع فاتورة الاشتراك.</p>
-                    <div class="ms-plans ms-plans-2 ms-stagger">
-                        <div class="ms-plan">
-                            <h3 class="ms-plan-name">باقة الأثاث</h3>
-                            <div class="ms-plan-price"><span class="ms-plan-num">10,000</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
-                            <ul class="ms-plan-feats">
-                                <li>كل التطبيقات الأساسية (مبيعات، مشتريات، مخزون، تصنيع، محاسبة، CRM…)</li>
-                                <li>متابعة الدفعات المقدّمة على أوامر البيع وكشف مدفوعات العميل</li>
-                                <li>جاهز للعمل خلال ثوانٍ</li>
-                            </ul>
-                            <a href="#ms-signup" class="ms-btn ms-btn-primary ms-plan-cta" data-package="باقة الأثاث" data-plan="furniture">اختر الباقة</a>
-                        </div>
-                        <div class="ms-plan">
-                            <h3 class="ms-plan-name">باقة وكلاء الزراعة</h3>
-                            <div class="ms-plan-price"><span class="ms-plan-num">9,000</span><span class="ms-plan-per">ج.م / شهريًا</span></div>
-                            <ul class="ms-plan-feats">
-                                <li>كل التطبيقات الأساسية (مبيعات، مشتريات، مخزون، تصنيع، محاسبة، CRM…)</li>
-                                <li>نظام السكيل: خصم السكيل على بنود المبيعات والمشتريات</li>
-                                <li>إنشاء أوامر البيع للعملاء تلقائيًا من أمر الشراء</li>
-                            </ul>
-                            <a href="#ms-signup" class="ms-btn ms-btn-primary ms-plan-cta" data-package="باقة وكلاء الزراعة" data-plan="agriculture">اختر الباقة</a>
                         </div>
                     </div>
                 </div>
