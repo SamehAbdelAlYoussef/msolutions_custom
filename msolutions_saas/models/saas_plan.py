@@ -165,6 +165,8 @@ class SaasPlan(models.Model):
             sys.executable, sys.argv[0], "-c", cfg.rcfile,
             "-d", tpl, "-i", ",".join(modules),
             "--stop-after-init", "--no-http",
+            # A customer template must never carry demo data.
+            "--without-demo=all",
         ]
         _logger.info("SaaS: building template %s with modules %s", tpl, modules)
         try:
