@@ -6,7 +6,7 @@
         so ALL required fields are guaranteed to be in the model registry at validation time.
 
         Tabs produced:
-          Tab 1 - المحاسبة:       income, expense, stock accounts, avatax
+          Tab 1 - المحاسبة:       income, expense, stock accounts
           Tab 2 - اللوجستيات:     removal strategy, routes
           Tab 3 - تقييم المخزون:  costing method, valuation type
     -->
@@ -36,7 +36,6 @@
                             <field name="property_price_difference_account_id"
                                    string="حساب فرق السعر" options="{'no_create': True}"
                                    invisible="not (property_cost_method == 'standard' and property_valuation == 'real_time')"/>
-                            <field name="avatax_category_id" string="فئة Avatax"/>
                         </group>
                     </page>
 
@@ -89,19 +88,6 @@
         <field name="priority">30</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='property_cost_method']/.." position="attributes">
-                <attribute name="invisible">True</attribute>
-            </xpath>
-        </field>
-    </record>
-
-    <!-- 4. Hide avatax_category_id in the header (now shown in tab 1). -->
-    <record id="product_category_hide_avatax_header" model="ir.ui.view">
-        <field name="name">product.category.hide.avatax.header</field>
-        <field name="model">product.category</field>
-        <field name="inherit_id" ref="account_avatax.product_category_form_inherit"/>
-        <field name="priority">30</field>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='avatax_category_id']" position="attributes">
                 <attribute name="invisible">True</attribute>
             </xpath>
         </field>
