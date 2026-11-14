@@ -42,7 +42,9 @@ class AccountPayment(models.Model):
         for pay in self:
             if not pay._is_so_advance() or pay.state in ('canceled', 'rejected'):
                 continue
-            order = pay.sale_order_id
+            # sudo: the cashier may not be allowed to read this order, but the
+            # rule must still be applied against its real total.
+            order = pay.sale_order_id.sudo()
             earlier = self.sudo().search_count([
                 ('sale_order_id', '=', order.id),
                 ('payment_type', '=', 'inbound'),

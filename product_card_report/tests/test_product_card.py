@@ -45,5 +45,5 @@ class TestProductCard(TransactionCase):
 
     def test_pdf_renders(self):
         report = self.env.ref('product_card_report.action_report_product_card_template')
-        pdf, _ = self.env['ir.actions.report']._render_qweb_pdf(report, self.tmpl.ids)
+        pdf, _ = self.env['ir.actions.report'].with_context(force_report_rendering=True)._render_qweb_pdf(report, self.tmpl.ids)
         self.assertTrue(pdf.startswith(b'%PDF'))
