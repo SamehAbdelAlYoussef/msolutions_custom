@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_product_card" model="report.paperformat">
+        <field name="name">Product card A4</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">14</field>
+        <field name="margin_bottom">14</field>
+        <field name="margin_left">14</field>
+        <field name="margin_right">14</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <!-- One page of the card. `product` is a product.template or product.product. -->
+    <template id="card_page">
+        <div class="o_product_card" style="text-align: center; font-size: 16px;">
+            <div style="height: 150mm; display: flex; align-items: center; justify-content: center;">
+                <img t-if="product.image_1920"
+                     t-att-src="image_data_uri(product.image_1920)"
+                     alt="Product image"
+                     style="max-width: 100%; max-height: 150mm; object-fit: contain;"/>
+            </div>
+            <h1 style="margin: 12mm 0 4mm; font-size: 34px; font-weight: 700;" t-field="product.name"/>
+            <div style="font-size: 22px; margin-bottom: 8mm;">
+                <span t-if="product.default_code" t-out="product.default_code"
+                      style="display: inline-block; padding: 2mm 6mm; border: 1.5px solid #000; border-radius: 3mm; font-weight: 600; letter-spacing: 1px;"/>
+            </div>
+            <div style="text-align: start; font-size: 18px; line-height: 1.7; padding: 0 6mm;">
+                <t t-if="product.description_sale">
+                    <div t-out="product.description_sale" style="white-space: pre-line;"/>
+                </t>
+                <t t-elif="product.description">
+                    <div t-field="product.description"/>
+                </t>
+            </div>
+        </div>
+    </template>
+
+    <template id="report_product_card">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="product">
+                <div t-attf-style="#{'page-break-after: always;' if not product_last else ''}">
+                    <t t-call="product_card_report.card_page"/>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_product_card_template"><t t-call="product_card_report.report_product_card"/></template>
+    <template id="report_product_card_variant"><t t-call="product_card_report.report_product_card"/></template>
+
+    <record id="action_report_product_card_template" model="ir.actions.report">
+        <field name="name">Product Card (A4)</field>
+        <field name="model">product.template</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">product_card_report.report_product_card_template</field>
+        <field name="report_file">product_card_report.report_product_card_template</field>
+        <field name="print_report_name">'Product card - %s' % (object.name)</field>
+        <field name="paperformat_id" ref="paperformat_product_card"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_product_card_variant" model="ir.actions.report">
+        <field name="name">Product Card (A4)</field>
+        <field name="model">product.product</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">product_card_report.report_product_card_variant</field>
+        <field name="report_file">product_card_report.report_product_card_variant</field>
+        <field name="print_report_name">'Product card - %s' % (object.display_name)</field>
+        <field name="paperformat_id" ref="paperformat_product_card"/>
+        <field name="binding_model_id" ref="product.model_product_product"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

@@ -200,41 +200,13 @@ class SaleOrder(models.Model):
         }
 
     def action_confirm(self):
-        """Confirm the SO and auto-validate the delivery picking.
+        """Confirm the SO. The delivery is NOT executed.
 
-        After the standard confirmation flow (which creates the stock
-        picking via procurement rules), this method:
-
-        1. Reserves / assigns the picking (``action_assign``) if not yet ready.
-        2. Sets done quantities on moves to their full demand so the entire
-           delivery ships immediately.
-        3. Calls ``button_validate`` to complete the transfer without the
-           backorder wizard (``skip_backorder=True``).
-
-        Already-done and cancelled pickings are skipped.
+        Confirming creates the delivery order through the standard procurement
+        rules and leaves it for the warehouse to process (reserve / validate).
+        It used to be reserved and validated here automatically; that was
+        removed on request -- confirming an order must not ship it.
+        (The explicit "create invoice" button, action_create_invoice_direct,
+        still processes the delivery because that is what the button is for.)
         """
-        res = super(SaleOrder, self).action_confirm()
-
-        # Auto-validate delivery pickings linked to this sale order
-        pickings_to_validate = self.picking_ids.filtered(
-            lambda p: p.state not in ('done', 'cancel')
-        )
-        for picking in pickings_to_validate:
-            # Reserve stock if not already assigned
-            if picking.state in ('draft', 'waiting', 'confirmed'):
-                picking.action_assign()
-
-            # If still not assigned (e.g. not enough stock), skip
-            if picking.state != 'assigned':
-                continue
-
-            # Mark full demand as done on each move (the inverse `_set_quantity`
-            # distributes the quantity across the move lines automatically)
-            for move in picking.move_ids:
-                if move.product_uom_qty > 0 and not move.quantity:
-                    move.quantity = move.product_uom_qty
-
-            # Validate without showing the backorder wizard
-            picking.with_context(skip_backorder=True).button_validate()
-
-        return res
+        return super().action_confirm()

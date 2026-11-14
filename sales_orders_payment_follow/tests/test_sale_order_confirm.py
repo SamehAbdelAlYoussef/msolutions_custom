@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test that confirming a sale order auto-validates the stock picking."""
+"""Confirming a sale order must NOT execute (validate) its delivery."""
 
 from odoo.tests.common import TransactionCase
 
@@ -43,37 +43,26 @@ class TestSaleOrderConfirmAutoValidate(TransactionCase):
         })
         return so
 
-    def test_confirm_auto_validates_picking(self):
-        """Clicking Confirm on SO should set the delivery picking to 'done'."""
+    def test_confirm_does_not_validate_picking(self):
+        """Confirm creates the delivery but leaves it undone."""
         so = self._create_so()
         self.assertEqual(so.state, 'draft')
-
-        # ── Confirm the SO ──
         so.action_confirm()
-
-        # ── SO must be confirmed ──
         self.assertEqual(so.state, 'sale')
-
-        # ── A picking should exist ──
         self.assertTrue(so.picking_ids, "No picking was created for the SO")
+        for picking in so.picking_ids:
+            self.assertNotEqual(
+                picking.state, 'done',
+                "Confirming the order must not validate the delivery")
+            self.assertEqual(sum(picking.move_ids.mapped('quantity_done')
+                                 if 'quantity_done' in picking.move_ids._fields else [0]), 0)
 
-        picking = so.picking_ids[0]
-        # ── The picking should be done ──
-        self.assertEqual(
-            picking.state, 'done',
-            f"Picking is in state '{picking.state}', expected 'done'. "
-            f"move_lines quantity: {picking.move_line_ids.mapped('quantity')}"
-        )
-
-    def test_confirm_already_validated_skipped(self):
-        """A picking that is already done should not cause an error on re-confirm."""
+    def test_delivery_can_still_be_validated_manually(self):
         so = self._create_so()
         so.action_confirm()
-
         picking = so.picking_ids[0]
+        picking.action_assign()
+        for move in picking.move_ids:
+            move.quantity = move.product_uom_qty
+        picking.with_context(skip_backorder=True).button_validate()
         self.assertEqual(picking.state, 'done')
-
-        # Should not raise — already-done pickings are skipped
-        # (action_confirm on an already-confirmed order is a no-op in core,
-        #  but we test that the filtering works)
-        self.assertTrue(True)  # reached here without crash

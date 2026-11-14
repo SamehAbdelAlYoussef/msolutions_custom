@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Members may register a first sales-order payment below the minimum
+         percentage. Assign it to the specific user(s) who may do so. -->
+    <record id="group_allow_low_down_payment" model="res.groups">
+        <field name="name">Allow first payment below minimum</field>
+        <field name="comment">Can register the first payment of a sales order even when it is below the required minimum percentage of the order total.</field>
+    </record>
+</odoo>
