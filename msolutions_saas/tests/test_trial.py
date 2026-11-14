@@ -153,7 +153,7 @@ class TestSaasTenantSettings(TransactionCase):
             self.log, self.count = log, count
             self._cnx = type("C", (), {"commit": lambda s: log.append(("commit",))})()
         def execute(self, sql, params=None):
-            self.log.append((" ".join(str(sql).split())[:60], params))
+            self.log.append((" ".join(str(sql).split()), params))
         def fetchone(self):
             return (self.count,)
         def close(self):
