@@ -27,6 +27,12 @@ class TestSaasSecurity(TransactionCase):
                          lambda self: None)
         p.start()
         self.addCleanup(p.stop)
+        # Per-customer settings steps hit the tenant database; stub them for
+        # tests that exercise the provisioning state machine.
+        for _m in ("_apply_hide_apps", "_sync_user_count"):
+            _p = patch.object(type(self.Tenant), _m, lambda self: None)
+            _p.start()
+            self.addCleanup(_p.stop)
 
         dev_group = self.env.ref("msolutions_saas.group_saas_developer")
 

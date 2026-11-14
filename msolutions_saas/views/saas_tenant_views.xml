@@ -102,6 +102,28 @@
                         <field name="error_message" readonly="1" nolabel="1"/>
                     </div>
                     <notebook>
+                        <page string="Settings" name="settings">
+                            <group>
+                                <group string="Users">
+                                    <label for="user_count"/>
+                                    <div class="o_row">
+                                        <field name="user_count" nolabel="1"/>
+                                        <button name="action_sync_users" type="object" string="Sync"
+                                                class="btn-secondary" icon="fa-refresh"
+                                                invisible="state != 'active'"/>
+                                    </div>
+                                    <field name="users_synced_at"/>
+                                </group>
+                                <group string="Apps">
+                                    <field name="hide_apps"/>
+                                </group>
+                            </group>
+                            <div class="text-muted">
+                                Hide Apps removes the Apps icon, its entries in the app
+                                switcher and in menu search for this customer. It is on
+                                by default for every new customer.
+                            </div>
+                        </page>
                         <page string="Backups" name="backups" invisible="not is_active_customer">
                             <group>
                                 <group>

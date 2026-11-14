@@ -43,6 +43,8 @@ class SaasAuditLog(models.Model):
             ("trial_expired", "Trial Expired"),
             ("promoted_active", "Promoted to Active"),
             ("moved_to_trial", "Moved to Trial"),
+            ("apps_hidden", "Apps Hidden"),
+            ("apps_shown", "Apps Shown"),
         ],
         string="Action",
         required=True,
