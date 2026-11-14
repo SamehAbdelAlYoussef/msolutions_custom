@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- The dashboard the task asked for. -->
+    <!-- Simple dashboard: a few counters that open the two customer lists. -->
     <record id="action_saas_dashboard" model="ir.actions.client">
-        <field name="name">Tenants</field>
-        <field name="tag">msolutions_saas.dashboard</field>
+        <field name="name">Dashboard</field>
+        <field name="tag">msolutions_saas.simple_dashboard</field>
     </record>
 
     <!-- Plain views kept alongside it: when provisioning fails, the raw record
@@ -60,6 +60,8 @@
                             confirm="This drops the half-created database left by the failed attempt and provisions this tenant again from scratch. The tenant was never live, so there is no customer data to lose. Continue?"/>
                     <button name="action_open_url" type="object" string="Open"
                             invisible="state != 'active'"/>
+                    <button name="action_backup_now" type="object" string="Backup Now"
+                            invisible="state != 'active'"/>
                     <button name="action_drop" type="object" string="Drop"
                             class="btn-danger"
                             confirm="This permanently deletes the database and its filestore. There is no backup. Continue?"
@@ -82,6 +84,12 @@
                             <field name="plan_id" readonly="state != 'draft'"
                                    options="{'no_create': True}"/>
                             <field name="quota_gb"/>
+                            <field name="is_active_customer" widget="boolean_toggle"/>
+                            <field name="trial_end" readonly="is_active_customer"
+                                   invisible="is_active_customer"/>
+                            <field name="trial_days_left"
+                                   invisible="is_active_customer or trial_expired"/>
+                            <field name="trial_expired" invisible="not trial_expired"/>
                         </group>
                         <group>
                             <field name="admin_login" readonly="state != 'draft'"/>
@@ -164,6 +172,70 @@
         </field>
     </record>
 
+    <!-- Two customer lists. The toggle in each row moves the customer between
+         them (and between the trial / active web containers). -->
+    <record id="view_saas_tenant_list_active" model="ir.ui.view">
+        <field name="name">saas.tenant.list.active</field>
+        <field name="model">saas.tenant</field>
+        <field name="arch" type="xml">
+            <list string="Active Customers">
+                <field name="name"/>
+                <field name="company_name"/>
+                <field name="url" widget="url"/>
+                <field name="plan_id"/>
+                <field name="create_date"/>
+                <field name="quota_gb" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-danger="state == 'error'"
+                       decoration-info="state in ('provisioning', 'terminating')"/>
+                <field name="is_active_customer" widget="boolean_toggle" string="Active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_saas_tenant_list_trial" model="ir.ui.view">
+        <field name="name">saas.tenant.list.trial</field>
+        <field name="model">saas.tenant</field>
+        <field name="arch" type="xml">
+            <list string="Trial Customers"
+                  decoration-danger="trial_expired"
+                  decoration-warning="not trial_expired and trial_days_left &lt;= 3">
+                <field name="name"/>
+                <field name="company_name"/>
+                <field name="url" widget="url"/>
+                <field name="plan_id"/>
+                <field name="create_date"/>
+                <field name="trial_end"/>
+                <field name="trial_days_left"/>
+                <field name="trial_expired" widget="boolean" string="Expired"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-danger="state == 'error'"
+                       decoration-info="state in ('provisioning', 'terminating')"/>
+                <field name="is_active_customer" widget="boolean_toggle" string="Active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_saas_customers_active" model="ir.actions.act_window">
+        <field name="name">Active Customers</field>
+        <field name="res_model">saas.tenant</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_saas_tenant_list_active"/>
+        <field name="domain">[('is_active_customer', '=', True)]</field>
+        <field name="context">{'default_is_active_customer': True}</field>
+    </record>
+
+    <record id="action_saas_customers_trial" model="ir.actions.act_window">
+        <field name="name">Trial Customers</field>
+        <field name="res_model">saas.tenant</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_saas_tenant_list_trial"/>
+        <field name="domain">[('is_active_customer', '=', False)]</field>
+        <field name="context">{'default_is_active_customer': False}</field>
+    </record>
+
     <record id="action_saas_tenant_records" model="ir.actions.act_window">
         <field name="name">Tenant Records</field>
         <field name="res_model">saas.tenant</field>
@@ -175,9 +247,13 @@
     <menuitem id="menu_saas_root" name="SaaS" sequence="1"
               web_icon="msolutions_saas,static/description/icon.png"
               groups="msolutions_saas.group_saas_developer"/>
-    <menuitem id="menu_saas_dashboard" name="Tenants" sequence="10"
+    <menuitem id="menu_saas_dashboard" name="Dashboard" sequence="10"
               parent="menu_saas_root" action="action_saas_dashboard"/>
-    <menuitem id="menu_saas_records" name="Tenant Records" sequence="20"
+    <menuitem id="menu_saas_customers_active" name="Active Customers" sequence="20"
+              parent="menu_saas_root" action="action_saas_customers_active"/>
+    <menuitem id="menu_saas_customers_trial" name="Trial Customers" sequence="30"
+              parent="menu_saas_root" action="action_saas_customers_trial"/>
+    <menuitem id="menu_saas_records" name="All Tenant Records" sequence="40"
               parent="menu_saas_root" action="action_saas_tenant_records"/>
 
 </odoo>

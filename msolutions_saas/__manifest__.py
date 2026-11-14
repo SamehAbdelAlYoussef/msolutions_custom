@@ -54,7 +54,7 @@ PostgreSQL roles keep the web tier unable to drop databases.
     ],
     'assets': {
         'web.assets_backend': [
-            'msolutions_saas/static/src/saas_dashboard/**/*',
+            'msolutions_saas/static/src/simple_dashboard/**/*',
             'msolutions_saas/static/src/saas_shell/**/*',
             'msolutions_saas/static/src/saas_logs/**/*',
         ],

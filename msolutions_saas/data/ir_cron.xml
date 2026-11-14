@@ -62,6 +62,18 @@
             <field name="active" eval="True"/>
         </record>
 
+        <!-- Trials past their end date -> trial_expired (nginx serves the
+             'trial ended' page). 5 min is plenty for a 15-day window. -->
+        <record id="cron_expire_trials" model="ir.cron">
+            <field name="name">SaaS: expire finished trials</field>
+            <field name="model_id" ref="model_saas_tenant"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_expire_trials()</field>
+            <field name="interval_number">5</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+        </record>
+
         <!-- Backup Now: dump the next queued job under the shared filestore lock,
              and finalize jobs the host uploader has reported. Triggered on demand
              by action_backup_now; the 1-min interval is a safety net. -->

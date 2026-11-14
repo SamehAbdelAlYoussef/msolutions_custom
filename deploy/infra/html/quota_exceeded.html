@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<title>Storage full — MSolutions</title>
+<style>
+  :root{
+    --bg1:#fdf2f4; --bg2:#f7e6ea; --card:#ffffff; --ink:#0f172a;
+    --muted:#64748b; --line:#e2e8f0; --red:#e11d48; --red-soft:#fee2e8;
+    --green:#16a34a; --green-ink:#fff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; min-height:100%;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Kufi Arabic",sans-serif;
+    color:var(--ink);
+    background:radial-gradient(1100px 560px at 50% -10%,#fff 0%,var(--bg1) 45%,var(--bg2) 100%);
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .lang-switch{
+    position:fixed; top:18px; inset-inline-end:18px; display:flex; gap:4px;
+    background:var(--card); border:1px solid var(--line); border-radius:999px;
+    padding:4px; box-shadow:0 2px 10px rgba(15,23,42,.06); z-index:5;
+  }
+  .lang-switch button{
+    border:0; background:transparent; color:var(--muted); cursor:pointer;
+    font:600 13px/1 inherit; padding:7px 14px; border-radius:999px;
+  }
+  .lang-switch button.active{background:var(--red); color:#fff}
+  .card{
+    width:100%; max-width:540px; background:var(--card); border:1px solid var(--line);
+    border-radius:22px; box-shadow:0 24px 60px -24px rgba(225,29,72,.35);
+    padding:40px 40px 28px; text-align:center;
+  }
+  /* Big instantly-readable "full" gauge */
+  .gauge{ position:relative; width:150px; height:150px; margin:4px auto 22px; }
+  .gauge svg{ transform:rotate(-90deg); }
+  .gauge .track{ stroke:#f1f5f9; }
+  .gauge .fill{ stroke:var(--red); stroke-linecap:round;
+    stroke-dasharray:408; stroke-dashoffset:0; /* 100% full */
+    filter:drop-shadow(0 4px 10px rgba(225,29,72,.35)); }
+  .gauge .center{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+  }
+  .gauge .pct{ font-size:30px; font-weight:800; color:var(--red); line-height:1; }
+  .gauge .full-label{ font-size:11px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--red); margin-top:4px; }
+  h1{ margin:0 0 8px; font-size:24px; font-weight:800; letter-spacing:-.01em; }
+  .chip{
+    display:inline-block; max-width:100%; overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap; vertical-align:bottom; margin:0 0 14px;
+    background:#f1f5f9; color:#334155; border:1px solid var(--line); border-radius:10px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; padding:7px 14px;
+  }
+  .lead{ margin:0 auto 26px; max-width:420px; color:var(--muted); font-size:15px; line-height:1.65; }
+  .actions{ display:flex; flex-direction:column; gap:12px; }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:9px;
+    text-decoration:none; font-weight:700; font-size:15px; border-radius:13px;
+    padding:14px 18px; cursor:pointer; border:1px solid transparent;
+  }
+  .btn svg{ width:18px; height:18px; }
+  .btn-primary{ background:linear-gradient(135deg,#2563eb,#4f46e5); color:#fff;
+    box-shadow:0 12px 26px -12px rgba(37,99,235,.7); }
+  .btn-primary:hover{ filter:brightness(1.06); }
+  .btn-wa{ background:#25d366; color:#062e14; }
+  .btn-wa:hover{ filter:brightness(1.03); }
+  .divider{ height:1px; background:var(--line); margin:26px -40px 16px; }
+  footer{ color:var(--muted); font-size:12.5px; }
+  footer .brand{ font-weight:800; color:var(--ink); }
+  @media (max-width:480px){ .card{padding:32px 22px 22px} h1{font-size:21px} }
+  @media (prefers-color-scheme:dark){
+    :root{ --bg1:#1a0b10; --bg2:#12070b; --card:#0f172a; --ink:#e5e9f0;
+      --muted:#94a3b8; --line:#1e293b; --red:#fb7185; --red-soft:#3a0f1a; }
+    body{ background:radial-gradient(1100px 560px at 50% -10%,#241019 0%,var(--bg1) 45%,var(--bg2) 100%); }
+    .gauge .track{ stroke:#1e293b; } .chip{ background:#0b1220; color:#cbd5e1; }
+  }
+</style>
+</head>
+<body>
+  <div class="lang-switch" role="group" aria-label="Language">
+    <button type="button" data-lang="en" class="active">English</button>
+    <button type="button" data-lang="ar">العربية</button>
+  </div>
+
+  <main class="card">
+    <div class="gauge" aria-hidden="true">
+      <svg width="150" height="150" viewBox="0 0 150 150">
+        <circle class="track" cx="75" cy="75" r="65" fill="none" stroke-width="14"/>
+        <circle class="fill" cx="75" cy="75" r="65" fill="none" stroke-width="14"/>
+      </svg>
+      <div class="center">
+        <div class="pct">100%</div>
+        <div class="full-label" data-i18n="full">FULL</div>
+      </div>
+    </div>
+
+    <h1 data-i18n="title">Storage is full</h1>
+    <div class="chip" id="sub">workspace</div>
+    <p class="lead" data-i18n="lead">This workspace has used all of its storage. Access is paused until you upgrade — your data is safe and untouched.</p>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="https://msolutions-eg.com" data-i18n="home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M9 21V12h6v9"/></svg>
+        <span>Go to MSolutions</span>
+      </a>
+      <a class="btn btn-wa" id="contact" href="#" data-i18n="upgrade">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm5.8 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5-4.5-.2-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6c-.1.2-.3.3-.1.6.1.2.6 1 1.3 1.6.9.8 1.6 1 1.8 1.1.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.9.9c.2.1.4.2.4.3.1.1.1.6-.1 1.1z"/></svg>
+        <span>Contact us to upgrade</span>
+      </a>
+    </div>
+
+    <div class="divider"></div>
+    <footer><span class="brand">MSolutions</span> · <span data-i18n="rights">© 2026 · All rights reserved</span></footer>
+  </main>
+
+<script>
+(function(){
+  // ── EDIT ME: your WhatsApp number for upgrades (digits only, country code first) ──
+  var WHATSAPP = "201017729427";
+
+  var sub = "";
+  try{ sub = (window.location.hostname || "").split(".")[0] || ""; }catch(e){}
+
+  var I18N = {
+    en: {
+      dir: "ltr",
+      full: "FULL",
+      title: "Storage is full",
+      lead: "This workspace has used all of its storage. Access is paused until you upgrade — your data is safe and untouched.",
+      home: "Go to MSolutions",
+      upgrade: "Contact us to upgrade",
+      rights: "© 2026 · All rights reserved",
+      pageTitle: "Storage full — MSolutions"
+    },
+    ar: {
+      dir: "rtl",
+      full: "ممتلئ",
+      title: "المساحة ممتلئة",
+      lead: "استهلك هذا الحساب كامل مساحته. تم إيقاف الوصول مؤقتاً حتى الترقية — بياناتك آمنة ولم تُمَس.",
+      home: "الذهاب إلى MSolutions",
+      upgrade: "تواصل معنا للترقية",
+      rights: "© 2026 · جميع الحقوق محفوظة",
+      pageTitle: "المساحة ممتلئة — MSolutions"
+    }
+  };
+
+  function setText(sel, txt){
+    document.querySelectorAll(sel).forEach(function(el){ el.textContent = txt; });
+  }
+
+  function apply(lang){
+    var t = I18N[lang] || I18N.en;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = t.dir;
+    document.title = t.pageTitle;
+    document.querySelectorAll("[data-i18n]").forEach(function(el){
+      var k = el.getAttribute("data-i18n");
+      if (t[k] != null){
+        var span = el.querySelector("span");
+        if (span){ span.textContent = t[k]; } else { el.textContent = t[k]; }
+      }
+    });
+    document.querySelectorAll(".lang-switch button").forEach(function(b){
+      b.classList.toggle("active", b.getAttribute("data-lang") === lang);
+    });
+    try{ localStorage.setItem("msol_lang", lang); }catch(e){}
+  }
+
+  // subdomain chip + WhatsApp link
+  document.getElementById("sub").textContent = sub ? (sub + ".msolutions-eg.com") : "workspace";
+  try{
+    var msg = encodeURIComponent("Hello, my workspace " + (sub || "") + " is full. I would like to upgrade my storage.");
+    document.getElementById("contact").setAttribute("href", "https://wa.me/" + WHATSAPP + "?text=" + msg);
+  }catch(e){}
+
+  document.querySelectorAll(".lang-switch button").forEach(function(b){
+    b.addEventListener("click", function(){ apply(b.getAttribute("data-lang")); });
+  });
+
+  var saved = "en";
+  try{ saved = localStorage.getItem("msol_lang") || "en"; }catch(e){}
+  apply(saved === "ar" ? "ar" : "en");
+})();
+</script>
+</body>
+</html>
