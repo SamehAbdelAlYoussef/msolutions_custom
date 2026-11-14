@@ -45,11 +45,11 @@ restic_run() {   # creds via exported env in a subshell -> never in `ps`
     restic "$@" )
 }
 
-result() {   # id status message
-  local id="$1" status="$2" msg="$3"
-  ID="$id" ST="$status" MSG="$msg" GID="$STATUS_GID" RES="$RESULTS" python3 - <<'PY'
+result() {   # result_filename id status message
+  local rn="$1" id="$2" status="$3" msg="$4"
+  RN="$rn" ID="$id" ST="$status" MSG="$msg" GID="$STATUS_GID" RES="$RESULTS" python3 - <<'PY'
 import json, os
-p = os.path.join(os.environ["RES"], "%s.json" % os.environ["ID"]); tmp = p + ".tmp"
+p = os.path.join(os.environ["RES"], os.environ["RN"]); tmp = p + ".tmp"
 open(tmp, "w").write(json.dumps({"id": int(os.environ["ID"]), "status": os.environ["ST"],
                                  "message": os.environ["MSG"]}))
 os.chown(tmp, 0, int(os.environ["GID"])); os.chmod(tmp, 0o640); os.replace(tmp, p)
@@ -67,10 +67,11 @@ for k in ("id","tenant","staging_rel","ref_key","source","date","snapshot_id"):
 PY
 ) || { rm -f "$req"; continue; }
   ID="${F[0]}"; TENANT="${F[1]}"; SREL="${F[2]}"; REF="${F[3]}"; SRC="${F[4]}"; DATE="${F[5]}"; SNAP="${F[6]}"
+  RN="$(basename "$req")"
 
   if ! printf '%s' "$ID" | grep -qE '^[0-9]+$' \
      || ! printf '%s' "$TENANT" | grep -qE '^[a-z][a-z0-9]{2,30}$' \
-     || [ "${SREL#downloads/}" = "$SREL" ]; then
+     || { [ "${SREL#downloads/}" = "$SREL" ] && [ "${SREL#restore_staging/}" = "$SREL" ]; }; then
     echo "backup_restore: rejecting malformed spool $req"; rm -f "$req"; continue
   fi
   STAGING="$FS_ROOT/$SREL"
@@ -113,10 +114,10 @@ PY
     dt=$(( $(date +%s) - t0 ))
     if [ -f "$STAGING/dump.sql" ] && [ "$(stat -c%s "$STAGING/dump.sql")" -ge 4096 ]; then
       echo "backup_restore: $ID staged from $origin in ${dt}s"
-      result "$ID" ok "restored from $origin in ${dt}s"
+      result "$RN" "$ID" ok "restored from $origin in ${dt}s"
     else
       rm -rf "$STAGING"
-      result "$ID" failed "could not locate/restore backup $REF"
+      result "$RN" "$ID" failed "could not locate/restore backup $REF"
     fi
     rm -f "$req"
   ) 9>"$LOCK"
