@@ -97,6 +97,10 @@ class MsSignup(http.Controller):
                 "name": subdomain,
                 "company_name": company,
                 "plan_id": plan.id if plan else False,
+                # Website signups start on the free trial (small container,
+                # 15 days); staff move them to Active from the Trial list.
+                "is_active_customer": False,
+                "trial_end": Tenant._trial_deadline(),
             })
             if tenant._database_exists():
                 tenant.unlink()

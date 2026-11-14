@@ -1,0 +1,16 @@
+.o_ms_simple_dash { padding: 2rem; max-width: 1000px; margin: 0 auto; }
+.o_ms_simple_dash_title { margin-bottom: 1.5rem; font-weight: 600; }
+.o_ms_simple_dash_cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.o_ms_card {
+    display: flex; flex-direction: column; align-items: flex-start; gap: .4rem;
+    padding: 1.2rem 1.4rem; border: 1px solid var(--o-border-color, #dee2e6);
+    border-inline-start-width: 5px; border-radius: .5rem; background: var(--o-view-background-color, #fff);
+    cursor: pointer; text-align: start;
+    &:hover { box-shadow: 0 4px 14px rgba(0, 0, 0, .1); }
+}
+.o_ms_card_value { font-size: 2.2rem; font-weight: 700; line-height: 1; }
+.o_ms_card_label { color: #6c757d; }
+.o_ms_card_ok { border-inline-start-color: #28a745; }
+.o_ms_card_info { border-inline-start-color: #17a2b8; }
+.o_ms_card_warn { border-inline-start-color: #fd7e14; }
+.o_ms_card_bad { border-inline-start-color: #dc3545; }

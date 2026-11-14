@@ -185,6 +185,29 @@ class SaasTenant(models.Model):
              "upgrade page until you raise the quota.",
     )
 
+    # ---- Trial / Active customers ----
+    # Customers who sign up from the website start on a TRIAL: a fixed number of
+    # days served from the small 'trial' web container. Ticking
+    # is_active_customer promotes them to the full-resources 'active' container
+    # (and clears any expiry). Routing is done by nginx from update_tenant_list.sh
+    # -- the database and filestore are shared, so a move never copies data.
+    is_active_customer = fields.Boolean(
+        string="Active Customer", default=True, copy=False, index=True,
+        help="Tick to move this customer from the Trial list to the Active "
+             "list (full-resources container). Untick to put it back on trial.",
+    )
+    trial_end = fields.Datetime(
+        string="Trial Ends", copy=False,
+        help="When the free trial ends. After this the customer sees a "
+             "'trial ended' page until you tick Active Customer.",
+    )
+    trial_expired = fields.Boolean(
+        string="Trial Expired", readonly=True, copy=False, index=True,
+        help="Set automatically when the trial passes its end date.",
+    )
+    trial_days_left = fields.Integer(
+        string="Trial Days Left", compute="_compute_trial_days_left")
+
     # ---- Backups (read-only registry; populated from the host manifest) ----
     backup_ids = fields.One2many("saas.backup", "tenant_id", string="Backups")
     backup_count = fields.Integer(compute="_compute_backup_state")
@@ -1571,8 +1594,64 @@ class SaasTenant(models.Model):
         self.search([("state", "=", "active")])._enforce_quota()
         self.env.cr.commit()
 
+    TRIAL_DAYS = 15
+
+    @api.depends("is_active_customer", "trial_end", "trial_expired")
+    def _compute_trial_days_left(self):
+        now = fields.Datetime.now()
+        for t in self:
+            if t.is_active_customer or not t.trial_end or t.trial_expired:
+                t.trial_days_left = 0
+            else:
+                secs = (t.trial_end - now).total_seconds()
+                t.trial_days_left = max(0, int(-(-secs // 86400)))  # ceil
+
+    @api.model
+    def _trial_deadline(self):
+        return fields.Datetime.now() + timedelta(days=self.TRIAL_DAYS)
+
+    @api.model
+    def _cron_expire_trials(self):
+        """Mark trials past their end date as expired (nginx then serves the
+        'trial ended' page within seconds). Never touches a tenant database."""
+        self._assert_control_plane()
+        due = self.search([
+            ("state", "=", "active"), ("is_active_customer", "=", False),
+            ("trial_expired", "=", False), ("trial_end", "!=", False),
+            ("trial_end", "<=", fields.Datetime.now()),
+        ])
+        for t in due:
+            t.trial_expired = True
+            t._log("trial_expired", "trial ended %s" % t.trial_end)
+            _logger.info("SaaS: trial of %s expired", t.name)
+        self.env.cr.commit()
+
+    @api.model
+    def simple_dashboard_data(self):
+        """Counters for the simple dashboard."""
+        self._check_developer_group()
+        T = self.search([("state", "=", "active")])
+        soon = T.filtered(lambda t: not t.is_active_customer and not t.trial_expired
+                          and 0 <= t.trial_days_left <= 3)
+        return {
+            "active": len(T.filtered("is_active_customer")),
+            "trial": len(T.filtered(lambda t: not t.is_active_customer and not t.trial_expired)),
+            "trial_ending": len(soon),
+            "trial_expired": len(T.filtered("trial_expired")),
+            "problems": self.search_count([("state", "=", "error")]),
+        }
+
     def write(self, vals):
+        if "is_active_customer" in vals:
+            if vals["is_active_customer"]:
+                vals["trial_expired"] = False          # promoted: lift any expiry
+            elif "trial_end" not in vals:
+                vals["trial_expired"] = False          # back on trial: fresh window
+                vals["trial_end"] = self._trial_deadline()
         res = super().write(vals)
+        if "is_active_customer" in vals:
+            for t in self:
+                t._log("promoted_active" if vals["is_active_customer"] else "moved_to_trial")
         # Changing a quota re-checks enforcement immediately, so setting a small
         # (or zero) quota suspends the tenant within a couple of seconds, and
         # raising it restores access -- no waiting for the timer. Guarded on the

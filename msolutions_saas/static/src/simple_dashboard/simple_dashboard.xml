@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="msolutions_saas.SimpleDashboard">
+        <div class="o_ms_simple_dash">
+            <h2 class="o_ms_simple_dash_title">SaaS</h2>
+            <div class="o_ms_simple_dash_cards">
+                <t t-foreach="cards" t-as="c" t-key="c.key">
+                    <button type="button" t-attf-class="o_ms_card o_ms_card_{{c.tone}}"
+                            t-on-click="() => this.open(c)">
+                        <span class="o_ms_card_value" t-esc="c.value ?? 0"/>
+                        <span class="o_ms_card_label" t-esc="c.label"/>
+                    </button>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

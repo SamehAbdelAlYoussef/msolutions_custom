@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Workspace not found — MSolutions</title>
+<style>
+  :root{
+    --bg1:#eef2f7; --bg2:#e3e9f2; --card:#ffffff; --ink:#0f172a;
+    --muted:#64748b; --line:#e2e8f0; --accent:#2563eb; --accent-ink:#ffffff;
+    --chip-bg:#f1f5f9; --chip-ink:#334155; --danger:#e11d48;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; min-height:100%;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Noto Kufi Arabic",sans-serif;
+    color:var(--ink);
+    background:radial-gradient(1200px 600px at 50% -10%,#ffffff 0%,var(--bg1) 45%,var(--bg2) 100%);
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .lang-switch{
+    position:fixed; top:18px; inset-inline-end:18px;
+    display:flex; gap:4px; background:var(--card); border:1px solid var(--line);
+    border-radius:999px; padding:4px; box-shadow:0 2px 10px rgba(15,23,42,.06);
+  }
+  .lang-switch button{
+    border:0; background:transparent; color:var(--muted); cursor:pointer;
+    font:600 13px/1 inherit; padding:7px 14px; border-radius:999px; transition:.15s;
+  }
+  .lang-switch button.active{background:var(--accent); color:var(--accent-ink)}
+  .card{
+    width:100%; max-width:520px; background:var(--card);
+    border:1px solid var(--line); border-radius:20px;
+    box-shadow:0 20px 50px -20px rgba(15,23,42,.25);
+    padding:44px 40px 30px; text-align:center;
+  }
+  .badge{
+    width:76px; height:76px; margin:0 auto 22px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(180deg,#fff1f4,#ffe4ea); border:1px solid #fecdd6;
+  }
+  .badge svg{width:38px; height:38px; stroke:var(--danger)}
+  h1{margin:0 0 10px; font-size:23px; font-weight:700; letter-spacing:-.01em}
+  .lead{margin:0 auto 24px; max-width:400px; color:var(--muted); font-size:15px; line-height:1.6}
+  .sub-label{font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:8px}
+  .chip{
+    display:inline-block; max-width:100%; overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap; vertical-align:bottom;
+    background:var(--chip-bg); color:var(--chip-ink);
+    border:1px solid var(--line); border-radius:10px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:14px; padding:10px 16px; margin-bottom:26px;
+  }
+  .actions{display:flex; flex-direction:column; gap:12px; margin-bottom:8px}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    text-decoration:none; font-weight:600; font-size:15px; border-radius:12px;
+    padding:13px 18px; transition:.15s; cursor:pointer; border:1px solid transparent;
+  }
+  .btn-primary{background:var(--accent); color:var(--accent-ink)}
+  .btn-primary:hover{filter:brightness(1.05)}
+  .btn-ghost{background:transparent; color:var(--muted); border-color:var(--line)}
+  .btn-ghost:hover{background:var(--chip-bg); color:var(--ink)}
+  .divider{height:1px; background:var(--line); margin:26px -40px 18px}
+  footer{color:var(--muted); font-size:12.5px}
+  footer .brand{font-weight:700; color:var(--ink)}
+  @media (max-width:480px){ .card{padding:34px 22px 24px} h1{font-size:20px} }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg1:#0b1220; --bg2:#070b14; --card:#0f172a; --ink:#e5e9f0;
+      --muted:#94a3b8; --line:#1e293b; --accent:#3b82f6; --chip-bg:#0b1220; --chip-ink:#cbd5e1;
+    }
+    body{background:radial-gradient(1200px 600px at 50% -10%,#111a2e 0%,var(--bg1) 45%,var(--bg2) 100%)}
+    .badge{background:linear-gradient(180deg,#2a0f1a,#1f0b13); border-color:#4c1d29}
+  }
+</style>
+</head>
+<body>
+  <div class="lang-switch" role="group" aria-label="Language">
+    <button type="button" data-lang="en" class="active">English</button>
+    <button type="button" data-lang="ar">العربية</button>
+  </div>
+
+  <main class="card">
+    <div class="badge" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        <line x1="8" y1="11" x2="14" y2="11"></line>
+      </svg>
+    </div>
+
+    <h1 data-i18n="title">Workspace not found</h1>
+    <p class="lead" data-i18n="lead">This workspace has been removed, or it hasn’t been created yet.</p>
+
+    <div class="sub-label" data-i18n="sublabel">Subdomain</div>
+    <div class="chip" id="subdomainDisplay">—</div>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="https://msolutions-eg.com" data-i18n="home">Return to homepage</a>
+      <a class="btn btn-ghost" href="https://msolutions-eg.com" data-i18n="support">Check the URL or contact support</a>
+    </div>
+
+    <div class="divider"></div>
+    <footer>
+      <span class="brand">MSolutions</span> · <span data-i18n="rights">© 2026 · All rights reserved</span>
+    </footer>
+  </main>
+
+<script>
+(function(){
+  // Show the requested subdomain (first label of the hostname).
+  try{
+    var host = window.location.hostname || "";
+    var sub = host.split(".")[0];
+    document.getElementById("subdomainDisplay").textContent = sub || host || "—";
+  }catch(e){}
+
+  var I18N = {
+    en:{
+      dir:"ltr", title:"Workspace not found",
+      lead:"This workspace has been removed, or it hasn’t been created yet.",
+      sublabel:"Subdomain",
+      home:"Return to homepage",
+      support:"Check the URL or contact support",
+      rights:"© 2026 · All rights reserved",
+      pageTitle:"Workspace not found — MSolutions"
+    },
+    ar:{
+      dir:"rtl", title:"العميل غير موجود",
+      lead:"تم حذف هذا العميل، أو لم يتم إنشاؤه بعد.",
+      sublabel:"النطاق الفرعي",
+      home:"العودة إلى الصفحة الرئيسية",
+      support:"تحقّق من الرابط أو تواصل مع الدعم الفني",
+      rights:"© 2026 · جميع الحقوق محفوظة",
+      pageTitle:"العميل غير موجود — MSolutions"
+    }
+  };
+
+  function apply(lang){
+    var t = I18N[lang] || I18N.en;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = t.dir;
+    document.title = t.pageTitle;
+    document.querySelectorAll("[data-i18n]").forEach(function(el){
+      var k = el.getAttribute("data-i18n");
+      if(t[k]!=null) el.textContent = t[k];
+    });
+    document.querySelectorAll(".lang-switch button").forEach(function(b){
+      b.classList.toggle("active", b.getAttribute("data-lang")===lang);
+    });
+    try{ localStorage.setItem("msol_lang", lang); }catch(e){}
+  }
+
+  document.querySelectorAll(".lang-switch button").forEach(function(b){
+    b.addEventListener("click", function(){ apply(b.getAttribute("data-lang")); });
+  });
+
+  var saved = "en";
+  try{ saved = localStorage.getItem("msol_lang") || "en"; }catch(e){}
+  apply(saved === "ar" ? "ar" : "en");
+})();
+</script>
+</body>
+</html>
