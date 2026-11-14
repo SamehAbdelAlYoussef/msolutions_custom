@@ -66,6 +66,7 @@
                    'purchase_accountant',
                    'sale_external_tax'],
     'data': ['views/msolutions_accounting_menus.xml'],
+    'uninstall_hook': 'uninstall_hook',
     'application': True,
     'auto_install': False,
     'installable': True,
