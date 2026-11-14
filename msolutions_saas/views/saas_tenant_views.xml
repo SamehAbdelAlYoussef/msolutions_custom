@@ -228,6 +228,11 @@
     <menuitem id="menu_saas_root" name="SaaS" sequence="1"
               web_icon="msolutions_saas,static/description/icon.png"
               groups="msolutions_saas.group_saas_developer"/>
+    <!-- The 4th and last top-level menu. Everything that is not a customer
+         list lives under it. -->
+    <menuitem id="menu_saas_configuration" name="Configuration"
+              parent="menu_saas_root" sequence="40"
+              groups="msolutions_saas.group_saas_developer"/>
     <menuitem id="menu_saas_dashboard" name="Dashboard" sequence="10"
               parent="menu_saas_root" action="action_saas_dashboard"/>
     <menuitem id="menu_saas_customers_active" name="Active Customers" sequence="20"

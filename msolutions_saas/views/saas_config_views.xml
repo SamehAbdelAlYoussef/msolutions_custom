@@ -60,11 +60,6 @@ action = record.get_formview_action()
         </field>
     </record>
 
-    <!-- The 4th and last top-level menu. Everything that is not a customer
-         list lives under it. -->
-    <menuitem id="menu_saas_configuration" name="Configuration"
-              parent="menu_saas_root" sequence="40"
-              groups="msolutions_saas.group_saas_developer"/>
     <menuitem id="menu_saas_config"
               name="Settings"
               parent="menu_saas_configuration"
