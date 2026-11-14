@@ -99,3 +99,47 @@ class TestSaasTrial(TransactionCase):
         with self.assertRaises(UserError) as err:
             t.with_user(user).action_backup_now()
         self.assertIn("demo", str(err.exception).lower())
+
+    # -- 30-day purge ------------------------------------------------------
+
+    def _purge(self):
+        with patch.object(self.env.cr, "commit", lambda: None), \
+             patch.object(type(self.Tenant), "_trigger_cron", lambda self: None):
+            self.Tenant._cron_purge_demos()
+
+    def test_purge_queues_only_demos_past_30_days(self):
+        # demo started 31 days ago: trial_end = start + 15d = 16 days ago
+        old = self._trial("olddemo", days=-16)
+        young = self._trial("younger", days=-10)        # started 25 days ago
+        fresh = self._trial("freshone", days=10)
+        self._purge()
+        self.assertEqual(old.state, "terminating")
+        self.assertEqual(young.state, "active")
+        self.assertEqual(fresh.state, "active")
+
+    def test_purge_never_touches_active_customers(self):
+        paid = self.Tenant.create({"name": "paidold", "state": "active",
+                                   "trial_end": fields.Datetime.now() - timedelta(days=400)})
+        self.assertTrue(paid.is_active_customer)
+        self._purge()
+        self.assertEqual(paid.state, "active")
+
+    def test_promoted_demo_is_not_purged(self):
+        t = self._trial("savedone", days=-20)
+        t.is_active_customer = True
+        self._purge()
+        self.assertEqual(t.state, "active")
+
+    def test_demo_without_end_date_is_not_purged(self):
+        t = self.Tenant.create({"name": "noenddate", "state": "active",
+                                "is_active_customer": False})
+        t.trial_end = False
+        self._purge()
+        self.assertEqual(t.state, "active")
+
+    def test_purge_is_logged(self):
+        self._trial("loggedone", days=-16)
+        self._purge()
+        log = self.env["saas.audit.log"].search(
+            [("tenant_name", "=", "loggedone"), ("action", "=", "drop_queued")])
+        self.assertTrue(log)
