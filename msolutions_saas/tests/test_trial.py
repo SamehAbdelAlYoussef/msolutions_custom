@@ -191,7 +191,7 @@ class TestSaasTenantSettings(TransactionCase):
         t.hide_apps = False
         sqls = [x[0] for x in self.log]
         self.assertTrue(any("UPDATE ir_ui_menu" in s for s in sqls))
-        self.assertTrue(any("orm_signaling_default_id_seq" in s for s in sqls))
+        self.assertTrue(any("INSERT INTO orm_signaling_default" in s for s in sqls))
         update = [x for x in self.log if x[0].startswith("WITH RECURSIVE")][-1]
         self.assertEqual(update[1], (True,))          # shown -> active = True
         t.hide_apps = True

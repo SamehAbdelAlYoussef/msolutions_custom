@@ -1620,9 +1620,11 @@ class SaasTenant(models.Model):
         self.search([("state", "=", "active")])._enforce_quota()
         self.env.cr.commit()
 
-    # Cache signalling (Odoo 19): bumping this sequence makes every running
-    # worker drop its 'default' ormcache, which is where menu visibility lives.
-    _SIGNAL_DEFAULT_CACHE_SQL = "SELECT nextval('orm_signaling_default_id_seq')"
+    # Cache signalling (Odoo 19): workers compare max(id) of this table with the
+    # value they last saw and drop their 'default' ormcache when it moved --
+    # menu visibility lives there. Inserting a row is exactly what Odoo itself
+    # does (Registry.signal_changes); bumping only the sequence is NOT seen.
+    _SIGNAL_DEFAULT_CACHE_SQL = "INSERT INTO orm_signaling_default DEFAULT VALUES"
 
     # Apps = base.menu_management and everything under it.
     _APPS_MENU_SQL = """
