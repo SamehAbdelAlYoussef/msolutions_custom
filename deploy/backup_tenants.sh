@@ -13,12 +13,13 @@
 # ─────────────────────────────────────────────────────────────────────────────
 #
 # Per-tenant backup: pg_dump -Fp + filestore -> local(7d) + restic->B2(7/4/3).
-# Usage: backup_tenants.sh [tenant]   (no arg = every tenant)
+# Usage: backup_tenants.sh [tenant]   (no arg = control plane + active customers)
 set -uo pipefail
 ENVF=/opt/scripts/backup.env
 [ -r "$ENVF" ] && . "$ENVF"
 : "${DB_HOST:?set DB_HOST in backup.env}"; : "${DB_PORT:=5432}"; : "${DB_USER:=odoo_web}"
 : "${FILESTORE:?set FILESTORE in backup.env}"
+: "${CONTROL_DB:=msolutions}"
 : "${LOCAL_DIR:?set LOCAL_DIR in backup.env}"; : "${LOG_DIR:?set LOG_DIR in backup.env}"; : "${LOCAL_KEEP_DAYS:=7}"
 BACKUP_ROOT="$(dirname "$LOCAL_DIR")"          # holds LAST_BACKUP_OK / _FAILED
 DATE=$(date -u +%F); TS=$(date -u +%F_%H%M%S); LOG="$LOG_DIR/backup-$TS.log"
@@ -37,7 +38,11 @@ echo "=== backup start $TS ==="
 export PGPASSWORD="${PGPASSWORD:-}"
 CONN="host=$DB_HOST port=$DB_PORT user=$DB_USER sslmode=require"
 if [ $# -ge 1 ]; then TENANTS="$1"; else
-  TENANTS=$(psql "$CONN dbname=postgres" -tAc "SELECT datname FROM pg_database WHERE has_database_privilege('$DB_USER',datname,'CONNECT') AND NOT datistemplate AND datallowconn AND datname<>'postgres' ORDER BY 1;") || { alert "cannot list tenants"; exit 1; }
+  # The control plane + ACTIVE customers only. Demo (trial) customers are never
+  # backed up. If the list cannot be read we stop: silently backing up nothing
+  # (or everything) would both be wrong.
+  ACTIVE=$(psql "$CONN dbname=$CONTROL_DB" -tAc "SELECT name FROM saas_tenant WHERE state='active' AND is_active_customer IS TRUE ORDER BY name;") || { alert "cannot list active customers"; exit 1; }
+  TENANTS="$CONTROL_DB $ACTIVE"
 fi
 for T in $TENANTS; do
   echo "--- $T ---"

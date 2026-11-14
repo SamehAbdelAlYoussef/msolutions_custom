@@ -60,7 +60,7 @@
     </record>
 
     <menuitem id="menu_saas_audit_log" name="Audit Log" sequence="30"
-              parent="msolutions_saas.menu_saas_root"
+              parent="msolutions_saas.menu_saas_configuration"
               action="action_saas_audit_log"
               groups="msolutions_saas.group_saas_developer"/>
 

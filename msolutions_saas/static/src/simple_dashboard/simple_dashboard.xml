@@ -1,16 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="msolutions_saas.SimpleDashboard">
-        <div class="o_ms_simple_dash">
-            <h2 class="o_ms_simple_dash_title">SaaS</h2>
-            <div class="o_ms_simple_dash_cards">
-                <t t-foreach="cards" t-as="c" t-key="c.key">
-                    <button type="button" t-attf-class="o_ms_card o_ms_card_{{c.tone}}"
-                            t-on-click="() => this.open(c)">
-                        <span class="o_ms_card_value" t-esc="c.value ?? 0"/>
-                        <span class="o_ms_card_label" t-esc="c.label"/>
+        <div class="o_ms_dash">
+            <header class="o_ms_dash_head">
+                <h1 class="o_ms_dash_title">Customers</h1>
+                <div class="o_ms_dash_actions">
+                    <button type="button" class="o_ms_btn o_ms_btn_demo" t-on-click="() => this.newCustomer(false)">
+                        New demo customer
                     </button>
-                </t>
+                    <button type="button" class="o_ms_btn o_ms_btn_active" t-on-click="() => this.newCustomer(true)">
+                        New active customer
+                    </button>
+                </div>
+            </header>
+
+            <!-- The two containers, drawn to scale. -->
+            <section class="o_ms_split" aria-label="Customers by container">
+                <div class="o_ms_split_figures">
+                    <button type="button" class="o_ms_fig o_ms_fig_active" t-on-click="() => this.openList('active')">
+                        <span class="o_ms_fig_n" t-esc="d.active ?? 0"/>
+                        <span class="o_ms_fig_l">Active customers</span>
+                        <span class="o_ms_fig_s">Full resources, backed up</span>
+                    </button>
+                    <button type="button" class="o_ms_fig o_ms_fig_demo" t-on-click="() => this.openList('demo')">
+                        <span class="o_ms_fig_n" t-esc="d.demo ?? 0"/>
+                        <span class="o_ms_fig_l">Demo customers</span>
+                        <span class="o_ms_fig_s">Limited resources, 15 days, not backed up</span>
+                    </button>
+                </div>
+                <div class="o_ms_bar" role="img"
+                     t-att-aria-label="(d.active ?? 0) + ' active, ' + (d.demo ?? 0) + ' demo'">
+                    <span class="o_ms_bar_active" t-attf-style="width: {{activePct}}%"/>
+                    <span class="o_ms_bar_demo"/>
+                </div>
+            </section>
+
+            <t t-if="attention.length">
+                <ul class="o_ms_attention">
+                    <li t-foreach="attention" t-as="a" t-key="a.key" t-attf-class="o_ms_att o_ms_att_{{a.tone}}">
+                        <button type="button" t-on-click="() => this.openList(a.key === 'errors' ? 'errors' : 'demo')">
+                            <b t-esc="a.n"/> <span t-esc="a.text"/>
+                        </button>
+                    </li>
+                </ul>
+            </t>
+
+            <div class="o_ms_cols">
+                <section class="o_ms_panel">
+                    <h2>Demos by time left</h2>
+                    <t t-if="d.demos and d.demos.length">
+                        <ul class="o_ms_rows">
+                            <li t-foreach="d.demos" t-as="row" t-key="row.id" class="o_ms_row"
+                                t-on-click="() => this.openCustomer(row.id)">
+                                <span class="o_ms_row_main">
+                                    <b t-esc="row.name"/>
+                                    <small t-esc="row.company"/>
+                                </span>
+                                <span t-attf-class="o_ms_pill o_ms_pill_{{daysTone(row)}}" t-esc="daysLabel(row)"/>
+                                <button type="button" class="o_ms_btn o_ms_btn_sm o_ms_btn_active"
+                                        t-att-disabled="state.busy === row.id"
+                                        t-on-click="(ev) => this.makeActive(ev, row)">
+                                    Make active
+                                </button>
+                            </li>
+                        </ul>
+                    </t>
+                    <p t-else="" class="o_ms_empty">
+                        No demo customers. Customers who sign up on the website start here, or create one with
+                        <b>New demo customer</b>.
+                    </p>
+                </section>
+
+                <section class="o_ms_panel">
+                    <h2>Recently added</h2>
+                    <t t-if="d.recent and d.recent.length">
+                        <ul class="o_ms_rows">
+                            <li t-foreach="d.recent" t-as="row" t-key="row.id" class="o_ms_row"
+                                t-on-click="() => this.openCustomer(row.id)">
+                                <span class="o_ms_row_main">
+                                    <b t-esc="row.name"/>
+                                    <small t-esc="row.company"/>
+                                </span>
+                                <span t-attf-class="o_ms_pill o_ms_pill_{{row.is_active ? 'active' : 'demo'}}"
+                                      t-esc="row.is_active ? 'Active' : 'Demo'"/>
+                                <small class="o_ms_row_date" t-esc="row.created"/>
+                            </li>
+                        </ul>
+                    </t>
+                    <p t-else="" class="o_ms_empty">No customers yet.</p>
+                </section>
             </div>
         </div>
     </t>

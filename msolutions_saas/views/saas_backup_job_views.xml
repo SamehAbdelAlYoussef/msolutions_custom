@@ -60,7 +60,7 @@
         </field>
     </record>
 
-    <menuitem id="menu_saas_backup_jobs" name="Backup Jobs" sequence="26"
-              parent="menu_saas_root" action="action_saas_backup_job"/>
+    <menuitem id="menu_saas_backup_jobs" name="Backup Jobs" sequence="50"
+              parent="menu_saas_configuration" action="action_saas_backup_job"/>
 
 </odoo>

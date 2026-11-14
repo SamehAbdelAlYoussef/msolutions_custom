@@ -102,18 +102,7 @@
                         <field name="error_message" readonly="1" nolabel="1"/>
                     </div>
                     <notebook>
-                        <page string="Shell" name="shell">
-                            <!-- saas_shell widget anchors on the record id.
-                                 readonly=1 prevents the form from trying to
-                                 write the integer id back to the server. -->
-                            <field name="id" widget="saas_shell"
-                                   nolabel="1" readonly="1"/>
-                        </page>
-                        <page string="Logs" name="logs">
-                            <field name="id" widget="saas_logs"
-                                   nolabel="1" readonly="1"/>
-                        </page>
-                        <page string="Backups" name="backups">
+                        <page string="Backups" name="backups" invisible="not is_active_customer">
                             <group>
                                 <group>
                                     <field name="backup_state"/>
@@ -134,23 +123,15 @@
                                 </list>
                             </field>
                         </page>
-                        <page string="Health" name="health">
-                            <group>
-                                <group>
-                                    <field name="reachability_state"/>
-                                    <field name="reachability_http_code"/>
-                                    <field name="reachability_has_db"/>
-                                    <field name="reachability_checked_at"/>
-                                </group>
-                            </group>
-                            <div class="text-muted">
-                                Reachability is probed from the host every few minutes
-                                via <code>/web/health</code> (no session, no tenant DB
-                                load). OK: the public URL routed and Odoo answered.
-                                Unreachable: it did not (404 = nginx has no route or the
-                                DB is missing; 5xx/0 = Odoo/nginx down). Stale: the probe
-                                itself stopped.
-                            </div>
+                        <page string="Activity" name="activity">
+                            <field name="audit_ids" nolabel="1" readonly="1">
+                                <list create="0" edit="0" delete="0">
+                                    <field name="create_date" string="When"/>
+                                    <field name="action"/>
+                                    <field name="user_id" optional="show"/>
+                                    <field name="detail" optional="show"/>
+                                </list>
+                            </field>
                         </page>
                         <page string="Apps" name="apps">
                             <!-- Editable only before provisioning; once the
@@ -195,10 +176,10 @@
     </record>
 
     <record id="view_saas_tenant_list_trial" model="ir.ui.view">
-        <field name="name">saas.tenant.list.trial</field>
+        <field name="name">saas.tenant.list.demo</field>
         <field name="model">saas.tenant</field>
         <field name="arch" type="xml">
-            <list string="Trial Customers"
+            <list string="Demo Customers"
                   decoration-danger="trial_expired"
                   decoration-warning="not trial_expired and trial_days_left &lt;= 3">
                 <field name="name"/>
@@ -228,7 +209,7 @@
     </record>
 
     <record id="action_saas_customers_trial" model="ir.actions.act_window">
-        <field name="name">Trial Customers</field>
+        <field name="name">Demo Customers</field>
         <field name="res_model">saas.tenant</field>
         <field name="view_mode">list,form</field>
         <field name="view_id" ref="view_saas_tenant_list_trial"/>
@@ -251,9 +232,7 @@
               parent="menu_saas_root" action="action_saas_dashboard"/>
     <menuitem id="menu_saas_customers_active" name="Active Customers" sequence="20"
               parent="menu_saas_root" action="action_saas_customers_active"/>
-    <menuitem id="menu_saas_customers_trial" name="Trial Customers" sequence="30"
+    <menuitem id="menu_saas_customers_trial" name="Demo Customers" sequence="30"
               parent="menu_saas_root" action="action_saas_customers_trial"/>
-    <menuitem id="menu_saas_records" name="All Tenant Records" sequence="40"
-              parent="menu_saas_root" action="action_saas_tenant_records"/>
 
 </odoo>
