@@ -1605,6 +1605,10 @@ class SaasTenant(models.Model):
         self.env.cr.commit()
 
     TRIAL_DAYS = 15
+    # A demo is deleted for good this many days after it started (database,
+    # filestore, nginx routes and the record). The demo is served for the first
+    # TRIAL_DAYS, then shows the 'trial ended' page until the purge.
+    DEMO_KEEP_DAYS = 30
 
     @api.depends("is_active_customer", "trial_end", "trial_expired")
     def _compute_trial_days_left(self):
@@ -1619,6 +1623,48 @@ class SaasTenant(models.Model):
     @api.model
     def _trial_deadline(self):
         return fields.Datetime.now() + timedelta(days=self.TRIAL_DAYS)
+
+    def _demo_purge_at(self):
+        """When this demo is deleted (None when it is not a demo)."""
+        self.ensure_one()
+        if self.is_active_customer or not self.trial_end:
+            return None
+        return self.trial_end + timedelta(days=self.DEMO_KEEP_DAYS - self.TRIAL_DAYS)
+
+    @api.model
+    def _cron_purge_demos(self):
+        """Queue every demo older than DEMO_KEEP_DAYS for deletion.
+
+        Only demos are ever touched: an Active Customer (is_active_customer) is
+        skipped by the domain AND re-checked per record, and a demo with no
+        end date is skipped. Queuing reuses the normal drop path (_run_drop):
+        it drops the database, removes the filestore and deletes the record, and
+        update_tenant_list.sh then drops its nginx routes within seconds. No
+        safety backup is taken -- demos are not backed up. The audit log keeps a
+        'drop_ok' line (tenant name only) as the only history.
+        """
+        self._assert_control_plane()
+        now = fields.Datetime.now()
+        candidates = self.search([
+            ("is_active_customer", "=", False),
+            ("state", "in", ("active", "error")),
+            ("trial_end", "!=", False),
+        ])
+        queued = self.browse()
+        for t in candidates:
+            due = t._demo_purge_at()
+            if due and due <= now and not t.is_active_customer:
+                t.write({"state": "terminating", "error_message": False,
+                         "state_since": now})
+                t._log("drop_queued",
+                       "demo older than %d days (ended %s); purging database, "
+                       "filestore and routes" % (self.DEMO_KEEP_DAYS, t.trial_end))
+                queued |= t
+        if queued:
+            _logger.info("SaaS: purging %d expired demo(s): %s",
+                         len(queued), ", ".join(queued.mapped("name")))
+            self.env.cr.commit()
+            self._trigger_cron()
 
     @api.model
     def _cron_expire_trials(self):
@@ -1640,6 +1686,7 @@ class SaasTenant(models.Model):
     def simple_dashboard_data(self):
         """Everything the dashboard shows, in one call."""
         self._check_developer_group()
+        now = fields.Datetime.now()
         live = self.search([("state", "=", "active")])
         demos = live.filtered(lambda t: not t.is_active_customer)
         expired = demos.filtered("trial_expired")
@@ -1658,6 +1705,8 @@ class SaasTenant(models.Model):
             "demos": [{
                 "id": t.id, "name": t.name, "company": t.company_name or "",
                 "days_left": t.trial_days_left, "expired": t.trial_expired,
+                "delete_in": max(0, int(-(-(t._demo_purge_at() - now).total_seconds() // 86400)))
+                if t._demo_purge_at() else None,
             } for t in order[:8]],
             "recent": [{
                 "id": t.id, "name": t.name, "company": t.company_name or "",

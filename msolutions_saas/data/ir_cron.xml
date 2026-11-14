@@ -74,6 +74,18 @@
             <field name="active" eval="True"/>
         </record>
 
+        <!-- Demos older than 30 days are deleted for good: database, filestore,
+             nginx routes and record (via the normal terminating -> _run_drop path). -->
+        <record id="cron_purge_demos" model="ir.cron">
+            <field name="name">SaaS: delete demos older than 30 days</field>
+            <field name="model_id" ref="model_saas_tenant"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_purge_demos()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="active" eval="True"/>
+        </record>
+
         <!-- Backup Now: dump the next queued job under the shared filestore lock,
              and finalize jobs the host uploader has reported. Triggered on demand
              by action_backup_now; the 1-min interval is a safety net. -->

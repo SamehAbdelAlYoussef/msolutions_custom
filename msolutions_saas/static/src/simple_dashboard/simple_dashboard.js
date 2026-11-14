@@ -45,7 +45,10 @@ export class SimpleDashboard extends Component {
     }
 
     daysLabel(row) {
-        if (row.expired) return "Expired";
+        if (row.expired) {
+            return row.delete_in === null || row.delete_in === undefined
+                ? "Expired" : `Expired, deleted in ${row.delete_in} d`;
+        }
         if (row.days_left === 0) return "Ends today";
         return row.days_left === 1 ? "1 day left" : `${row.days_left} days left`;
     }
