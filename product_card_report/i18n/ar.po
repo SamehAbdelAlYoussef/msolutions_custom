@@ -1,0 +1,38 @@
+# Arabic translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_card_report
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260630\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-14 21:35+0000\n"
+"PO-Revision-Date: 2026-11-14 21:35+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+
+#. module: product_card_report
+#: model:ir.actions.report,print_report_name:product_card_report.action_report_product_card_variant
+msgid "'Product card - %s' % (object.display_name)"
+msgstr "'بطاقة المنتج - %s' % (object.display_name)"
+
+#. module: product_card_report
+#: model:ir.actions.report,print_report_name:product_card_report.action_report_product_card_template
+msgid "'Product card - %s' % (object.name)"
+msgstr "'بطاقة المنتج - %s' % (object.name)"
+
+#. module: product_card_report
+#: model:ir.actions.report,name:product_card_report.action_report_product_card_template
+#: model:ir.actions.report,name:product_card_report.action_report_product_card_variant
+msgid "Product Card (A4)"
+msgstr "بطاقة المنتج (A4)"
+
+#. module: product_card_report
+#: model_terms:ir.ui.view,arch_db:product_card_report.card_page
+msgid "Product image"
+msgstr "صورة المنتج"

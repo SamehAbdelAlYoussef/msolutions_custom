@@ -1,0 +1,72 @@
+# Arabic translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sale_payment_controls
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260630\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-14 21:35+0000\n"
+"PO-Revision-Date: 2026-11-14 21:35+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+
+#. module: sale_payment_controls
+#: model:res.groups,name:sale_payment_controls.group_allow_low_down_payment
+msgid "Allow first payment below minimum"
+msgstr "السماح بدفعة أولى أقل من الحد الأدنى"
+
+#. module: sale_payment_controls
+#: model:res.groups,comment:sale_payment_controls.group_allow_low_down_payment
+msgid ""
+"Can register the first payment of a sales order even when it is below the "
+"required minimum percentage of the order total."
+msgstr "يستطيع تسجيل أول دفعة على أمر البيع حتى لو كانت أقل من النسبة الدنيا المطلوبة من إجمالي الأمر."
+
+#. module: sale_payment_controls
+#: model:ir.model.fields,field_description:sale_payment_controls.field_account_payment__display_name
+msgid "Display Name"
+msgstr "اسم العرض"
+
+#. module: sale_payment_controls
+#. odoo-python
+#: code:addons/sale_payment_controls/models/account_payment.py:0
+msgid "Enter the receipt / batch number of this payment before confirming it."
+msgstr "أدخل رقم الإيصال / الباتش لهذه الدفعة قبل تأكيدها."
+
+#. module: sale_payment_controls
+#: model:ir.model.fields,field_description:sale_payment_controls.field_account_payment__id
+msgid "ID"
+msgstr "المعرف"
+
+#. module: sale_payment_controls
+#: model:ir.model.fields,help:sale_payment_controls.field_account_payment__receipt_number
+msgid ""
+"Payment receipt number or card-machine batch number. Required to confirm a "
+"payment of a sales order."
+msgstr "رقم إيصال الدفع أو رقم الباتش الخاص بماكينة البطاقات. مطلوب لتأكيد دفعة أمر البيع."
+
+#. module: sale_payment_controls
+#: model:ir.model,name:sale_payment_controls.model_account_payment
+msgid "Payments"
+msgstr "المدفوعات"
+
+#. module: sale_payment_controls
+#: model:ir.model.fields,field_description:sale_payment_controls.field_account_payment__receipt_number
+msgid "Receipt / Batch No."
+msgstr "رقم الإيصال / الباتش"
+
+#. module: sale_payment_controls
+#. odoo-python
+#: code:addons/sale_payment_controls/models/account_payment.py:0
+msgid ""
+"The first payment of %(order)s must be at least %(pct)g%% of the order total (%(required)s). You entered %(paid)s.\n"
+"Ask a user who is allowed to accept a lower first payment."
+msgstr ""
+"يجب ألا تقل الدفعة الأولى لأمر البيع %(order)s عن %(pct)g%% من إجمالي الأمر (%(required)s). المبلغ الذي أدخلته %(paid)s.\n"
+"اطلب من مستخدم مسموح له بقبول دفعة أولى أقل من ذلك."
