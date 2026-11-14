@@ -71,11 +71,11 @@ class TestSaasTrial(TransactionCase):
         self.assertIn("promoted_active", actions)
 
     def test_dashboard_counters(self):
-        self._trial("t1", days=10)
-        self._trial("t2", days=2)             # ending soon
-        done = self._trial("t3", days=-1)
+        self._trial("trialone", days=10)
+        self._trial("trialtwo", days=2)           # ending soon
+        done = self._trial("trialthree", days=-1)
         done.trial_expired = True
-        self.Tenant.create({"name": "a1", "state": "active"})
+        self.Tenant.create({"name": "activeone", "state": "active"})
         group = self.env.ref("msolutions_saas.group_saas_developer")
         user = self.env["res.users"].create({"name": "Dev", "login": "dev_trial@test.com"})
         user.write({"group_ids": [(4, group.id)]})
