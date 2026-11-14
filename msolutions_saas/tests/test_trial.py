@@ -2,6 +2,7 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from odoo import fields
+from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase
 
 
@@ -70,9 +71,9 @@ class TestSaasTrial(TransactionCase):
         self.assertIn("moved_to_trial", actions)
         self.assertIn("promoted_active", actions)
 
-    def test_dashboard_counters(self):
+    def test_dashboard_counters_and_lists(self):
         self._trial("trialone", days=10)
-        self._trial("trialtwo", days=2)           # ending soon
+        self._trial("trialtwo", days=2)             # ending soon
         done = self._trial("trialthree", days=-1)
         done.trial_expired = True
         self.Tenant.create({"name": "activeone", "state": "active"})
@@ -80,7 +81,21 @@ class TestSaasTrial(TransactionCase):
         user = self.env["res.users"].create({"name": "Dev", "login": "dev_trial@test.com"})
         user.write({"group_ids": [(4, group.id)]})
         d = self.Tenant.with_user(user).simple_dashboard_data()
-        base = {"trial": 2, "trial_ending": 1, "trial_expired": 1}
-        for k, v in base.items():
-            self.assertGreaterEqual(d[k], v, k)
+        self.assertGreaterEqual(d["demo"], 3)
+        self.assertGreaterEqual(d["ending"], 1)
+        self.assertGreaterEqual(d["expired"], 1)
         self.assertGreaterEqual(d["active"], 1)
+        names = [x["name"] for x in d["demos"]]
+        # expired first, then fewest days left
+        self.assertLess(names.index("trialthree"), names.index("trialtwo"))
+        self.assertLess(names.index("trialtwo"), names.index("trialone"))
+        self.assertTrue(d["recent"])
+
+    def test_demo_customer_cannot_be_backed_up(self):
+        t = self._trial("nobackup", days=5)
+        group = self.env.ref("msolutions_saas.group_saas_developer")
+        user = self.env["res.users"].create({"name": "Dev2", "login": "dev_bk@test.com"})
+        user.write({"group_ids": [(4, group.id)]})
+        with self.assertRaises(UserError) as err:
+            t.with_user(user).action_backup_now()
+        self.assertIn("demo", str(err.exception).lower())

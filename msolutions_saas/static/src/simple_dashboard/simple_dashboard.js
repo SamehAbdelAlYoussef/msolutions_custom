@@ -3,7 +3,10 @@ import { Component, onWillStart, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
-/** Very simple SaaS dashboard: a few counters, each opens the matching list. */
+/**
+ * SaaS dashboard. One question: how are my customers split between the Active
+ * container and the Demo container, and which demos need me today?
+ */
 export class SimpleDashboard extends Component {
     static template = "msolutions_saas.SimpleDashboard";
     static props = ["*"];
@@ -11,40 +14,90 @@ export class SimpleDashboard extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
-        this.state = useState({ data: null });
-        onWillStart(async () => {
-            this.state.data = await this.orm.call("saas.tenant", "simple_dashboard_data", []);
+        this.state = useState({ data: null, busy: 0 });
+        onWillStart(() => this.load());
+    }
+
+    async load() {
+        this.state.data = await this.orm.call("saas.tenant", "simple_dashboard_data", []);
+    }
+
+    get d() {
+        return this.state.data || {};
+    }
+
+    get total() {
+        return (this.d.active || 0) + (this.d.demo || 0);
+    }
+
+    /** Width of each side of the split bar; an empty fleet shows an even bar. */
+    get activePct() {
+        return this.total ? Math.round(((this.d.active || 0) / this.total) * 100) : 50;
+    }
+
+    get attention() {
+        const d = this.d;
+        return [
+            { key: "ending", tone: "warn", n: d.ending, text: "demos end within 3 days" },
+            { key: "expired", tone: "bad", n: d.expired, text: "demos have expired" },
+            { key: "errors", tone: "bad", n: d.errors, text: "customers failed to provision" },
+        ].filter((a) => a.n);
+    }
+
+    daysLabel(row) {
+        if (row.expired) return "Expired";
+        if (row.days_left === 0) return "Ends today";
+        return row.days_left === 1 ? "1 day left" : `${row.days_left} days left`;
+    }
+
+    daysTone(row) {
+        if (row.expired) return "bad";
+        return row.days_left <= 3 ? "warn" : "calm";
+    }
+
+    newCustomer(active) {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: active ? "New active customer" : "New demo customer",
+            res_model: "saas.tenant",
+            views: [[false, "form"]],
+            target: "current",
+            context: { default_is_active_customer: active },
         });
     }
 
-    get cards() {
-        const d = this.state.data || {};
-        return [
-            { key: "active", label: "Active Customers", value: d.active, tone: "ok", go: "active" },
-            { key: "trial", label: "Trial Customers", value: d.trial, tone: "info", go: "trial" },
-            { key: "ending", label: "Trials ending in 3 days", value: d.trial_ending, tone: "warn", go: "ending" },
-            { key: "expired", label: "Expired trials", value: d.trial_expired, tone: "bad", go: "expired" },
-            { key: "problems", label: "Provisioning errors", value: d.problems, tone: "bad", go: "problems" },
-        ];
+    openCustomer(id) {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "saas.tenant",
+            res_id: id,
+            views: [[false, "form"]],
+        });
     }
 
-    open(card) {
-        const base = { type: "ir.actions.act_window", res_model: "saas.tenant",
-                       views: [[false, "list"], [false, "form"]] };
-        switch (card.go) {
-            case "active":
-                return this.action.doAction("msolutions_saas.action_saas_customers_active");
-            case "trial":
-                return this.action.doAction("msolutions_saas.action_saas_customers_trial");
-            case "ending":
-                return this.action.doAction({ ...base, name: card.label,
-                    domain: [["is_active_customer", "=", false], ["trial_expired", "=", false]] });
-            case "expired":
-                return this.action.doAction({ ...base, name: card.label,
-                    domain: [["trial_expired", "=", true]] });
-            default:
-                return this.action.doAction({ ...base, name: card.label,
-                    domain: [["state", "=", "error"]] });
+    openList(kind) {
+        if (kind === "errors") {
+            return this.action.doAction({
+                type: "ir.actions.act_window", name: "Failed to provision",
+                res_model: "saas.tenant", views: [[false, "list"], [false, "form"]],
+                domain: [["state", "=", "error"]],
+            });
+        }
+        return this.action.doAction(
+            kind === "active"
+                ? "msolutions_saas.action_saas_customers_active"
+                : "msolutions_saas.action_saas_customers_trial"
+        );
+    }
+
+    async makeActive(ev, row) {
+        ev.stopPropagation();
+        this.state.busy = row.id;
+        try {
+            await this.orm.write("saas.tenant", [row.id], { is_active_customer: true });
+            await this.load();
+        } finally {
+            this.state.busy = 0;
         }
     }
 }

@@ -74,7 +74,7 @@ action = env.ref('msolutions_saas.action_saas_backup').sudo().read()[0]
         </field>
     </record>
 
-    <menuitem id="menu_saas_backups" name="Backups" sequence="25"
-              parent="menu_saas_root" action="action_saas_backup_refresh"/>
+    <menuitem id="menu_saas_backups" name="Backups" sequence="40"
+              parent="menu_saas_configuration" action="action_saas_backup_refresh"/>
 
 </odoo>

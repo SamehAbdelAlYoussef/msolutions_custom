@@ -61,10 +61,10 @@ action = record.get_formview_action()
     </record>
 
     <menuitem id="menu_saas_config"
-              name="Configuration"
-              parent="menu_saas_root"
+              name="Settings"
+              parent="menu_saas_configuration"
               action="action_saas_config"
-              sequence="40"
+              sequence="10"
               groups="msolutions_saas.group_saas_developer"/>
 
 </odoo>

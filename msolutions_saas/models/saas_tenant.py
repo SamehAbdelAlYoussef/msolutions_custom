@@ -185,6 +185,8 @@ class SaasTenant(models.Model):
              "upgrade page until you raise the quota.",
     )
 
+    audit_ids = fields.One2many("saas.audit.log", "tenant_id", string="Activity")
+
     # ---- Trial / Active customers ----
     # Customers who sign up from the website start on a TRIAL: a fixed number of
     # days served from the small 'trial' web container. Ticking
@@ -193,20 +195,21 @@ class SaasTenant(models.Model):
     # -- the database and filestore are shared, so a move never copies data.
     is_active_customer = fields.Boolean(
         string="Active Customer", default=True, copy=False, index=True,
-        help="Tick to move this customer from the Trial list to the Active "
-             "list (full-resources container). Untick to put it back on trial.",
+        help="Tick to move this customer from the Demo list to the Active "
+             "list (full-resources container, backed up). Untick to put it "
+             "back on demo (small container, never backed up).",
     )
     trial_end = fields.Datetime(
-        string="Trial Ends", copy=False,
-        help="When the free trial ends. After this the customer sees a "
+        string="Demo Ends", copy=False,
+        help="When the demo ends. After this the customer sees a "
              "'trial ended' page until you tick Active Customer.",
     )
     trial_expired = fields.Boolean(
-        string="Trial Expired", readonly=True, copy=False, index=True,
+        string="Demo Expired", readonly=True, copy=False, index=True,
         help="Set automatically when the trial passes its end date.",
     )
     trial_days_left = fields.Integer(
-        string="Trial Days Left", compute="_compute_trial_days_left")
+        string="Demo Days Left", compute="_compute_trial_days_left")
 
     # ---- Backups (read-only registry; populated from the host manifest) ----
     backup_ids = fields.One2many("saas.backup", "tenant_id", string="Backups")
@@ -600,6 +603,10 @@ class SaasTenant(models.Model):
                 raise UserError(_(
                     "%s is not active; only active tenants can be backed up.",
                     tenant.name))
+            if not tenant.is_active_customer:
+                raise UserError(_(
+                    "%s is a demo customer. Demos are not backed up; move it "
+                    "to Active Customers first.", tenant.name))
             busy = Job.search([("tenant_id", "=", tenant.id),
                                ("state", "in", list(Job.ACTIVE_STATES))], limit=1)
             if busy:
@@ -1311,7 +1318,10 @@ class SaasTenant(models.Model):
         if not self._database_exists():
             _logger.info("SaaS: database %s already gone", self.name)
             return
-        self._backup_before_drop()
+        if self.is_active_customer:
+            self._backup_before_drop()
+        else:
+            _logger.info("SaaS: %s is a demo customer; dropping without a backup", self.name)
         self._drop_database_raw()
 
     def _drop_database_raw(self):
@@ -1628,17 +1638,32 @@ class SaasTenant(models.Model):
 
     @api.model
     def simple_dashboard_data(self):
-        """Counters for the simple dashboard."""
+        """Everything the dashboard shows, in one call."""
         self._check_developer_group()
-        T = self.search([("state", "=", "active")])
-        soon = T.filtered(lambda t: not t.is_active_customer and not t.trial_expired
-                          and 0 <= t.trial_days_left <= 3)
+        live = self.search([("state", "=", "active")])
+        demos = live.filtered(lambda t: not t.is_active_customer)
+        expired = demos.filtered("trial_expired")
+        running = demos - expired
+        ending = running.filtered(lambda t: t.trial_days_left <= 3)
+        # Most urgent first: expired, then fewest days left.
+        order = sorted(demos, key=lambda t: (not t.trial_expired, t.trial_days_left, t.name))
+        recent = self.search([("state", "!=", "terminated")], limit=6,
+                             order="create_date desc, id desc")
         return {
-            "active": len(T.filtered("is_active_customer")),
-            "trial": len(T.filtered(lambda t: not t.is_active_customer and not t.trial_expired)),
-            "trial_ending": len(soon),
-            "trial_expired": len(T.filtered("trial_expired")),
-            "problems": self.search_count([("state", "=", "error")]),
+            "active": len(live) - len(demos),
+            "demo": len(demos),
+            "ending": len(ending),
+            "expired": len(expired),
+            "errors": self.search_count([("state", "=", "error")]),
+            "demos": [{
+                "id": t.id, "name": t.name, "company": t.company_name or "",
+                "days_left": t.trial_days_left, "expired": t.trial_expired,
+            } for t in order[:8]],
+            "recent": [{
+                "id": t.id, "name": t.name, "company": t.company_name or "",
+                "is_active": t.is_active_customer, "state": t.state,
+                "created": fields.Datetime.to_string(t.create_date)[:10] if t.create_date else "",
+            } for t in recent],
         }
 
     def write(self, vals):
