@@ -58,11 +58,11 @@ SUSPENDED=$(psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$CONTROL_DB" -tAc
 TRIAL=$(psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$CONTROL_DB" -tAF' ' -c \
   "SELECT name, COALESCE(GREATEST(CEIL(EXTRACT(EPOCH FROM (trial_end - now())) / 86400), 0)::int, 15)
    FROM saas_tenant
-   WHERE state = 'active' AND is_active_customer = false AND trial_expired = false
+   WHERE state = 'active' AND is_active_customer IS NOT TRUE AND trial_expired IS NOT TRUE
    ORDER BY name;") || TRIAL=""
 EXPIRED=$(psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$CONTROL_DB" -tAc \
   "SELECT name FROM saas_tenant
-   WHERE state = 'active' AND is_active_customer = false AND trial_expired = true
+   WHERE state = 'active' AND is_active_customer IS NOT TRUE AND trial_expired IS TRUE
    ORDER BY name;") || EXPIRED=""
 
 TMP_T="$(mktemp)"; TMP_S="$(mktemp)"; TMP_R="$(mktemp)"; TMP_X="$(mktemp)"
