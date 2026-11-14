@@ -185,6 +185,18 @@ class SaasTenant(models.Model):
              "upgrade page until you raise the quota.",
     )
 
+    # ---- Per-customer settings applied inside the tenant database ----
+    hide_apps = fields.Boolean(
+        string="Hide Apps", default=True, copy=False,
+        help="Hides the Apps menu (icon, app switcher, menu search) from this "
+             "customer so they cannot install or remove apps. On by default for "
+             "every new customer; untick to show it again.",
+    )
+    user_count = fields.Integer(
+        string="Users", readonly=True, copy=False,
+        help="Internal users in this customer's database, as of the last Sync.")
+    users_synced_at = fields.Datetime(string="Users Synced", readonly=True, copy=False)
+
     audit_ids = fields.One2many("saas.audit.log", "tenant_id", string="Activity")
 
     # ---- Trial / Active customers ----
@@ -819,6 +831,10 @@ class SaasTenant(models.Model):
             # (granting before caused a 500 -- permission denied on the new
             # tables -- on any tenant with extra modules).
             self._install_extra_modules()
+            # Per-customer settings: Apps hidden by default, and the first user
+            # count. Before the ownership hand-off, like the other raw-SQL steps.
+            self._apply_hide_apps()
+            self._sync_user_count()
             # Both paths: a clone inherits objects already owned by odoo_web (a
             # no-op re-grant) but still needs the database-level CONNECT, which
             # CREATE DATABASE does not copy. See _grant_web_ownership.
@@ -1604,6 +1620,60 @@ class SaasTenant(models.Model):
         self.search([("state", "=", "active")])._enforce_quota()
         self.env.cr.commit()
 
+    # Cache signalling (Odoo 19): bumping this sequence makes every running
+    # worker drop its 'default' ormcache, which is where menu visibility lives.
+    _SIGNAL_DEFAULT_CACHE_SQL = "SELECT nextval('orm_signaling_default_id_seq')"
+
+    # Apps = base.menu_management and everything under it.
+    _APPS_MENU_SQL = """
+        WITH RECURSIVE apps AS (
+            SELECT res_id AS id FROM ir_model_data
+             WHERE module = 'base' AND model = 'ir.ui.menu' AND name = 'menu_management'
+            UNION
+            SELECT m.id FROM ir_ui_menu m JOIN apps a ON m.parent_id = a.id
+        )
+        UPDATE ir_ui_menu SET active = %s WHERE id IN (SELECT id FROM apps)
+    """
+
+    def _apply_hide_apps(self):
+        """Make the tenant's Apps menu match hide_apps.
+
+        Raw SQL on the tenant database (no tenant registry is opened), like the
+        rest of this module. Hidden = the menu records are deactivated, so the
+        navbar icon, the app switcher and the menu search no longer list Apps.
+        """
+        self.ensure_one()
+        conn = odoo.sql_db.db_connect(self.name)
+        with closing(conn.cursor()) as cr:
+            cr.execute(self._APPS_MENU_SQL, (not self.hide_apps,))
+            cr.execute(self._SIGNAL_DEFAULT_CACHE_SQL)
+            cr._cnx.commit()
+        _logger.info("SaaS: Apps %s for tenant %s", "hidden" if self.hide_apps else "shown", self.name)
+
+    def _sync_user_count(self):
+        """Read the number of internal (non-portal) active users from the tenant DB."""
+        self.ensure_one()
+        conn = odoo.sql_db.db_connect(self.name)
+        with closing(conn.cursor()) as cr:
+            cr.execute("SELECT count(*) FROM res_users WHERE active AND NOT share")
+            count = cr.fetchone()[0]
+        self.write({"user_count": count, "users_synced_at": fields.Datetime.now()})
+        return count
+
+    def action_sync_users(self):
+        self._check_developer_group()
+        for t in self:
+            if t.state != "active":
+                raise UserError(_("%s is not active; its users can only be read once it is.", t.name))
+            try:
+                t._sync_user_count()
+            except UserError:
+                raise
+            except Exception as exc:  # noqa: BLE001
+                raise UserError(_("Could not read the users of %(name)s: %(err)s",
+                                  name=t.name, err=exc)) from exc
+        return True
+
     TRIAL_DAYS = 15
     # A demo is deleted for good this many days after it started (database,
     # filestore, nginx routes and the record). The demo is served for the first
@@ -1723,6 +1793,12 @@ class SaasTenant(models.Model):
                 vals["trial_expired"] = False          # back on trial: fresh window
                 vals["trial_end"] = self._trial_deadline()
         res = super().write(vals)
+        if "hide_apps" in vals:
+            # Only a live tenant has a database to change; a draft/provisioning
+            # one gets the value when provisioning finishes.
+            for t in self.filtered(lambda t: t.state == "active"):
+                t._apply_hide_apps()
+                t._log("apps_hidden" if t.hide_apps else "apps_shown")
         if "is_active_customer" in vals:
             for t in self:
                 t._log("promoted_active" if vals["is_active_customer"] else "moved_to_trial")

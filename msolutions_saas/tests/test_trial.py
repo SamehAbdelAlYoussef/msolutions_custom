@@ -143,3 +143,73 @@ class TestSaasTrial(TransactionCase):
         log = self.env["saas.audit.log"].search(
             [("tenant_name", "=", "loggedone"), ("action", "=", "drop_queued")])
         self.assertTrue(log)
+
+
+class TestSaasTenantSettings(TransactionCase):
+    """Hide Apps + user count: the tenant database is faked, never touched."""
+
+    class _Cur:
+        def __init__(self, log, count):
+            self.log, self.count = log, count
+            self._cnx = type("C", (), {"commit": lambda s: log.append(("commit",))})()
+        def execute(self, sql, params=None):
+            self.log.append((" ".join(str(sql).split())[:60], params))
+        def fetchone(self):
+            return (self.count,)
+        def close(self):
+            pass
+
+    class _Conn:
+        def __init__(self, cur):
+            self.cur = cur
+        def cursor(self):
+            return self.cur
+
+    def setUp(self):
+        super().setUp()
+        self.Tenant = self.env["saas.tenant"]
+        self.log = []
+        cur = self._Cur(self.log, 7)
+        p = patch("odoo.sql_db.db_connect", lambda name: self._Conn(cur))
+        p.start()
+        self.addCleanup(p.stop)
+        p2 = patch.object(type(self.Tenant), "_assert_control_plane", lambda self: None)
+        p2.start()
+        self.addCleanup(p2.stop)
+
+    def _dev(self):
+        group = self.env.ref("msolutions_saas.group_saas_developer")
+        u = self.env["res.users"].create({"name": "Dev3", "login": "dev_set@test.com"})
+        u.write({"group_ids": [(4, group.id)]})
+        return u
+
+    def test_apps_are_hidden_by_default(self):
+        self.assertTrue(self.Tenant.create({"name": "newcust"}).hide_apps)
+
+    def test_toggle_updates_the_tenant_database_and_the_cache(self):
+        t = self.Tenant.create({"name": "togglec", "state": "active"})
+        t.hide_apps = False
+        sqls = [x[0] for x in self.log]
+        self.assertTrue(any("UPDATE ir_ui_menu" in s for s in sqls))
+        self.assertTrue(any("orm_signaling_default_id_seq" in s for s in sqls))
+        update = [x for x in self.log if x[0].startswith("WITH RECURSIVE")][-1]
+        self.assertEqual(update[1], (True,))          # shown -> active = True
+        t.hide_apps = True
+        update = [x for x in self.log if x[0].startswith("WITH RECURSIVE")][-1]
+        self.assertEqual(update[1], (False,))         # hidden -> active = False
+
+    def test_toggle_on_a_draft_tenant_touches_no_database(self):
+        t = self.Tenant.create({"name": "draftcust"})
+        t.hide_apps = False
+        self.assertEqual(self.log, [])
+
+    def test_sync_users_reads_the_count(self):
+        t = self.Tenant.create({"name": "usersync", "state": "active"})
+        t.with_user(self._dev()).action_sync_users()
+        self.assertEqual(t.user_count, 7)
+        self.assertTrue(t.users_synced_at)
+
+    def test_sync_users_refuses_an_inactive_tenant(self):
+        t = self.Tenant.create({"name": "notactiv"})
+        with self.assertRaises(UserError):
+            t.with_user(self._dev()).action_sync_users()
