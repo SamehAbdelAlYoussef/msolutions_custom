@@ -1,0 +1,44 @@
+name: Run a fixed check inside the AI Lead Gen engine container
+
+# Manual only. The command is picked from a fixed list (no free text), so nothing else can be run on the server.
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "What to run"
+        required: true
+        type: choice
+        default: check-odoo
+        options:
+          - check-odoo
+          - preflight
+          - check-ai
+          - stats
+          - telegram-status
+          - run-now
+          - logs
+
+jobs:
+  exec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@v1.0.3
+        env:
+          CMD: ${{ inputs.command }}
+        with:
+          host:     ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key:      ${{ secrets.SSH_PRIVATE_KEY }}
+          port:     22
+          envs: CMD
+          script_stop: true
+          command_timeout: 20m
+          script: |
+            set -euo pipefail
+            docker ps --filter name=leadgen_engine --format 'container: {{.Names}} {{.Status}}'
+            case "$CMD" in
+              logs) docker logs --tail 60 leadgen_engine 2>&1 | cut -c1-200 ;;
+              run-now) docker exec leadgen_engine python main.py run -p telegram -p maps --hours 168 --limit 100 2>&1 | tail -n 45 | cut -c1-200 ;;
+              check-odoo|preflight|check-ai|stats|telegram-status) docker exec leadgen_engine python main.py "$CMD" 2>&1 | tail -n 45 | cut -c1-200 ;;
+              *) echo "unknown command"; exit 1 ;;
+            esac
