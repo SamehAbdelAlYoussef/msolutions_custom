@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="ai_leadgen_menu_root"
+              name="AI Lead Gen"
+              parent="crm.crm_menu_root"
+              groups="sales_team.group_sale_manager"
+              sequence="30"/>
+    <menuitem id="ai_leadgen_ops_menu"
+              name="Operations"
+              parent="ai_leadgen_menu_root"
+              action="ai_leadgen_dashboard_action"
+              sequence="1"/>
+    <menuitem id="ai_leadgen_source_health_menu"
+              name="Sources"
+              parent="ai_leadgen_menu_root"
+              action="ai_leadgen_source_health_action"
+              sequence="2"/>
+    <menuitem id="ai_leadgen_candidate_menu"
+              name="Candidates"
+              parent="ai_leadgen_menu_root"
+              action="ai_leadgen_candidate_action"
+              sequence="3"/>
+    <menuitem id="ai_leadgen_run_menu"
+              name="Runs"
+              parent="ai_leadgen_menu_root"
+              action="ai_leadgen_run_action"
+              sequence="10"/>
+    <menuitem id="leadgen_source_menu"
+              name="Target Groups"
+              parent="ai_leadgen_menu_root"
+              action="leadgen_source_action"
+              sequence="12"/>
+    <menuitem id="leadgen_source_import_menu"
+              name="Import groups from the engine"
+              parent="ai_leadgen_menu_root"
+              action="leadgen_source_import_action"
+              sequence="13"/>
+    <menuitem id="ai_leadgen_session_menu"
+              name="Authorizations"
+              parent="ai_leadgen_menu_root"
+              action="ai_leadgen_session_action"
+              sequence="15"/>
+    <menuitem id="ai_leadgen_deep_sync_menu"
+              name="Deep Sync Run"
+              parent="ai_leadgen_menu_root"
+              action="ai_leadgen_deep_sync_action"
+              sequence="5"/>
+    <menuitem id="ai_leadgen_config_settings_menu"
+              name="Settings"
+              parent="ai_leadgen_menu_root"
+              action="ai_leadgen_config_settings_action"
+              groups="base.group_system"
+              sequence="20"/>
+
+</odoo>

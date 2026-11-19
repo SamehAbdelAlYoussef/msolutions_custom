@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ai_leadgen_run_view_form" model="ir.ui.view">
+        <field name="name">ai.leadgen.run.view.form</field>
+        <field name="model">ai.leadgen.run</field>
+        <field name="arch" type="xml">
+            <form string="Lead Gen Run">
+                <header>
+                    <button name="action_start" string="Start" type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_refresh" string="Refresh" type="object"
+                            invisible="state != 'running'"/>
+                    <button name="action_stop" string="Stop" type="object"
+                            invisible="state != 'running'"
+                            confirm="Stop the engine now? Work already done is kept."/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,running,done"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning" role="alert" invisible="not session_warning">
+                        <field name="session_warning" class="mb-0"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group name="options">
+                            <field name="source" readonly="state != 'draft'"/>
+                            <field name="dry_run" readonly="state != 'draft'"/>
+                            <field name="limit" readonly="state != 'draft'"/>
+                            <field name="hours" readonly="state != 'draft'"/>
+                        </group>
+                        <group name="results">
+                            <field name="started"/>
+                            <field name="finished"/>
+                            <field name="pushed_count"/>
+                            <field name="discarded_count"/>
+                            <field name="deferred_count"/>
+                            <field name="error_count"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="results" string="Results">
+                            <field name="line_ids" readonly="1">
+                                <list decoration-success="outcome == 'pushed'"
+                                      decoration-muted="outcome == 'discarded'"
+                                      decoration-warning="outcome == 'deferred'"
+                                      decoration-danger="outcome == 'error'">
+                                    <field name="source"/>
+                                    <field name="title"/>
+                                    <field name="score"/>
+                                    <field name="outcome" widget="badge"/>
+                                    <field name="reason"/>
+                                    <field name="contacts"/>
+                                    <field name="lead_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page name="log" string="Engine Log">
+                            <field name="log"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="ai_leadgen_run_view_list" model="ir.ui.view">
+        <field name="name">ai.leadgen.run.view.list</field>
+        <field name="model">ai.leadgen.run</field>
+        <field name="arch" type="xml">
+            <list string="Lead Gen Runs"
+                  decoration-info="state == 'running'"
+                  decoration-danger="state == 'failed'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="source"/>
+                <field name="dry_run" optional="show"/>
+                <field name="state" widget="badge"/>
+                <field name="started"/>
+                <field name="finished" optional="show"/>
+                <field name="pushed_count" string="Pushed"/>
+                <field name="discarded_count" string="Discarded" optional="show"/>
+                <field name="deferred_count" string="Retry" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ai_leadgen_run_view_search" model="ir.ui.view">
+        <field name="name">ai.leadgen.run.view.search</field>
+        <field name="model">ai.leadgen.run</field>
+        <field name="arch" type="xml">
+            <search string="Lead Gen Runs">
+                <field name="name"/>
+                <filter name="running" string="Running" domain="[('state', '=', 'running')]"/>
+                <filter name="done" string="Done" domain="[('state', '=', 'done')]"/>
+                <filter name="failed" string="Failed" domain="[('state', '=', 'failed')]"/>
+                <group>
+                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_source" string="Source" context="{'group_by': 'source'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ai_leadgen_run_action" model="ir.actions.act_window">
+        <field name="name">Lead Gen Runs</field>
+        <field name="res_model">ai.leadgen.run</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Start your first lead generation run
+            </p>
+            <p>
+                A run scrapes the freelance platforms, scores each request with AI, looks for a verified
+                contact and creates the qualified leads in CRM.
+            </p>
+        </field>
+    </record>
+
+</odoo>

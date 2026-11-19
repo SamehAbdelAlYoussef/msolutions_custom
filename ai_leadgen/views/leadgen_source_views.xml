@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="leadgen_source_view_list" model="ir.ui.view">
+        <field name="name">leadgen.source.view.list</field>
+        <field name="model">leadgen.source</field>
+        <field name="arch" type="xml">
+            <list string="Target Groups" editable="bottom" default_order="sequence, id"
+                  decoration-muted="status == 'off'"
+                  decoration-warning="status in ('needs_url', 'needs_confirm')">
+                <field name="sequence" widget="handle"/>
+                <field name="name" placeholder="Group name, e.g. Odoo Egypt"/>
+                <field name="url" widget="url" placeholder="https://www.facebook.com/groups/... (or leave empty and search by name)"/>
+                <field name="enabled" widget="boolean_toggle"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'polled'" decoration-warning="status in ('needs_url', 'needs_confirm')"
+                       decoration-muted="status == 'off'"/>
+                <button name="action_search_facebook_group" type="object" string="Search / Resolve URL" icon="fa-search"
+                        invisible="not name or (url and verified)"/>
+                <button name="action_confirm" type="object" string="Confirm" icon="fa-check"
+                        invisible="not url or verified"/>
+                <field name="member_count" optional="show"/>
+                <field name="weight" optional="show" string="Poll weight"/>
+                <field name="last_visited" optional="show"/>
+                <field name="verified" optional="hide"/>
+                <field name="engine_synced" optional="hide"/>
+                <field name="platform" column_invisible="True"/>
+                <field name="source" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="leadgen_source_view_form" model="ir.ui.view">
+        <field name="name">leadgen.source.view.form</field>
+        <field name="model">leadgen.source</field>
+        <field name="arch" type="xml">
+            <form string="Target Group">
+                <header>
+                    <button name="action_search_facebook_group" type="object" string="Search / Resolve URL" class="btn-primary"
+                            invisible="url and verified"/>
+                    <button name="action_confirm" type="object" string="Confirm" invisible="not url or verified"/>
+                    <field name="status" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="url" widget="url"/>
+                            <field name="platform"/>
+                            <field name="enabled" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="verified"/>
+                            <field name="member_count"/>
+                            <field name="weight"/>
+                            <field name="last_visited"/>
+                            <field name="engine_synced"/>
+                            <field name="source"/>
+                        </group>
+                    </group>
+                    <group string="Search result" invisible="not resolve_note">
+                        <field name="resolve_note" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="leadgen_source_view_search" model="ir.ui.view">
+        <field name="name">leadgen.source.view.search</field>
+        <field name="model">leadgen.source</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="url"/>
+                <filter name="polled" string="Being polled" domain="[('status', '=', 'polled')]"/>
+                <filter name="off" string="Switched off" domain="[('enabled', '=', False)]"/>
+                <filter name="attention" string="Needs attention" domain="[('status', 'in', ('needs_url', 'needs_confirm'))]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="leadgen_source_action" model="ir.actions.act_window">
+        <field name="name">Target Groups</field>
+        <field name="res_model">leadgen.source</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add the Facebook groups to read
+            </p>
+            <p>
+                Type a group name and press Search / Resolve URL, or paste the group link. Drag the handle to rank
+                a group: the top of the list is read most often. Only active, verified groups are polled.
+            </p>
+        </field>
+    </record>
+
+    <record id="leadgen_source_import_action" model="ir.actions.server">
+        <field name="name">Import groups from the engine</field>
+        <field name="model_id" ref="model_leadgen_source"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_import_from_engine()</field>
+    </record>
+
+</odoo>

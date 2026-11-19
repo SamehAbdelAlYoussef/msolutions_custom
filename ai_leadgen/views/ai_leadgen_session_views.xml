@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ai_leadgen_session_view_list" model="ir.ui.view">
+        <field name="name">ai.leadgen.session.view.list</field>
+        <field name="model">ai.leadgen.session</field>
+        <field name="arch" type="xml">
+            <list string="Platform Authorizations" create="0" delete="0"
+                  decoration-success="state == 'connected'"
+                  decoration-warning="state in ('expiring', 'logging_in')"
+                  decoration-danger="state == 'paused' or (state == 'missing' and needed)">
+                <field name="platform"/>
+                <field name="state" widget="badge"/>
+                <field name="age_days" string="Session age (days)"/>
+                <field name="paused_until" optional="show"/>
+                <field name="needed" string="Needed by your groups"/>
+                <button name="action_authorize" type="object" string="Authorize" icon="fa-sign-in"
+                        invisible="state in ('connected', 'logging_in', 'paused')"/>
+                <button name="action_authorize" type="object" string="Re-authorize" icon="fa-refresh"
+                        invisible="state != 'connected'"/>
+                <button name="action_refresh" type="object" string="Refresh status" icon="fa-repeat"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ai_leadgen_session_view_form" model="ir.ui.view">
+        <field name="name">ai.leadgen.session.view.form</field>
+        <field name="model">ai.leadgen.session</field>
+        <field name="arch" type="xml">
+            <form string="Platform Authorization" create="0" delete="0">
+                <header>
+                    <button name="action_authorize" string="Authorize" type="object" class="btn-primary"
+                            invisible="state in ('connected', 'logging_in', 'paused')"/>
+                    <button name="action_authorize" string="Re-authorize" type="object"
+                            invisible="state != 'connected'"/>
+                    <button name="action_refresh" string="Refresh status" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="missing,logging_in,connected,paused"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="platform"/>
+                        <field name="age_days"/>
+                        <field name="needed"/>
+                        <field name="paused_until"/>
+                    </group>
+                    <p class="text-muted">
+                        Authorize opens the platform's login page in a visible browser window on the computer running Odoo.
+                        You log in yourself, including two-step verification. Only the saved browser session is kept, never
+                        your password. If the platform shows a security check, the engine stops and waits for you.
+                    </p>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="ai_leadgen_session_action" model="ir.actions.act_window">
+        <field name="name">Authorizations</field>
+        <field name="res_model">ai.leadgen.session</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No platform to authorize
+            </p>
+        </field>
+    </record>
+
+</odoo>

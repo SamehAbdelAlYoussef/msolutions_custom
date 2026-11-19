@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ai_leadgen_run_manager,ai.leadgen.run manager,model_ai_leadgen_run,sales_team.group_sale_manager,1,1,1,1
+access_ai_leadgen_run_line_manager,ai.leadgen.run.line manager,model_ai_leadgen_run_line,sales_team.group_sale_manager,1,0,0,0
+access_ai_leadgen_session_manager,ai.leadgen.session manager,model_ai_leadgen_session,sales_team.group_sale_manager,1,0,0,0
+access_leadgen_source_manager,leadgen.source manager,model_leadgen_source,sales_team.group_sale_manager,1,1,1,1
+access_ai_leadgen_candidate_manager,ai.leadgen.candidate manager,model_ai_leadgen_candidate,sales_team.group_sale_manager,1,0,0,0
+access_ai_leadgen_source_health_manager,ai.leadgen.source.health manager,model_ai_leadgen_source_health,sales_team.group_sale_manager,1,0,0,0
+access_ai_leadgen_dashboard_manager,ai.leadgen.dashboard manager,model_ai_leadgen_dashboard,sales_team.group_sale_manager,1,1,0,0

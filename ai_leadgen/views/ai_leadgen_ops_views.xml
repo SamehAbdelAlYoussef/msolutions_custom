@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Dashboard -->
+    <record id="ai_leadgen_dashboard_view_form" model="ir.ui.view">
+        <field name="name">ai.leadgen.dashboard.view.form</field>
+        <field name="model">ai.leadgen.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Operations" create="0" delete="0" edit="0">
+                <header>
+                    <button name="action_refresh" type="object" string="Refresh" class="btn-primary" icon="fa-refresh"/>
+                    <button name="action_run_ingestion" type="object" string="Run now" icon="fa-play"
+                            confirm="Start a run over all enabled sources (Facebook groups, Telegram, maps)? It uses your AI quota."/>
+                    <button name="action_retry_failed" type="object" string="Retry failed jobs" icon="fa-repeat"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning" role="alert" invisible="not last_error">
+                        Last synchronization failed: <field name="last_error" nolabel="1" class="d-inline"/>
+                    </div>
+                    <group string="Sources">
+                        <group>
+                            <field name="sources_connected"/>
+                            <field name="sources_total"/>
+                            <field name="sources_unconfigured"/>
+                        </group>
+                        <group>
+                            <field name="last_sync"/>
+                            <field name="next_runs"/>
+                        </group>
+                    </group>
+                    <group string="Queue">
+                        <group>
+                            <field name="discovered"/>
+                            <field name="outside_region"/>
+                            <field name="unknown_region"/>
+                            <field name="fresh_24h"/>
+                            <field name="fresh_7d"/>
+                        </group>
+                        <group>
+                            <field name="pending"/>
+                            <field name="processed"/>
+                            <field name="failed"/>
+                        </group>
+                    </group>
+                    <group string="Buyers and CRM">
+                        <group>
+                            <field name="qualified"/>
+                            <field name="odoo_buyers"/>
+                            <field name="erp_buyers"/>
+                            <field name="software_buyers"/>
+                            <field name="ai_buyers"/>
+                            <field name="maintenance_buyers"/>
+                        </group>
+                        <group>
+                            <field name="leads_created"/>
+                            <field name="phones_verified"/>
+                            <field name="emails_verified"/>
+                            <field name="rejected"/>
+                            <field name="duplicates"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Why candidates were rejected or failed"><field name="rejection_reasons" nolabel="1"/></group>
+                        <group string="Candidates by country"><field name="countries" nolabel="1"/></group>
+                    </group>
+                    <p class="text-muted">
+                        An email counts as verified when its syntax is valid and its domain exists; the MX record is reported separately and the
+                        mailbox itself is never probed. A valid phone number is not proof of a reachable phone or a WhatsApp account.
+                    </p>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Source health -->
+    <record id="ai_leadgen_source_health_view_list" model="ir.ui.view">
+        <field name="name">ai.leadgen.source.health.view.list</field>
+        <field name="model">ai.leadgen.source.health</field>
+        <field name="arch" type="xml">
+            <list string="Sources" create="0" delete="0" edit="0"
+                  decoration-success="status == 'ok'" decoration-warning="status in ('not_configured', 'skipped', 'unknown')"
+                  decoration-danger="status in ('blocked', 'error')" decoration-muted="status == 'disabled'">
+                <field name="label"/>
+                <field name="status" widget="badge"/>
+                <field name="enabled" column_invisible="True"/>
+                <field name="configured"/>
+                <field name="permitted"/>
+                <field name="last_count"/>
+                <field name="last_success"/>
+                <field name="last_run"/>
+                <field name="failures"/>
+                <field name="detail"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ai_leadgen_source_health_action" model="ir.actions.act_window">
+        <field name="name">Sources</field>
+        <field name="res_model">ai.leadgen.source.health</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Candidates -->
+    <record id="ai_leadgen_candidate_view_list" model="ir.ui.view">
+        <field name="name">ai.leadgen.candidate.view.list</field>
+        <field name="model">ai.leadgen.candidate</field>
+        <field name="arch" type="xml">
+            <list string="Candidates" create="0" delete="0" edit="0"
+                  decoration-success="state == 'pushed'" decoration-danger="state == 'error'" decoration-muted="state in ('rejected', 'duplicate', 'stale')">
+                <field name="published_at"/>
+                <field name="name"/>
+                <field name="source"/>
+                <field name="country" optional="show"/>
+                <field name="region" optional="hide"/>
+                <field name="state" widget="badge"/>
+                <field name="reason" optional="show"/>
+                <field name="intent_level" optional="show"/>
+                <field name="intent_category" optional="show"/>
+                <field name="score" optional="show"/>
+                <field name="phones_verified" optional="hide"/>
+                <field name="emails_verified" optional="hide"/>
+                <field name="lead_id" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ai_leadgen_candidate_view_form" model="ir.ui.view">
+        <field name="name">ai.leadgen.candidate.view.form</field>
+        <field name="model">ai.leadgen.candidate</field>
+        <field name="arch" type="xml">
+            <form string="Candidate" create="0" delete="0" edit="0">
+                <header>
+                    <button name="action_retry" type="object" string="Restart" invisible="state not in ('error', 'deferred')"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <h1><field name="name"/></h1>
+                    <group>
+                        <group>
+                            <field name="url" widget="url"/>
+                            <field name="source"/>
+                            <field name="source_name"/>
+                            <field name="permission"/>
+                            <field name="country"/>
+                            <field name="language"/>
+                            <field name="published_at"/>
+                            <field name="discovered_at"/>
+                        </group>
+                        <group>
+                            <field name="reason"/>
+                            <field name="intent_level"/>
+                            <field name="intent_category"/>
+                            <field name="buyer_intent"/>
+                            <field name="score"/>
+                            <field name="phones_found"/>
+                            <field name="phones_verified"/>
+                            <field name="emails_found"/>
+                            <field name="emails_verified"/>
+                            <field name="attempts"/>
+                            <field name="lead_id"/>
+                        </group>
+                    </group>
+                    <group string="Original request (excerpt)"><field name="excerpt" nolabel="1"/></group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="ai_leadgen_candidate_view_search" model="ir.ui.view">
+        <field name="name">ai.leadgen.candidate.view.search</field>
+        <field name="model">ai.leadgen.candidate</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="url"/>
+                <field name="country"/>
+                <filter name="in_scope" string="Arab world" domain="['|', ('region', '=', 'arab'), '&amp;', ('region', '=', 'unknown'), ('language', '=', 'ar')]"/>
+                <filter name="arab" string="Arab countries only" domain="[('region', '=', 'arab')]"/>
+                <filter name="outside" string="Rejected: outside the Arab world" domain="[('region', '=', 'non_arab')]"/>
+                <separator/>
+                <filter name="last_24h" string="Published in 24 hours" domain="[('freshness', '=', '24h')]"/>
+                <filter name="last_7d" string="Published in 7 days" domain="[('freshness', 'in', ('24h', '7d'))]"/>
+                <separator/>
+                <filter name="pending" string="Pending" domain="[('state', 'in', ('new', 'deferred'))]"/>
+                <filter name="failed" string="Failed" domain="[('state', '=', 'error')]"/>
+                <filter name="leads" string="Lead created" domain="[('state', '=', 'pushed')]"/>
+                <filter name="rejected" string="Rejected" domain="[('state', '=', 'rejected')]"/>
+                <separator/>
+                <filter name="buyers" string="Buyers (AI)" domain="[('buyer_intent', '=', True)]"/>
+                <filter name="odoo" string="Odoo buyers" domain="[('buyer_intent', '=', True), ('intent_category', '=', 'odoo_buyer')]"/>
+                <group>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_region" string="Region" context="{'group_by': 'region'}"/>
+                    <filter name="group_source" string="Source" context="{'group_by': 'source'}"/>
+                    <filter name="group_country" string="Country" context="{'group_by': 'country'}"/>
+                    <filter name="group_reason" string="Reason" context="{'group_by': 'reason'}"/>
+                    <filter name="group_category" string="Intent category" context="{'group_by': 'intent_category'}"/>
+                    <filter name="group_level" string="Intent level" context="{'group_by': 'intent_level'}"/>
+                    <filter name="group_fresh" string="Freshness" context="{'group_by': 'freshness'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ai_leadgen_candidate_view_pivot" model="ir.ui.view">
+        <field name="name">ai.leadgen.candidate.view.pivot</field>
+        <field name="model">ai.leadgen.candidate</field>
+        <field name="arch" type="xml">
+            <pivot string="Candidates">
+                <field name="source" type="row"/>
+                <field name="state" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="ai_leadgen_candidate_action" model="ir.actions.act_window">
+        <field name="name">Candidates</field>
+        <field name="res_model">ai.leadgen.candidate</field>
+        <field name="view_mode">list,pivot,form</field>
+        <field name="context">{'search_default_in_scope': 1}</field>
+    </record>
+
+    <record id="ai_leadgen_candidate_retry_action" model="ir.actions.server">
+        <field name="name">Restart failed jobs</field>
+        <field name="model_id" ref="model_ai_leadgen_candidate"/>
+        <field name="binding_model_id" ref="model_ai_leadgen_candidate"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_retry()</field>
+    </record>
+
+</odoo>

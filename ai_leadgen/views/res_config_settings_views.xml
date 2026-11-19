@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.ai_leadgen</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="40"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="AI Lead Gen" string="AI Lead Gen" name="ai_leadgen" groups="base.group_system">
+                    <block title="AI">
+                        <setting string="AI provider" help="Which provider judges each request. Gemini has a free daily quota. DeepSeek is paid per token and is never used unless it is chosen here.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_ai_provider" class="col-lg-4 o_light_label"/>
+                                    <field name="ai_leadgen_ai_provider" widget="radio"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Google Gemini" invisible="ai_leadgen_ai_provider != 'gemini'"
+                                 help="Free tier, per model per day. The key never leaves the server.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_gemini_api_key" class="col-lg-4 o_light_label"/>
+                                    <field name="ai_leadgen_gemini_api_key" password="True"/>
+                                </div>
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_gemini_model" class="col-lg-4 o_light_label"/>
+                                    <field name="ai_leadgen_gemini_model"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="DeepSeek" invisible="ai_leadgen_ai_provider != 'deepseek'"
+                                 help="Paid per token: choose the model and how much it thinks. Free Gemini stays as the fallback when DeepSeek is over budget or out of balance.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_deepseek_api_key" class="col-lg-4 o_light_label"/>
+                                    <field name="ai_leadgen_deepseek_api_key" password="True"/>
+                                </div>
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_deepseek_model" class="col-lg-4 o_light_label"/>
+                                    <field name="ai_leadgen_deepseek_model"/>
+                                </div>
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_deepseek_thinking" class="col-lg-4 o_light_label"/>
+                                    <field name="ai_leadgen_deepseek_thinking"/>
+                                </div>
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_deepseek_daily_budget_usd" class="col-lg-4 o_light_label"/>
+                                    <field name="ai_leadgen_deepseek_daily_budget_usd"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Test the connection" help="Saves the settings, then sends one tiny real request to each model of the chosen provider.">
+                            <button name="action_ai_leadgen_test_ai" type="object" string="Test AI connection" class="btn-primary" icon="fa-plug"/>
+                        </setting>
+                    </block>
+                    <block title="Filters">
+                        <setting string="Qualification" help="Only leads at or above the minimum score are enriched and can reach CRM. Facebook-group posts only need to be in scope. No budget or price filter exists: every price is targeted.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_enrich_min_score" class="col-lg-4 o_light_label"/>
+                                    <field name="ai_leadgen_enrich_min_score"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Proxy" help="Optional proxy for the engine's web traffic, to keep this server's IP away from the platforms.">
+                            <field name="ai_leadgen_proxy_url" placeholder="http://user:pass@host:port"/>
+                        </setting>
+                    </block>
+                    <block title="Data sources">
+                        <setting string="Google Places" help="Optional. The official Google Places API (phone numbers and websites of businesses on maps) needs a Google Cloud billing account, so it is off by default and the engine uses OpenStreetMap, which has far fewer phone numbers.">
+                            <field name="ai_leadgen_google_places_api_key" password="True"/>
+                        </setting>
+                    </block>
+                    <block title="Target groups">
+                        <setting string="Facebook groups" help="The groups the engine reads, ranked by drag and drop. The top of the list is read most often.">
+                            <button name="%(ai_leadgen.leadgen_source_action)d" type="action" string="Manage target groups"
+                                    class="btn-link" icon="oi-arrow-right"/>
+                        </setting>
+                    </block>
+                    <block title="Engine">
+                        <setting string="Location" help="Where the engine is installed on this server. Leave empty to use the folder this module ships in.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_engine_path" class="col-lg-4 o_light_label"/>
+                                    <field name="ai_leadgen_engine_path"/>
+                                </div>
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_python_path" class="col-lg-4 o_light_label"/>
+                                    <field name="ai_leadgen_python_path"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ai_leadgen_config_settings_action" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="res_config_settings_view_form"/>
+        <field name="view_mode">form</field>
+        <field name="context">{'module': 'ai_leadgen', 'bin_size': False}</field>
+    </record>
+
+</odoo>

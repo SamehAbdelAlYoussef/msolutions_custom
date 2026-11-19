@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="ai_leadgen_session_facebook" model="ai.leadgen.session">
+        <field name="platform">facebook</field>
+    </record>
+    <record id="ai_leadgen_session_linkedin" model="ai.leadgen.session">
+        <field name="platform">linkedin</field>
+    </record>
+
+</odoo>

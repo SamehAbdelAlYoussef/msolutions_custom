@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="crm_lead_view_form" model="ir.ui.view">
+        <field name="name">crm.lead.view.form.inherit.ai_leadgen</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <page name="internal_notes" position="after">
+                <page name="ai_leadgen" string="AI Lead Gen" invisible="not ai_score">
+                    <group>
+                        <field name="ai_score"/>
+                        <field name="ai_intent_category"/>
+                        <field name="ai_intent_level"/>
+                        <field name="ai_source_published"/>
+                        <field name="ai_contact_status"/>
+                        <field name="ai_whatsapp_pitch"/>
+                    </group>
+                </page>
+            </page>
+        </field>
+    </record>
+
+    <!-- Filters for the leads this module creates: where they came from and whether they have a phone -->
+    <record id="crm_lead_view_search_opportunity" model="ir.ui.view">
+        <field name="name">crm.lead.view.search.opportunity.inherit.ai_leadgen</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter name="ai_leadgen" string="AI Lead Gen" domain="[('ai_score', '&gt;', 0)]"/>
+                <filter name="ai_facebook" string="From Facebook" domain="[('source_id.name', 'ilike', 'Facebook')]"/>
+                <filter name="ai_no_phone" string="No phone" domain="[('phone', '=', False)]"/>
+                <filter name="ai_facebook_no_phone" string="Facebook, no phone" domain="[('source_id.name', 'ilike', 'Facebook'), ('phone', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_lead_view_search_lead" model="ir.ui.view">
+        <field name="name">crm.lead.view.search.lead.inherit.ai_leadgen</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_leads_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter name="ai_leadgen" string="AI Lead Gen" domain="[('ai_score', '&gt;', 0)]"/>
+                <filter name="ai_facebook" string="From Facebook" domain="[('source_id.name', 'ilike', 'Facebook')]"/>
+                <filter name="ai_no_phone" string="No phone" domain="[('phone', '=', False)]"/>
+                <filter name="ai_facebook_no_phone" string="Facebook, no phone" domain="[('source_id.name', 'ilike', 'Facebook'), ('phone', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
