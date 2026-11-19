@@ -1,0 +1,73 @@
+name: Deploy the AI Lead Gen engine (isolated container)
+
+# Manual only. Pulls the PRIVATE engine repo with a read-only deploy key, builds its image, writes its settings file on the server
+# (the API key for the tenant is generated on the server and never printed), and (re)starts ONE resource-limited container.
+# It never touches the Odoo containers or docker-compose.
+on:
+  workflow_dispatch:
+    inputs:
+      tenant:
+        description: "Tenant database the engine delivers leads to (one word, for example: sameh)"
+        required: true
+        default: sameh
+
+concurrency:
+  group: deploy-leadgen-engine
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare the deploy key for transport
+        env:
+          KEY: ${{ secrets.LEADGEN_DEPLOY_KEY }}
+        run: |
+          B64=$(printf '%s\n' "$KEY" | base64 -w0)
+          echo "::add-mask::$B64"
+          echo "DK_B64=$B64" >> "$GITHUB_ENV"
+
+      - name: SSH, pull, build, configure, run
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          TENANT: ${{ inputs.tenant }}
+          GEMINI: ${{ secrets.LEADGEN_GEMINI_API_KEY }}
+          TG: ${{ secrets.LEADGEN_TELEGRAM_BOT_TOKEN }}
+        with:
+          host:     ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key:      ${{ secrets.SSH_PRIVATE_KEY }}
+          port:     22
+          envs: TENANT,GEMINI,TG,DK_B64
+          script_stop: true
+          command_timeout: 25m
+          script: |
+            set -euo pipefail
+            case "$TENANT" in ""|*[!a-z0-9_]*|msolutions) echo "refusing tenant '$TENANT'"; exit 1;; esac
+            BASE=/opt/leadgen; mkdir -p "$BASE/data" "$BASE/logs" 2>/dev/null || { BASE="$HOME/leadgen"; mkdir -p "$BASE/data" "$BASE/logs"; }
+            echo "== base dir: $BASE"
+            echo "== pull the private engine repo (read-only deploy key)"
+            umask 077
+            echo "$DK_B64" | base64 -d > "$BASE/.dk"
+            export GIT_SSH_COMMAND="ssh -i $BASE/.dk -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=$BASE/.kh"
+            if [ -d "$BASE/src/.git" ]; then git -C "$BASE/src" fetch -q origin main && git -C "$BASE/src" reset -q --hard origin/main; else git clone -q git@github.com:SamehAbdelAlYoussef/odoo-ai-leadgen-engine.git "$BASE/src"; fi
+            rm -f "$BASE/.dk"
+            git -C "$BASE/src" log -1 --oneline
+            echo "== build the image (low priority)"
+            nice -n 10 docker build -q -t leadgen_engine:latest "$BASE/src" | tail -n 1
+            echo "== settings file (owner-only), API key generated on this server if missing"
+            SH="docker exec -i odoo_worker odoo shell -d $TENANT --no-http --max-cron-threads=0 --logfile="
+            KEY=$(grep '^ODOO_API_KEY=' "$BASE/engine.env" 2>/dev/null | cut -d= -f2- || true)
+            LOGIN=$(grep '^ODOO_USER=' "$BASE/engine.env" 2>/dev/null | cut -d= -f2- || true)
+            if [ -z "$KEY" ]; then printf '%s\n' "import datetime" "u = env['res.users'].browse(2)" "try:" "    k = env['res.users.apikeys'].with_user(u)._generate(None, 'leadgen-engine', None)" "except Exception:" "    k = env['res.users.apikeys'].with_user(u)._generate(None, 'leadgen-engine', datetime.datetime.now() + datetime.timedelta(days=365))" "env.cr.commit()" "print('LOGIN=' + u.login + '|KEY=' + k)" > "$BASE/mk.py"; LINE=$($SH < "$BASE/mk.py" 2>/dev/null | grep '^LOGIN=' || true); rm -f "$BASE/mk.py"; [ -n "$LINE" ] || { echo "could not generate the API key"; exit 1; }; LOGIN=${LINE#LOGIN=}; LOGIN=${LOGIN%%|*}; KEY=${LINE##*|KEY=}; echo "api key generated for the tenant admin (not shown)"; fi
+            { printf 'ODOO_URL=%s\n' "https://$TENANT.msolutions-eg.com"; printf 'ODOO_DB=%s\n' "$TENANT"; printf 'ODOO_USER=%s\n' "$LOGIN"; printf 'ODOO_API_KEY=%s\n' "$KEY"; printf 'ODOO_LEAD_TYPE=opportunity\n'; printf 'AI_PROVIDER=gemini\n'; printf 'GEMINI_API_KEY=%s\n' "$GEMINI"; printf 'GEMINI_MODEL=gemini-3.5-flash-lite\n'; printf 'GEMINI_FALLBACK_MODEL=gemini-2.5-flash\nGEMINI_API_VERSION=v1beta\nGEMINI_DAILY_CAP=450\nAI_BATCH_SIZE=5\n'; printf 'TELEGRAM_BOT_TOKEN=%s\n' "$TG"; } > "$BASE/engine.env"
+            chmod 600 "$BASE/engine.env"
+            echo "== start the container (0.5 CPU, 768 MB, no extra privileges)"
+            docker run --rm -v "$BASE/data:/a" -v "$BASE/logs:/b" alpine chown -R 10001:10001 /a /b
+            docker rm -f leadgen_engine >/dev/null 2>&1 || true
+            docker run -d --name leadgen_engine --restart unless-stopped --memory 768m --memory-swap 768m --cpus 0.5 --pids-limit 200 --cap-drop ALL --security-opt no-new-privileges --log-opt max-size=10m --log-opt max-file=3 --env-file "$BASE/engine.env" -v "$BASE/data:/app/data" -v "$BASE/logs:/app/logs" leadgen_engine:latest
+            sleep 45
+            echo "== container"
+            docker ps --filter name=leadgen_engine --format '{{.Names}} {{.Status}}'
+            echo "== engine log (tail)"
+            docker logs --tail 25 leadgen_engine 2>&1 | cut -c1-220
