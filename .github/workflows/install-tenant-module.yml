@@ -1,0 +1,72 @@
+name: Install a module on ONE tenant
+
+# Manual only (Actions > Run workflow). Uses the same SSH secrets as the deploy workflow; no password anywhere.
+# It installs the module in a single tenant database, seeds its default data, restarts the cron worker (new crons only fire after that)
+# and prints a verification. It never touches the control database and never runs on push.
+on:
+  workflow_dispatch:
+    inputs:
+      tenant:
+        description: "Tenant database name (one word, for example: sameh)"
+        required: true
+        default: sameh
+      module:
+        description: "Module to install"
+        required: true
+        type: choice
+        default: ai_leadgen
+        options:
+          - ai_leadgen
+
+concurrency:
+  group: install-tenant-module
+  cancel-in-progress: false
+
+jobs:
+  install:
+    name: Install on the tenant
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH → install in one database → seed → restart worker → verify
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          TENANT: ${{ inputs.tenant }}
+          MODULE: ${{ inputs.module }}
+        with:
+          host:     ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key:      ${{ secrets.SSH_PRIVATE_KEY }}
+          port:     22
+          envs: TENANT,MODULE
+          script_stop: true
+          script: |
+            set -euo pipefail
+            case "$TENANT" in ""|*[!a-z0-9_]*) echo "refusing: '$TENANT' is not a plain tenant name"; exit 1;; esac
+            if [ "$TENANT" = "msolutions" ]; then echo "refusing: that is the control database"; exit 1; fi
+
+            echo "== code on the server"
+            cd /opt/odoo/msolutions_custom && git log -1 --oneline && test -f "$MODULE/__manifest__.py"
+
+            echo "== install $MODULE in $TENANT only"
+            docker exec odoo_worker odoo -d "$TENANT" -i "$MODULE" --stop-after-init --no-http --max-cron-threads=0 --logfile= 2>&1 | tail -n 25
+
+            if [ "$MODULE" = "ai_leadgen" ]; then
+              echo "== seed the default Facebook groups (idempotent)"
+              docker exec -i odoo_worker odoo shell -d "$TENANT" --no-http --max-cron-threads=0 --logfile= <<'PY' 2>&1 | tail -n 8
+            print("groups created:", env['leadgen.source']._seed_default_groups())
+            env.cr.commit()
+            PY
+            fi
+
+            echo "== restart the cron worker"
+            docker restart odoo_worker
+
+            echo "== verify"
+            sleep 20
+            docker exec -i odoo_worker odoo shell -d "$TENANT" --no-http --max-cron-threads=0 --logfile= <<'PY' 2>&1 | tail -n 12
+            mod = env['ir.module.module'].search([('name', '=', 'ai_leadgen')])
+            print("module state:", mod.state, mod.latest_version)
+            print("target groups:", env['leadgen.source'].search_count([]))
+            print("crons:", [(c.name, c.active) for c in env['ir.cron'].search([('name', 'ilike', 'AI Lead Gen')])])
+            print("crm installed:", env['ir.module.module'].search([('name', '=', 'crm')]).state)
+            PY
