@@ -11,24 +11,16 @@ Without an engine on the server every engine-facing job in the module stays sile
 arrive from an engine somewhere else through the normal Odoo API (see step 5).
 
 ## Steps (after `main` has been deployed by the GitHub workflow)
-1. **Install on the tenant only** (the worker container has `--no-http` and `workers = 0`, so it is the safe place for a one-off job):
-   ```bash
-   docker exec odoo_worker odoo -d sameh -i ai_leadgen --stop-after-init --no-http
-   ```
-2. **Seed the Facebook groups** (idempotent; this data is deliberately not module data):
-   ```bash
-   docker exec -i odoo_worker odoo shell -d sameh --no-http <<'PY'
-   print(env['leadgen.source']._seed_default_groups(), "groups created")
-   env.cr.commit()
-   PY
-   ```
-3. **Restart the worker** so its registry knows the new crons (`deploy/README.md`, trap 3):
-   ```bash
-   docker restart odoo_worker
-   ```
-4. In the tenant: **CRM > AI Lead Gen > Settings**: pick the AI provider (Gemini or DeepSeek) and paste its key. Keys are stored per database.
-5. **Lead delivery from an engine:** in the tenant open *Preferences > Account Security > New API Key*, then give the engine
-   `ODOO_URL=https://sameh.msolutions-eg.com`, `ODOO_DB=sameh`, `ODOO_USER=<that user's login>`, `ODOO_API_KEY=<the key>` in its `.env`.
+The server's containers connect to PostgreSQL with different roles (`odoo_web` for the web containers, `odoo_provision` for `odoo_worker`),
+so tables created by an install are owned by `odoo_provision` and the web role needs a GRANT. The workflow below does that too.
+1. **Install or upgrade on the tenant only:** GitHub > Actions > *Install a module on ONE tenant* > Run workflow (tenant `sameh`, module `ai_leadgen`,
+   tick *upgrade* after a code change). It installs/upgrades in that one database, seeds the default Facebook groups (idempotent), grants the web
+   role access to the module's tables, restarts `odoo_worker` (new crons only fire after that) and prints a check. It refuses the control database.
+2. **Engine:** *Deploy the AI Lead Gen engine* workflow (tenant `sameh`) builds one resource-limited container `leadgen_engine` from the private
+   engine repo. Inside it, every 5 minutes: the Target Groups chosen in Odoo are pulled, one Facebook poll tick runs (only if a saved session exists)
+   and the operations snapshot is reported to Odoo; every hour: Telegram + maps. The engine uses an Odoo API key generated on the server
+   and never printed. *Run a fixed check inside the engine container* gives `check-odoo`, `preflight`, `check-ai`, `stats`, `telegram-status`, `run-now`, `logs`.
+3. In the tenant: **CRM > AI Lead Gen > Settings** shows the AI provider. The engine reads its keys from its own settings file on the server.
 
 ## Check
 `docker logs odoo_worker --since 10m | grep -i ai_leadgen` should show no error. Other tenants are untouched: `select datname from pg_database` does not change and
