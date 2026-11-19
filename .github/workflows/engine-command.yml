@@ -36,9 +36,5 @@ jobs:
           script: |
             set -euo pipefail
             docker ps --filter name=leadgen_engine --format 'container: {{.Names}} {{.Status}}'
-            case "$CMD" in
-              logs) docker logs --tail 60 leadgen_engine 2>&1 | cut -c1-200 ;;
-              run-now) docker exec leadgen_engine python main.py run -p telegram -p maps --hours 168 --limit 100 2>&1 | tail -n 45 | cut -c1-200 ;;
-              check-odoo|preflight|check-ai|stats|telegram-status) docker exec leadgen_engine python main.py "$CMD" 2>&1 | tail -n 45 | cut -c1-200 ;;
-              *) echo "unknown command"; exit 1 ;;
-            esac
+            # one physical line: the SSH action injects a line after every line, which would break a multi-line case
+            case "$CMD" in logs) docker logs --tail 60 leadgen_engine 2>&1 | cut -c1-200 ;; run-now) docker exec leadgen_engine python main.py run -p telegram -p maps --hours 168 --limit 100 2>&1 | tail -n 45 | cut -c1-200 ;; check-odoo|preflight|check-ai|stats|telegram-status) docker exec leadgen_engine python main.py "$CMD" 2>&1 | tail -n 45 | cut -c1-200 ;; *) echo "unknown command"; exit 1 ;; esac
