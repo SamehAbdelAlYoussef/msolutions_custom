@@ -47,26 +47,23 @@ jobs:
             echo "== code on the server"
             cd /opt/odoo/msolutions_custom && git log -1 --oneline && test -f "$MODULE/__manifest__.py"
 
-            echo "== install $MODULE in $TENANT only"
-            docker exec odoo_worker odoo -d "$TENANT" -i "$MODULE" --stop-after-init --no-http --max-cron-threads=0 --logfile= 2>&1 | tail -n 25
+            # Single-line commands only: the SSH action injects a line after every line, which breaks heredocs.
+            SH="docker exec -i odoo_worker odoo shell -d $TENANT --no-http --max-cron-threads=0 --logfile="
+            STATE=$(echo "print('STATE=' + (env['ir.module.module'].search([('name', '=', '$MODULE')]).state or 'missing'))" | $SH 2>/dev/null | grep '^STATE=' | cut -d= -f2)
+            echo "== state of $MODULE in $TENANT before: $STATE"
+            if [ "$STATE" != "installed" ]; then
+              echo "== install $MODULE in $TENANT only"
+              docker exec odoo_worker odoo -d "$TENANT" -i "$MODULE" --stop-after-init --no-http --max-cron-threads=0 --logfile= 2>&1 | tail -n 12
+            fi
 
             if [ "$MODULE" = "ai_leadgen" ]; then
               echo "== seed the default Facebook groups (idempotent)"
-              docker exec -i odoo_worker odoo shell -d "$TENANT" --no-http --max-cron-threads=0 --logfile= <<'PY' 2>&1 | tail -n 8
-            print("groups created:", env['leadgen.source']._seed_default_groups())
-            env.cr.commit()
-            PY
+              echo "print('groups created:', env['leadgen.source']._seed_default_groups()); env.cr.commit()" | $SH 2>&1 | tail -n 5
             fi
 
             echo "== restart the cron worker"
             docker restart odoo_worker
+            sleep 20
 
             echo "== verify"
-            sleep 20
-            docker exec -i odoo_worker odoo shell -d "$TENANT" --no-http --max-cron-threads=0 --logfile= <<'PY' 2>&1 | tail -n 12
-            mod = env['ir.module.module'].search([('name', '=', 'ai_leadgen')])
-            print("module state:", mod.state, mod.latest_version)
-            print("target groups:", env['leadgen.source'].search_count([]))
-            print("crons:", [(c.name, c.active) for c in env['ir.cron'].search([('name', 'ilike', 'AI Lead Gen')])])
-            print("crm installed:", env['ir.module.module'].search([('name', '=', 'crm')]).state)
-            PY
+            echo "m = env['ir.module.module'].search([('name', 'in', ['$MODULE', 'crm'])]); print('modules:', [(x.name, x.state) for x in m]); print('target groups:', env['leadgen.source'].search_count([])); print('crons:', [(c.name, c.active) for c in env['ir.cron'].search([('name', 'ilike', 'AI Lead Gen')])])" | $SH 2>&1 | tail -n 6
