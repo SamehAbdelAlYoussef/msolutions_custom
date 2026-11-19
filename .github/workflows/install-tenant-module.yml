@@ -61,9 +61,14 @@ jobs:
               echo "print('groups created:', env['leadgen.source']._seed_default_groups()); env.cr.commit()" | $SH 2>&1 | tail -n 5
             fi
 
+            # The worker connects as odoo_provision, the web containers as odoo_web: tables created here are owned by odoo_provision,
+            # so the web role must be granted access or every screen of the module fails with "permission denied for table".
+            echo "== grant the web role (odoo_web) access to the tables and sequences this role created"
+            echo "cr=env.cr; cr.execute(\"select tablename from pg_tables where schemaname='public' and tableowner=current_user\"); ts=[r[0] for r in cr.fetchall()]; cr.execute(\"select sequencename from pg_sequences where schemaname='public' and sequenceowner=current_user\"); sq=[r[0] for r in cr.fetchall()]; [cr.execute('GRANT ALL ON TABLE '+t+' TO odoo_web') for t in ts]; [cr.execute('GRANT ALL ON SEQUENCE '+q+' TO odoo_web') for q in sq]; env.cr.commit(); print('granted tables:', ts, 'sequences:', len(sq))" | $SH 2>&1 | grep granted
+
             echo "== restart the cron worker"
             docker restart odoo_worker
             sleep 20
 
             echo "== verify"
-            echo "m = env['ir.module.module'].search([('name', 'in', ['$MODULE', 'crm'])]); print('modules:', [(x.name, x.state) for x in m]); print('target groups:', env['leadgen.source'].search_count([])); print('crons:', [(c.name, c.active) for c in env['ir.cron'].search([('name', 'ilike', 'AI Lead Gen')])])" | $SH 2>&1 | tail -n 6
+            echo "m = env['ir.module.module'].search([('name', 'in', ['$MODULE', 'crm'])]); print('modules:', [(x.name, x.state) for x in m]); print('web role can use dashboard table:', (env.cr.execute(\"select has_table_privilege('odoo_web','ai_leadgen_dashboard','SELECT,INSERT,UPDATE,DELETE')\"), env.cr.fetchone()[0])[1]); print('target groups:', env['leadgen.source'].search_count([])); print('crons:', [(c.name, c.active) for c in env['ir.cron'].search([('name', 'ilike', 'AI Lead Gen')])])" | $SH 2>&1 | tail -n 6
