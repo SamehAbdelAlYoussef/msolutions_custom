@@ -1,10 +1,10 @@
 import json
 import logging
 import subprocess
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from odoo import api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -104,7 +104,9 @@ class AiLeadgenCandidate(models.Model):
         """Read `main.py ops-export` and mirror it. Never raises into the cron: the error is kept for the dashboard."""
         params = self.env['ir.config_parameter'].sudo()
         if not self.env['ai.leadgen.run']._engine_available():
-            params.set_param('ai_leadgen.ops_last_error', "No lead-generation engine is installed on this server.")
+            if self._remote_engine_is_reporting():
+                return True  # an engine running elsewhere (its own container) reports by itself: do not overwrite its data
+            params.set_param('ai_leadgen.ops_last_error', "No lead-generation engine is installed on this server, and none has reported in the last 15 minutes.")
             return False
         try:
             code, stdout, stderr = self.env['leadgen.source']._run_engine(['ops-export'], timeout=120)
@@ -117,6 +119,35 @@ class AiLeadgenCandidate(models.Model):
             return False
         self.sudo()._apply_snapshot(data)
         params.set_param('ai_leadgen.ops_last_sync', fields.Datetime.to_string(fields.Datetime.now()))
+        params.set_param('ai_leadgen.ops_last_error', '')
+        return True
+
+    REMOTE_FRESH_MINUTES = 15
+
+    @api.model
+    def _remote_engine_is_reporting(self):
+        last = self.env['ir.config_parameter'].sudo().get_param('ai_leadgen.ops_remote_push')
+        if not last:
+            return False
+        try:
+            pushed = fields.Datetime.from_string(last)
+        except ValueError:
+            return False
+        return fields.Datetime.now() - pushed < timedelta(minutes=self.REMOTE_FRESH_MINUTES)
+
+    @api.model
+    def remote_push_snapshot(self, data):
+        """Called over XML-RPC by an engine that runs away from this server (see engine command `push-ops`). Same effect as the local sync.
+        Only a system administrator may call it: it rewrites the operations mirror."""
+        if not self.env.user.has_group('base.group_system'):
+            raise AccessError(self.env._("Only an administrator can report engine operations."))
+        if not isinstance(data, dict):
+            raise UserError(self.env._("The snapshot must be a dictionary."))
+        self.sudo()._apply_snapshot(data)
+        params = self.env['ir.config_parameter'].sudo()
+        now = fields.Datetime.to_string(fields.Datetime.now())
+        params.set_param('ai_leadgen.ops_last_sync', now)
+        params.set_param('ai_leadgen.ops_remote_push', now)
         params.set_param('ai_leadgen.ops_last_error', '')
         return True
 

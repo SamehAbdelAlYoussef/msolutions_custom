@@ -17,6 +17,11 @@ on:
         default: ai_leadgen
         options:
           - ai_leadgen
+      upgrade:
+        description: "Upgrade the module when it is already installed (after a code change)"
+        required: true
+        type: boolean
+        default: false
 
 concurrency:
   group: install-tenant-module
@@ -32,12 +37,13 @@ jobs:
         env:
           TENANT: ${{ inputs.tenant }}
           MODULE: ${{ inputs.module }}
+          UPGRADE: ${{ inputs.upgrade }}
         with:
           host:     ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key:      ${{ secrets.SSH_PRIVATE_KEY }}
           port:     22
-          envs: TENANT,MODULE
+          envs: TENANT,MODULE,UPGRADE
           script_stop: true
           script: |
             set -euo pipefail
@@ -54,6 +60,9 @@ jobs:
             if [ "$STATE" != "installed" ]; then
               echo "== install $MODULE in $TENANT only"
               docker exec odoo_worker odoo -d "$TENANT" -i "$MODULE" --stop-after-init --no-http --max-cron-threads=0 --logfile= 2>&1 | tail -n 12
+            elif [ "$UPGRADE" = "true" ]; then
+              echo "== upgrade $MODULE in $TENANT only"
+              docker exec odoo_worker odoo -d "$TENANT" -u "$MODULE" --stop-after-init --no-http --max-cron-threads=0 --logfile= 2>&1 | tail -n 12
             fi
 
             if [ "$MODULE" = "ai_leadgen" ]; then

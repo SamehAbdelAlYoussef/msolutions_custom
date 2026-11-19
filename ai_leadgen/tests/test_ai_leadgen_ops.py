@@ -166,3 +166,43 @@ class TestAiLeadgenOps(EnginePresent, BaseCommon):
             self.env['ai.leadgen.dashboard'].with_user(self.plain).search([])
         with self.assertRaises(AccessError):                               # nobody edits the mirror by hand
             self.Candidate.with_user(self.manager).search([], limit=1).write({'state': 'pushed'})
+
+
+class TestRemoteEngine(BaseCommon):
+    """The engine may run in its own container, away from this server: it reports to Odoo over XML-RPC instead of Odoo reading its files."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.Candidate = cls.env['ai.leadgen.candidate']
+        cls.params = cls.env['ir.config_parameter'].sudo()
+        cls.env['ir.config_parameter'].sudo().set_param('ai_leadgen.engine_path', '/nonexistent/engine')   # no engine on this server
+
+    def _isolate(self):
+        self.Candidate.sudo().search([]).unlink()
+        self.env['ai.leadgen.source.health'].sudo().search([]).unlink()
+
+    def test_a_reporting_engine_fills_the_dashboard_and_the_local_cron_keeps_its_hands_off(self):
+        self._isolate()
+        self.assertFalse(self.env['ai.leadgen.run']._engine_available())
+        self.assertTrue(self.Candidate.remote_push_snapshot(SNAPSHOT))
+        self.assertEqual(self.Candidate.search_count([]), len(SNAPSHOT['candidates']))
+        self.assertFalse(self.params.get_param('ai_leadgen.ops_last_error'))   # an empty parameter is removed by Odoo
+        self.assertTrue(self.Candidate._sync_from_engine())                       # no local engine, but one is reporting: no overwrite
+        self.assertFalse(self.params.get_param('ai_leadgen.ops_last_error'))   # an empty parameter is removed by Odoo
+        self.assertEqual(self.Candidate.search_count([]), len(SNAPSHOT['candidates']))
+
+    def test_a_silent_engine_is_reported_after_fifteen_minutes(self):
+        self._isolate()
+        self.Candidate.remote_push_snapshot(SNAPSHOT)
+        old = (datetime.utcnow() - timedelta(minutes=16)).strftime('%Y-%m-%d %H:%M:%S')
+        self.params.set_param('ai_leadgen.ops_remote_push', old)
+        self.assertFalse(self.Candidate._sync_from_engine())
+        self.assertIn('none has reported', self.params.get_param('ai_leadgen.ops_last_error'))
+
+    def test_only_an_administrator_may_report(self):
+        plain = new_test_user(self.env, login='ai_leadgen_remote_plain', groups='sales_team.group_sale_manager')
+        with self.assertRaises(AccessError):
+            self.Candidate.with_user(plain).remote_push_snapshot(SNAPSHOT)
+        with self.assertRaises(UserError):
+            self.Candidate.remote_push_snapshot(['not', 'a', 'dict'])
