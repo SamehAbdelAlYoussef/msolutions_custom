@@ -1,0 +1,16 @@
+name: Diagnose tenant DB roles (read-only, temporary)
+on:
+  workflow_dispatch:
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:     ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key:      ${{ secrets.SSH_PRIVATE_KEY }}
+          port:     22
+          script: |
+            for c in odoo_web odoo_worker odoo_gevent odoo_trial; do echo "== $c"; docker exec $c sh -c 'grep -hE "^(db_user|db_host|db_name|dbfilter)" /etc/odoo/odoo.conf 2>/dev/null; env | grep -E "^(USER|PGUSER)=" ' ; done
+            echo "cr=env.cr; cr.execute(\"select current_user\"); print('conn user:', cr.fetchall()); cr.execute(\"select tableowner, count(*) from pg_tables where tablename like 'ai_leadgen%' or tablename like 'leadgen%' group by 1\"); print('ai tables owners:', cr.fetchall()); cr.execute(\"select tableowner, count(*) from pg_tables where schemaname='public' group by 1\"); print('all tables owners:', cr.fetchall())" | docker exec -i odoo_worker odoo shell -d sameh --no-http --max-cron-threads=0 --logfile= 2>&1 | grep -E "conn user|owners"
