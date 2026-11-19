@@ -17,6 +17,9 @@ on:
           - telegram-status
           - run-now
           - logs
+          - stop-engine
+          - start-engine
+          - restart-engine
 
 jobs:
   exec:
@@ -37,4 +40,4 @@ jobs:
             set -euo pipefail
             docker ps --filter name=leadgen_engine --format 'container: {{.Names}} {{.Status}}'
             # one physical line: the SSH action injects a line after every line, which would break a multi-line case
-            case "$CMD" in logs) docker logs --tail 60 leadgen_engine 2>&1 | cut -c1-200 ;; run-now) docker exec leadgen_engine python main.py run -p telegram -p maps --hours 168 --limit 100 2>&1 | tail -n 45 | cut -c1-200 ;; check-odoo|preflight|check-ai|stats|telegram-status) docker exec leadgen_engine python main.py "$CMD" 2>&1 | tail -n 45 | cut -c1-200 ;; *) echo "unknown command"; exit 1 ;; esac
+            case "$CMD" in stop-engine) docker stop leadgen_engine; docker ps -a --filter name=leadgen_engine --format "{{.Names}} {{.Status}}" ;; start-engine) docker start leadgen_engine; docker ps --filter name=leadgen_engine --format "{{.Names}} {{.Status}}" ;; restart-engine) docker restart leadgen_engine; docker ps --filter name=leadgen_engine --format "{{.Names}} {{.Status}}" ;; logs) docker logs --tail 60 leadgen_engine 2>&1 | cut -c1-200 ;; run-now) docker exec leadgen_engine python main.py run -p telegram -p maps --hours 168 --limit 100 2>&1 | tail -n 45 | cut -c1-200 ;; check-odoo|preflight|check-ai|stats|telegram-status) docker exec leadgen_engine python main.py "$CMD" 2>&1 | tail -n 45 | cut -c1-200 ;; *) echo "unknown command"; exit 1 ;; esac

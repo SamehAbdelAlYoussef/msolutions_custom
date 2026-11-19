@@ -10,6 +10,16 @@ on:
         description: "Tenant database the engine delivers leads to (one word, for example: sameh)"
         required: true
         default: sameh
+      replace_fb_session:
+        description: "Replace the Facebook session on the server with the one stored in the GitHub secret (after logging in again on a PC)"
+        required: true
+        type: boolean
+        default: false
+      regenerate_api_key:
+        description: "Generate a NEW Odoo API key for the engine (the old one stays valid until revoked in Odoo > Preferences > Account Security)"
+        required: true
+        type: boolean
+        default: false
 
 concurrency:
   group: deploy-leadgen-engine
@@ -34,12 +44,14 @@ jobs:
           GEMINI: ${{ secrets.LEADGEN_GEMINI_API_KEY }}
           TG: ${{ secrets.LEADGEN_TELEGRAM_BOT_TOKEN }}
           FB_B64: ${{ secrets.LEADGEN_FB_SESSION_B64 }}
+          REPLACE_FB: ${{ inputs.replace_fb_session }}
+          REGEN_KEY: ${{ inputs.regenerate_api_key }}
         with:
           host:     ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key:      ${{ secrets.SSH_PRIVATE_KEY }}
           port:     22
-          envs: TENANT,GEMINI,TG,DK_B64,FB_B64
+          envs: TENANT,GEMINI,TG,DK_B64,FB_B64,REPLACE_FB,REGEN_KEY
           script_stop: true
           command_timeout: 25m
           script: |
@@ -60,6 +72,7 @@ jobs:
             SH="docker exec -i odoo_worker odoo shell -d $TENANT --no-http --max-cron-threads=0 --logfile="
             KEY=$(grep '^ODOO_API_KEY=' "$BASE/engine.env" 2>/dev/null | cut -d= -f2- || true)
             LOGIN=$(grep '^ODOO_USER=' "$BASE/engine.env" 2>/dev/null | cut -d= -f2- || true)
+            if [ "$REGEN_KEY" = "true" ]; then KEY=""; fi
             if [ -z "$KEY" ]; then printf '%s\n' "import datetime" "u = env['res.users'].browse(2)" "try:" "    k = env['res.users.apikeys'].with_user(u)._generate(None, 'leadgen-engine', None)" "except Exception:" "    k = env['res.users.apikeys'].with_user(u)._generate(None, 'leadgen-engine', datetime.datetime.now() + datetime.timedelta(days=365))" "env.cr.commit()" "print('LOGIN=' + u.login + '|KEY=' + k)" > "$BASE/mk.py"; LINE=$($SH < "$BASE/mk.py" 2>/dev/null | grep '^LOGIN=' || true); rm -f "$BASE/mk.py"; [ -n "$LINE" ] || { echo "could not generate the API key"; exit 1; }; LOGIN=${LINE#LOGIN=}; LOGIN=${LOGIN%%|*}; KEY=${LINE##*|KEY=}; echo "api key generated for the tenant admin (not shown)"; fi
             { printf 'ODOO_URL=%s\n' "https://$TENANT.msolutions-eg.com"; printf 'ODOO_DB=%s\n' "$TENANT"; printf 'ODOO_USER=%s\n' "$LOGIN"; printf 'ODOO_API_KEY=%s\n' "$KEY"; printf 'ODOO_LEAD_TYPE=opportunity\n'; printf 'AI_PROVIDER=gemini\n'; printf 'GEMINI_API_KEY=%s\n' "$GEMINI"; printf 'GEMINI_MODEL=gemini-3.5-flash-lite\n'; printf 'GEMINI_FALLBACK_MODEL=gemini-2.5-flash\nGEMINI_API_VERSION=v1beta\nGEMINI_DAILY_CAP=450\nAI_BATCH_SIZE=5\n'; printf 'TELEGRAM_BOT_TOKEN=%s\n' "$TG"; } > "$BASE/engine.env"
             chmod 600 "$BASE/engine.env"
@@ -67,7 +80,7 @@ jobs:
             free -m | sed -n 1,2p
             echo "== Facebook session: seeded only when the server has none (a live session is never overwritten)"
             mkdir -p "$BASE/data/sessions"
-            if [ ! -s "$BASE/data/sessions/facebook.json" ] && [ -n "$FB_B64" ]; then echo "$FB_B64" | base64 -d | tar -xz -C "$BASE/data/sessions"; echo "session seeded"; else echo "session left as is"; fi
+            if { [ ! -s "$BASE/data/sessions/facebook.json" ] || [ "$REPLACE_FB" = "true" ]; } && [ -n "$FB_B64" ]; then echo "$FB_B64" | base64 -d | tar -xz -C "$BASE/data/sessions"; echo "session seeded"; else echo "session left as is"; fi
             chmod 700 "$BASE/data/sessions"; chmod 600 "$BASE"/data/sessions/* 2>/dev/null || true
             echo "== start the container (1 CPU, 1.5 GB for Chromium, no extra privileges)"
             docker run --rm -v "$BASE/data:/a" -v "$BASE/logs:/b" alpine chown -R 10001:10001 /a /b
