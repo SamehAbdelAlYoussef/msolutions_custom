@@ -11,14 +11,6 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    @api.depends('order_line.total_purchase_customer', 'order_line.price_subtotal')
-    def _amount_all(self):
-        super()._amount_all()
-        for order in self:
-            lines = order.order_line.filtered(lambda l: not l.display_type)
-            order.amount_untaxed = sum(lines.mapped('price_subtotal'))
-            order.amount_total = order.amount_untaxed + order.amount_tax
-
     related_sale_order_ids = fields.Many2many(
         'sale.order', string='Related Sale Orders',
         compute='_compute_related_sale_orders')
@@ -57,7 +49,21 @@ class PurchaseOrder(models.Model):
         res = super().button_approve(force=force)
         # Auto-validate incoming pickings after PO approval
         self._auto_validate_pickings()
+        # Then create the vendor bill for what was received
+        self._auto_create_vendor_bills()
         return res
+
+    def _auto_create_vendor_bills(self):
+        """Create and post the vendor bill of each confirmed order that has
+        something to bill and no bill yet. The bill date is today."""
+        self.env.flush_all()
+        for order in self:
+            if order.invoice_status != 'to invoice' or order.invoice_ids:
+                continue
+            order.action_create_invoice()
+            bills = order.invoice_ids.filtered(lambda m: m.state == 'draft')
+            bills.filtered(lambda m: not m.invoice_date).invoice_date = fields.Date.context_today(order)
+            bills.action_post()
 
     def _auto_validate_pickings(self):
         """Auto-validate all incoming pickings for the purchase order."""
@@ -141,9 +147,10 @@ class PurchaseOrder(models.Model):
                     'product_uom_qty': pol.product_qty,
                     'scale_id': pol.scale_id.id,
                     'scale_discount': pol.scale_discount,
-                    'price_unit': pol.price_unit,
+                    # Selling price entered on the purchase line, else the
+                    # product sales price (never the purchase cost)
+                    'price_unit': pol.total_purchase_customer or pol.product_id.lst_price,
                     'source_vendor_id': order.partner_id.id,
-                    'total_purchase_customer': pol.total_purchase_customer,
                     'name': "%s\nVendor: %s" % (
                         pol.product_id.display_name, order.partner_id.name),
                 } for pol in pols])

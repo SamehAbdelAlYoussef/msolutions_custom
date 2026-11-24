@@ -147,9 +147,8 @@ msgstr "اسم الميزان"
 
 #. module: sale_scale
 #: model:ir.model.fields,field_description:sale_scale.field_purchase_order_line__total_purchase_customer
-#: model:ir.model.fields,field_description:sale_scale.field_sale_order_line__total_purchase_customer
-msgid "Total Purchase Customer"
-msgstr "إجمالي مشتريات العميل"
+msgid "Sales Price"
+msgstr "سعر البيع"
 
 #. module: sale_scale
 #: model:ir.model.fields,field_description:sale_scale.field_sale_order_line__source_vendor_id

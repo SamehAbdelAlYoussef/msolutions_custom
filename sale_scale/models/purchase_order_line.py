@@ -15,24 +15,12 @@ class PurchaseOrderLine(models.Model):
     # Customer for whom a sale order will be created after PO confirmation
     customer_id = fields.Many2one(
         'res.partner', string='Customer', copy=False)
+    # Unit price the customer pays: becomes the unit price of the generated
+    # sale order line. It has no effect on the amounts of the purchase order.
     total_purchase_customer = fields.Monetary(
-        string='Total Purchase Customer',
+        string='Sales Price',
         currency_field='currency_id',
         default=0.0)
-
-    @api.depends('total_purchase_customer')
-    def _compute_amount(self):
-        """Trigger recompute when total_purchase_customer changes."""
-        super()._compute_amount()
-
-    def _prepare_base_line_for_taxes_computation(self):
-        """Use total_purchase_customer as the line total when set."""
-        vals = super()._prepare_base_line_for_taxes_computation()
-        if self.total_purchase_customer:
-            vals['price_unit'] = self.total_purchase_customer
-            vals['quantity'] = 1.0
-            vals['discount'] = 0.0
-        return vals
 
     # The sale order line created from this PO line (to prevent duplicates)
     generated_sale_line_id = fields.Many2one(
@@ -53,9 +41,12 @@ class PurchaseOrderLine(models.Model):
     # Fields synced from PO line to linked sale order line
     _SALE_SYNC_FIELDS = (
         'product_id', 'product_qty', 'product_uom_id', 'scale_id', 'scale_discount',
-        'price_unit', 'total_purchase_customer')
+        'total_purchase_customer')
     # Fields with different names in sale.order.line (the rest use the same name)
-    _SALE_FIELD_RENAMES = {'product_qty': 'product_uom_qty'}
+    _SALE_FIELD_RENAMES = {
+        'product_qty': 'product_uom_qty',
+        'total_purchase_customer': 'price_unit',  # Sales Price -> selling unit price
+    }
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -98,15 +89,7 @@ class PurchaseOrderLine(models.Model):
     @api.depends('scale_id', 'scale_discount')
     def _compute_price_unit_and_date_planned_and_name(self):
         """Scale discount is applied as actual line discount."""
-        # Save prices for lines where user entered total_purchase_customer
-        saved_prices = {
-            line.id: line.price_unit
-            for line in self if line.total_purchase_customer
-        }
         super()._compute_price_unit_and_date_planned_and_name()
-        # Restore prices that should not be recomputed
         for line in self:
-            if line.id in saved_prices:
-                line.price_unit = saved_prices[line.id]
             if line.scale_id:
                 line.discount = line.scale_discount

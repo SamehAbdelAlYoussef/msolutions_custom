@@ -15,24 +15,6 @@ class SaleOrderLine(models.Model):
     # Vendor from whom the product was purchased (from PO)
     source_vendor_id = fields.Many2one(
         'res.partner', string='Vendor', copy=False)
-    total_purchase_customer = fields.Monetary(
-        string='Total Purchase Customer',
-        currency_field='currency_id',
-        default=0.0)
-
-    @api.depends('total_purchase_customer')
-    def _compute_amount(self):
-        """Trigger recompute when total_purchase_customer changes."""
-        super()._compute_amount()
-
-    def _prepare_base_line_for_taxes_computation(self):
-        """Use total_purchase_customer as the line total when set."""
-        vals = super()._prepare_base_line_for_taxes_computation()
-        if self.total_purchase_customer:
-            vals['price_unit'] = self.total_purchase_customer
-            vals['quantity'] = 1.0
-            vals['discount'] = 0.0
-        return vals
 
     @api.depends('product_uom_qty', 'scale_discount')
     def _compute_qty_after_scale_discount(self):
@@ -56,10 +38,9 @@ class SaleOrderLine(models.Model):
             line.discount = line.scale_discount
 
     def _compute_price_unit(self):
-        """Lines from purchase orders or with total_purchase_customer:
-        skip pricelist price computation (set manually, save on qty change)."""
-        skip_lines = self.filtered(
-            lambda l: l.source_vendor_id or l.total_purchase_customer)
+        """Lines created from purchase orders keep the Sales Price entered
+        on the purchase line: skip the pricelist price computation."""
+        skip_lines = self.filtered('source_vendor_id')
         # Re-assigning the same value = signal to ORM that field was computed
         for line in skip_lines:
             line.price_unit = line.price_unit

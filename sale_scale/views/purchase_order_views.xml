@@ -17,21 +17,13 @@
                 </button>
             </xpath>
 
-            <!-- Hide price_unit in list (optional hide) and form (invisible) -->
-            <xpath expr="//field[@name='order_line']/list//field[@name='price_unit']" position="attributes">
-                <attribute name="optional">hide</attribute>
-            </xpath>
-            <xpath expr="//field[@name='order_line']/form//field[@name='price_unit']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <!-- customer_id + total_purchase_customer after product_id in list -->
+            <!-- customer_id + Sales Price (total_purchase_customer) after product_id in list -->
             <xpath expr="//field[@name='order_line']/list//field[@name='product_id']" position="after">
                 <field name="customer_id" optional="show" options="{'no_create': True}"/>
                 <field name="total_purchase_customer" optional="show"/>
             </xpath>
 
-            <!-- customer_id + total_purchase_customer after product_id in form -->
+            <!-- customer_id + Sales Price after product_id in form -->
             <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
                 <field name="customer_id" options="{'no_create': True}"/>
                 <field name="total_purchase_customer"/>

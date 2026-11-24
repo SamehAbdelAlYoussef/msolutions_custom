@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import api, fields, models
+from odoo import models
 
 _logger = logging.getLogger(__name__)
 
@@ -9,36 +9,33 @@ _logger = logging.getLogger(__name__)
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    @api.depends('order_line.total_purchase_customer', 'order_line.price_subtotal')
-    def _compute_amounts(self):
-        super()._compute_amounts()
-        for order in self:
-            lines = order.order_line.filtered(lambda l: not l.display_type)
-            order.amount_untaxed = sum(lines.mapped('price_subtotal'))
-            order.amount_total = order.amount_untaxed + order.amount_tax
-
     def _action_confirm(self):
         res = super()._action_confirm()
         # Auto-validate delivery pickings after order confirmation
         self._auto_validate_pickings()
+        # Then create and post the customer invoice
+        self._auto_create_invoices()
         return res
+
+    def _auto_create_invoices(self):
+        """Create and post the customer invoice of each confirmed order that
+        has something to invoice and no invoice yet."""
+        self.env.flush_all()
+        for order in self:
+            if order.invoice_status != 'to invoice' or order.invoice_ids:
+                continue
+            order._create_invoices().action_post()
 
     def _auto_validate_pickings(self):
         """Auto-validate all delivery orders for the sale order."""
         self.env.flush_all()
         for order in self:
-            domain = [
-                ('state', 'not in', ('done', 'cancel')),
-                '|',
+            # Odoo 19 has no procurement group on the sale order: the delivery
+            # orders are linked to it through stock.picking.sale_id
+            pickings = self.env['stock.picking'].search([
                 ('sale_id', '=', order.id),
-                ('group_id', '=', order.procurement_group_id.id),
-            ]
-            if not order.procurement_group_id:
-                domain = [
-                    ('sale_id', '=', order.id),
-                    ('state', 'not in', ('done', 'cancel')),
-                ]
-            pickings = self.env['stock.picking'].search(domain)
+                ('state', 'not in', ('done', 'cancel')),
+            ])
             _logger.info(
                 "Auto-validating %s pickings for %s: %s",
                 len(pickings), order.name,
