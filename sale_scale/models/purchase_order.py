@@ -137,7 +137,7 @@ class PurchaseOrder(models.Model):
                 sale_lines = self.env['sale.order.line'].sudo().create([{
                     'order_id': sale_order.id,
                     'product_id': pol.product_id.id,
-                    'product_uom': pol.product_uom.id,
+                    'product_uom_id': pol.product_uom_id.id,
                     'product_uom_qty': pol.product_qty,
                     'scale_id': pol.scale_id.id,
                     'scale_discount': pol.scale_discount,

@@ -52,7 +52,7 @@ class PurchaseOrderLine(models.Model):
 
     # Fields synced from PO line to linked sale order line
     _SALE_SYNC_FIELDS = (
-        'product_id', 'product_qty', 'product_uom', 'scale_id', 'scale_discount',
+        'product_id', 'product_qty', 'product_uom_id', 'scale_id', 'scale_discount',
         'price_unit', 'total_purchase_customer')
     # Fields with different names in sale.order.line (the rest use the same name)
     _SALE_FIELD_RENAMES = {'product_qty': 'product_uom_qty'}
