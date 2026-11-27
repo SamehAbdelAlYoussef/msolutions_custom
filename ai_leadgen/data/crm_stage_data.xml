@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- A lead moves here by itself when its reply is posted on the Facebook post. Right after New. -->
+    <record id="crm_stage_commented" model="crm.stage">
+        <field name="name">تم التعليق</field>
+        <field name="sequence">1</field>
+        <field name="color">4</field>
+    </record>
+
+</odoo>

@@ -17,6 +17,20 @@ DEEPSEEK_THINKING = [
     ('max', "Max: deep research, the most tokens"),
 ]
 
+DEFAULT_STYLE_GUIDE = """- ادخل في الموضوع من أول كلمة: قول الحل أو الخطوة العملية مباشرة.
+- اكتب بصيغة المتكلم (أنا)، كمتخصص بينفذ الشغل بنفسه.
+- عربي بسيط وواضح قريب من كلام السوق، من غير تكلف.
+- من سطرين لأربعة سطور قصيرة، من غير عناوين ولا نقط ولا إيموجي."""
+DEFAULT_CONTACT_LINES = """للتفاصيل كلمني واتساب: {whatsapp}
+لو حابب نتكلم فيها: {whatsapp}
+تقدر تبعتلي التفاصيل هنا: {whatsapp}
+ابعتلي على الواتساب ونشوفها سوا: {whatsapp}"""
+TEXT_PARAMS = [  # (settings field, parameter, default) - multi-line texts cannot use config_parameter
+    ('ai_leadgen_comment_style_guide', 'ai_leadgen.comment_style_guide', DEFAULT_STYLE_GUIDE),
+    ('ai_leadgen_comment_contact_lines', 'ai_leadgen.comment_contact_lines', DEFAULT_CONTACT_LINES),
+    ('ai_leadgen_comment_examples', 'ai_leadgen.comment_examples', ''),
+]
+
 
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
@@ -59,6 +73,47 @@ class ResConfigSettings(models.TransientModel):
         string="Google Places API Key", config_parameter='ai_leadgen.google_places_api_key',
         help="Optional. Phone numbers and websites of businesses from the official Google Places API.",
     )
+
+    # --- replies on Facebook posts ------------------------------------------------
+    ai_leadgen_auto_comment_enabled = fields.Boolean(
+        string="Reply Automatically", config_parameter='ai_leadgen.auto_comment_enabled',
+        help="Every new request from a Facebook group gets its reply planned 10 to 20 minutes after the post was read. "
+             "Off: replies are only written, and you plan each one from the lead.")
+    ai_leadgen_max_comments_per_day = fields.Integer(
+        string="Replies per Day (maximum)", config_parameter='ai_leadgen.max_comments_per_day', default=10,
+        help="The engine never posts more than this in 24 hours, and posts fewer whenever its risk score rises.")
+    ai_leadgen_whatsapp_link = fields.Char(string="WhatsApp Link", config_parameter='ai_leadgen.whatsapp_link')
+    ai_leadgen_website_link = fields.Char(string="Website", config_parameter='ai_leadgen.website_link')
+    ai_leadgen_comment_include_whatsapp = fields.Boolean(
+        string="Put the WhatsApp Link in Replies", config_parameter='ai_leadgen.comment_include_whatsapp', default=True)
+    ai_leadgen_comment_include_website = fields.Boolean(
+        string="Put the Website in Replies", config_parameter='ai_leadgen.comment_include_website')
+    ai_leadgen_auto_delete_days = fields.Integer(
+        string="Delete Untouched Leads After (days)", config_parameter='ai_leadgen.auto_delete_days', default=3,
+        help="Generated leads still in New or in the commented stage are deleted after this many days. 0 keeps them forever.")
+    ai_leadgen_comment_style_guide = fields.Text(
+        string="Reply Style",
+        help="How a reply must read: tone, length, what to say first, what never to say. The AI reads this before writing every reply.")
+    ai_leadgen_comment_contact_lines = fields.Text(
+        string="Closing Lines",
+        help="One closing line per row. {whatsapp} and {website} are replaced by the links above. "
+             "The engine picks a different line each time, so two replies never end the same way.")
+    ai_leadgen_comment_examples = fields.Text(
+        string="Example Replies", help="Replies you like, separated by an empty line. The AI imitates their tone, never their words.")
+
+    @api.model
+    def get_values(self):
+        res = super().get_values()
+        get = self.env['ir.config_parameter'].sudo().get_param
+        for name, key, default in TEXT_PARAMS:
+            res[name] = get(key) or default
+        return res
+
+    def set_values(self):
+        super().set_values()
+        params = self.env['ir.config_parameter'].sudo()
+        for name, key, _default in TEXT_PARAMS:
+            params.set_param(key, (self[name] or '').strip())
 
     @api.onchange('ai_leadgen_ai_provider')
     def _onchange_ai_leadgen_ai_provider(self):

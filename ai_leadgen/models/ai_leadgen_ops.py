@@ -251,6 +251,18 @@ class AiLeadgenDashboard(models.Model):
     last_sync = fields.Char("Last synchronization", compute='_compute_ops')
     last_error = fields.Char("Last sync error", compute='_compute_ops')
     next_runs = fields.Text("Scheduled runs", compute='_compute_ops')
+    comment_risk_score = fields.Integer("Risk score (0-100)", compute='_compute_comments')
+    comment_risk_zone = fields.Selection([('safe', "Safe"), ('caution', "Caution: fewer replies"), ('danger', "Danger: stopped")],
+                                         string="Risk zone", compute='_compute_comments')
+    comment_risk_factors = fields.Text("Why this score", compute='_compute_comments')
+    comments_today = fields.Integer("Replies in the last 24 hours", compute='_compute_comments')
+    comments_cap_today = fields.Integer("Allowed in 24 hours now", compute='_compute_comments')
+    comments_queued = fields.Integer("Replies waiting", compute='_compute_comments')
+    comments_paused = fields.Integer("Replies stopped by a pause", compute='_compute_comments')
+    comment_alert = fields.Char("Replies stopped", compute='_compute_comments')
+    comment_needs_resume = fields.Boolean(compute='_compute_comments')
+    comment_groups_paused = fields.Text("Groups with replies paused", compute='_compute_comments')
+    comment_reported_at = fields.Char("Last safety report", compute='_compute_comments')
 
     @api.model
     def _the_dashboard(self):
@@ -306,6 +318,39 @@ class AiLeadgenDashboard(models.Model):
             rec.last_sync = params.get_param('ai_leadgen.ops_last_sync') or self.env._("never")
             rec.last_error = params.get_param('ai_leadgen.ops_last_error') or False
             rec.next_runs = "\n".join(crons) or self.env._("No collection run is scheduled. Enable \"AI Lead Gen: scheduled run\" in Settings > Technical > Scheduled Actions.")
+
+    def _compute_comments(self):
+        params = self.env['ir.config_parameter'].sudo()
+        try:
+            state = json.loads(params.get_param('ai_leadgen.comment_state') or '{}')
+        except ValueError:
+            state = {}
+        kill = params.get_param('ai_leadgen.comment_kill') or False
+        Lead = self.env['crm.lead'].sudo()
+        queued = Lead.search_count([('fb_comment_status', '=', 'queued')])
+        paused = Lead.search_count([('fb_comment_status', '=', 'paused_risk')])
+        for rec in self:
+            rec.comment_risk_score = state.get('score', 0)
+            rec.comment_risk_zone = 'danger' if kill else state.get('zone') or 'safe'
+            rec.comment_risk_factors = "\n".join(state.get('factors') or []) or False
+            rec.comments_today = state.get('posted_24h', 0)
+            rec.comments_cap_today = state.get('effective_cap', 0)
+            rec.comments_queued, rec.comments_paused = queued, paused
+            rec.comment_needs_resume = bool(kill)
+            rec.comment_alert = kill or (state.get('paused_until') and self.env._(
+                "Paused until %(until)s UTC: %(reason)s", until=state['paused_until'], reason=state.get('pause_reason') or '')) or False
+            rec.comment_groups_paused = "\n".join(state.get('groups_paused') or []) or False
+            rec.comment_reported_at = state.get('reported_at') or self.env._("never")
+
+    def action_resume_comments(self):
+        """Lift a safety stop after a human looked at the account. The engine sees the new token on its next tick and starts again."""
+        params = self.env['ir.config_parameter'].sudo()
+        params.set_param('ai_leadgen.comment_kill', '')
+        params.set_param('ai_leadgen.comment_resume_token', fields.Datetime.to_string(fields.Datetime.now()))
+        back = self.env['crm.lead']._fb_comment_requeue_paused()
+        return {'type': 'ir.actions.client', 'tag': 'display_notification',
+                'params': {'title': self.env._("Replies resumed"), 'message': self.env._("%s waiting reply(ies) are planned again.", back),
+                           'type': 'success', 'next': {'type': 'ir.actions.client', 'tag': 'soft_reload'}}}
 
     def action_refresh(self):
         self.env['ai.leadgen.candidate'].sudo()._sync_from_engine()

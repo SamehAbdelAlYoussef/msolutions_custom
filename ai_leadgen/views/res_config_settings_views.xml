@@ -56,6 +56,55 @@
                             <button name="action_ai_leadgen_test_ai" type="object" string="Test AI connection" class="btn-primary" icon="fa-plug"/>
                         </setting>
                     </block>
+                    <block title="Replies on Facebook posts">
+                        <setting string="Automatic replies"
+                                 help="A new request gets its reply planned 10 to 20 minutes after the post was read: service requests first, questions when the daily maximum allows. No reply is posted between 01:00 and 07:00 Cairo time.">
+                            <field name="ai_leadgen_auto_comment_enabled"/>
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_max_comments_per_day" class="col-lg-6 o_light_label"/>
+                                    <field name="ai_leadgen_max_comments_per_day"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="How to reach us" help="The links a reply may end with.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_whatsapp_link" class="col-lg-4 o_light_label"/>
+                                    <field name="ai_leadgen_whatsapp_link" placeholder="https://wa.me/2010..."/>
+                                </div>
+                                <div class="row mt8">
+                                    <field name="ai_leadgen_comment_include_whatsapp" class="col-lg-1"/>
+                                    <label for="ai_leadgen_comment_include_whatsapp" class="col-lg-10 o_light_label"/>
+                                </div>
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_website_link" class="col-lg-4 o_light_label"/>
+                                    <field name="ai_leadgen_website_link" placeholder="https://..."/>
+                                </div>
+                                <div class="row mt8">
+                                    <field name="ai_leadgen_comment_include_website" class="col-lg-1"/>
+                                    <label for="ai_leadgen_comment_include_website" class="col-lg-10 o_light_label"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Reply style" help="The AI reads this before it writes any reply. Change it to change how every new reply reads.">
+                            <field name="ai_leadgen_comment_style_guide" class="w-100" placeholder="Tone, length, what to say first, what never to say"/>
+                        </setting>
+                        <setting string="Closing lines" help="One per row, with {whatsapp} and {website}. A different one is used each time.">
+                            <field name="ai_leadgen_comment_contact_lines" class="w-100"/>
+                        </setting>
+                        <setting string="Example replies" help="Replies you like, separated by an empty line. Their tone is imitated, their words are not copied.">
+                            <field name="ai_leadgen_comment_examples" class="w-100"/>
+                        </setting>
+                        <setting string="Cleanup" help="Generated leads nobody moved out of New or the commented stage are deleted after these days. 0 keeps them.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="ai_leadgen_auto_delete_days" class="col-lg-6 o_light_label"/>
+                                    <field name="ai_leadgen_auto_delete_days"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
                     <block title="Filters">
                         <setting string="Qualification" help="Only leads at or above the minimum score are enriched and can reach CRM. Facebook-group posts only need to be in scope. No budget or price filter exists: every price is targeted.">
                             <div class="content-group">

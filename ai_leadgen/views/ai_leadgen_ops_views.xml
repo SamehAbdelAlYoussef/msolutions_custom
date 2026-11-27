@@ -12,11 +12,34 @@
                     <button name="action_run_ingestion" type="object" string="Run now" icon="fa-play"
                             confirm="Start a run over all enabled sources (Facebook groups, Telegram, maps)? It uses your AI quota."/>
                     <button name="action_retry_failed" type="object" string="Retry failed jobs" icon="fa-repeat"/>
+                    <button name="action_resume_comments" type="object" string="Resume replies" icon="fa-unlock" class="btn-warning"
+                            invisible="not comment_needs_resume"
+                            confirm="Resume replies? Do it only after you opened Facebook yourself and the account works normally."/>
                 </header>
                 <sheet>
                     <div class="alert alert-warning" role="alert" invisible="not last_error">
                         Last synchronization failed: <field name="last_error" nolabel="1" class="d-inline"/>
                     </div>
+                    <field name="comment_needs_resume" invisible="1"/>
+                    <div class="alert alert-danger" role="alert" invisible="not comment_alert">
+                        <b>Replies on Facebook are stopped.</b> <field name="comment_alert" nolabel="1" class="d-inline"/>
+                    </div>
+                    <group string="Replies on Facebook posts">
+                        <group>
+                            <field name="comment_risk_zone" widget="badge" decoration-success="comment_risk_zone == 'safe'"
+                                   decoration-warning="comment_risk_zone == 'caution'" decoration-danger="comment_risk_zone == 'danger'"/>
+                            <field name="comment_risk_score"/>
+                            <field name="comment_risk_factors" invisible="not comment_risk_factors"/>
+                            <field name="comment_reported_at"/>
+                        </group>
+                        <group>
+                            <field name="comments_today"/>
+                            <field name="comments_cap_today"/>
+                            <field name="comments_queued"/>
+                            <field name="comments_paused"/>
+                            <field name="comment_groups_paused" invisible="not comment_groups_paused"/>
+                        </group>
+                    </group>
                     <group string="Sources">
                         <group>
                             <field name="sources_connected"/>

@@ -16,6 +16,25 @@
                         <field name="ai_contact_status"/>
                         <field name="ai_whatsapp_pitch"/>
                     </group>
+                    <group string="Reply on the post" invisible="not fb_post_url">
+                        <field name="fb_post_url" widget="url"/>
+                        <field name="fb_comment_tier"/>
+                        <field name="fb_comment_status" widget="badge"
+                               decoration-success="fb_comment_status == 'posted'" decoration-info="fb_comment_status == 'queued'"
+                               decoration-danger="fb_comment_status in ('failed', 'paused_risk')" decoration-muted="fb_comment_status in ('none', 'skipped')"/>
+                        <field name="fb_comment_scheduled_at" invisible="fb_comment_status != 'queued'"/>
+                        <field name="fb_comment_posted_at" invisible="not fb_comment_posted_at"/>
+                        <field name="fb_comment_error" invisible="not fb_comment_error"/>
+                        <field name="fb_comment_draft" readonly="fb_comment_status == 'posted'"/>
+                    </group>
+                    <div invisible="not fb_post_url or fb_comment_status == 'posted'">
+                        <button name="action_fb_comment_queue" type="object" class="btn-primary me-2" icon="fa-clock-o"
+                                string="Plan the reply" invisible="fb_comment_status == 'queued'"/>
+                        <button name="action_fb_comment_queue" type="object" class="btn-secondary me-2" icon="fa-clock-o"
+                                string="Plan again" invisible="fb_comment_status != 'queued'"/>
+                        <button name="action_fb_comment_skip" type="object" class="btn-secondary" icon="fa-ban"
+                                string="Skip" invisible="fb_comment_status == 'skipped'"/>
+                    </div>
                 </page>
             </page>
         </field>
@@ -33,6 +52,9 @@
                 <filter name="ai_facebook" string="From Facebook" domain="[('source_id.name', 'ilike', 'Facebook')]"/>
                 <filter name="ai_no_phone" string="No phone" domain="[('phone', '=', False)]"/>
                 <filter name="ai_facebook_no_phone" string="Facebook, no phone" domain="[('source_id.name', 'ilike', 'Facebook'), ('phone', '=', False)]"/>
+                <filter name="ai_reply_queued" string="Reply queued" domain="[('fb_comment_status', '=', 'queued')]"/>
+                <filter name="ai_reply_posted" string="Reply posted" domain="[('fb_comment_status', '=', 'posted')]"/>
+                <filter name="ai_reply_problem" string="Reply failed or paused" domain="[('fb_comment_status', 'in', ('failed', 'paused_risk'))]"/>
             </xpath>
         </field>
     </record>
@@ -48,6 +70,9 @@
                 <filter name="ai_facebook" string="From Facebook" domain="[('source_id.name', 'ilike', 'Facebook')]"/>
                 <filter name="ai_no_phone" string="No phone" domain="[('phone', '=', False)]"/>
                 <filter name="ai_facebook_no_phone" string="Facebook, no phone" domain="[('source_id.name', 'ilike', 'Facebook'), ('phone', '=', False)]"/>
+                <filter name="ai_reply_queued" string="Reply queued" domain="[('fb_comment_status', '=', 'queued')]"/>
+                <filter name="ai_reply_posted" string="Reply posted" domain="[('fb_comment_status', '=', 'posted')]"/>
+                <filter name="ai_reply_problem" string="Reply failed or paused" domain="[('fb_comment_status', 'in', ('failed', 'paused_risk'))]"/>
             </xpath>
         </field>
     </record>

@@ -1,6 +1,6 @@
 {
     'name': 'AI Lead Gen',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Sales/CRM',
     'summary': 'Run the AI lead generation engine from CRM and review what it found',
     'description': """
@@ -12,6 +12,7 @@ the leads it creates.
     'data': [
         'security/ir.model.access.csv',
         'data/ai_leadgen_session_data.xml',
+        'data/crm_stage_data.xml',
         'data/ir_actions_server_data.xml',  # before the menus that point at it
         'data/ai_leadgen_ops_data.xml',  # before the menus that point at its action
         'views/ai_leadgen_session_views.xml',
