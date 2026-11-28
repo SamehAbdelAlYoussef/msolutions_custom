@@ -263,6 +263,7 @@ class AiLeadgenDashboard(models.Model):
     comment_needs_resume = fields.Boolean(compute='_compute_comments')
     comment_groups_paused = fields.Text("Groups with replies paused", compute='_compute_comments')
     comment_reported_at = fields.Char("Last safety report", compute='_compute_comments')
+    learned_notes = fields.Text("What the engine learned from its results", compute='_compute_comments')
 
     @api.model
     def _the_dashboard(self):
@@ -341,6 +342,14 @@ class AiLeadgenDashboard(models.Model):
                 "Paused until %(until)s UTC: %(reason)s", until=state['paused_until'], reason=state.get('pause_reason') or '')) or False
             rec.comment_groups_paused = "\n".join(state.get('groups_paused') or []) or False
             rec.comment_reported_at = state.get('reported_at') or self.env._("never")
+            rec.learned_notes = params.get_param('ai_leadgen.learned_notes') or False
+
+    def action_forget_learning(self):
+        """Throw away the lessons the engine drew by itself: it starts again from the fixed rules and learns afresh."""
+        params = self.env['ir.config_parameter'].sudo()
+        params.set_param('ai_leadgen.learned_notes', '')
+        params.set_param('ai_leadgen.learning_reset_token', fields.Datetime.to_string(fields.Datetime.now()))
+        return {'type': 'ir.actions.client', 'tag': 'soft_reload'}
 
     def action_resume_comments(self):
         """Lift a safety stop after a human looked at the account. The engine sees the new token on its next tick and starts again."""

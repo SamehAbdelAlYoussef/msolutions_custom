@@ -40,6 +40,11 @@
                             <field name="comment_groups_paused" invisible="not comment_groups_paused"/>
                         </group>
                     </group>
+                    <group string="Self-learning" invisible="not learned_notes">
+                        <field name="learned_notes" nolabel="1" colspan="2"/>
+                        <button name="action_forget_learning" type="object" string="Forget what it learned" icon="fa-eraser" class="btn-secondary"
+                                confirm="Forget every lesson the engine drew from its results? It starts again from the fixed rules."/>
+                    </group>
                     <group string="Sources">
                         <group>
                             <field name="sources_connected"/>

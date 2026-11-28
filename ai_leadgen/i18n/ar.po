@@ -1,0 +1,2567 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ai_leadgen
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e-20261121\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-28 00:22+0000\n"
+"PO-Revision-Date: 2026-11-28 00:22+0000\n"
+"Last-Translator: \n"
+"Language-Team: Arabic\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/leadgen_source.py:0
+msgid "\"%s\" has no URL yet: use Search / Resolve URL or paste the link."
+msgstr ""
+"المجموعة \"%s\" ليس لها رابط بعد: استخدم «بحث / جلب الرابط» أو الصق الرابط."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_ops.py:0
+msgid "%s candidate(s) will be processed in the next run."
+msgstr "ستتم معالجة %s مرشح في التشغيل القادم."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/leadgen_source.py:0
+msgid "%s group(s) found by the engine were added to the list."
+msgstr "تمت إضافة %s مجموعة وجدها المحرك إلى القائمة."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/leadgen_source.py:0
+msgid "%s is not a Facebook group link (https://www.facebook.com/groups/...)."
+msgstr "%s ليس رابط مجموعة فيسبوك (https://www.facebook.com/groups/...)."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_ops.py:0
+msgid "%s waiting reply(ies) are planned again."
+msgstr "تمت إعادة جدولة %s رد في الانتظار."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid "<b>Replies on Facebook are stopped.</b>"
+msgstr "<b>الردود على فيسبوك متوقفة.</b>"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_session.py:0
+msgid ""
+"A browser window opened on this computer. Log in yourself (2FA included). "
+"The session is saved when you finish; then press Refresh."
+msgstr ""
+"تم فتح نافذة متصفح على هذا الجهاز. سجّل الدخول بنفسك (بما يشمل التحقق "
+"بخطوتين). تُحفظ جلسة الدخول عند الانتهاء؛ ثم اضغط «تحديث»."
+
+#. module: ai_leadgen
+#: model:ir.model.constraint,message:ai_leadgen.constraint_ai_leadgen_candidate_url_uniq
+msgid "A candidate exists once per source URL."
+msgstr "لكل رابط مصدر مرشح واحد فقط."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_session.py:0
+msgid "A login window for this platform is already open."
+msgstr "توجد نافذة تسجيل دخول مفتوحة بالفعل لهذه المنصة."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid ""
+"A new request gets its reply planned 10 to 20 minutes after the post was "
+"read: service requests first, questions when the daily maximum allows. No "
+"reply is posted between 01:00 and 07:00 Cairo time."
+msgstr ""
+"كل طلب جديد يُجدول الرد عليه بعد 10 إلى 20 دقيقة من قراءة المنشور: طلبات "
+"الخدمات أولاً، ثم الأسئلة إذا سمح الحد الأقصى اليومي. لا يُنشر أي رد بين "
+"01:00 و07:00 بتوقيت القاهرة."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_run.py:0
+msgid ""
+"A platform showed a warning, so the engine is paused until %s (UTC) to "
+"protect the account. Nothing was started."
+msgstr ""
+"أظهرت إحدى المنصات تحذيراً، لذلك المحرك متوقف مؤقتاً حتى %s (UTC) لحماية "
+"الحساب. لم يبدأ أي شيء."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/crm_lead.py:0
+msgid "A reply needs the post link and the reply text."
+msgstr "الرد يحتاج إلى رابط المنشور ونص الرد."
+
+#. module: ai_leadgen
+#: model_terms:ir.actions.act_window,help:ai_leadgen.ai_leadgen_run_action
+msgid ""
+"A run scrapes the freelance platforms, scores each request with AI, looks for a verified\n"
+"                contact and creates the qualified leads in CRM."
+msgstr ""
+"التشغيل يجمع الطلبات من منصات العمل الحر، ويقيّم كل طلب بالذكاء الاصطناعي، ويبحث عن وسيلة\n"
+"                اتصال موثّقة، ثم ينشئ العملاء المحتملين المؤهلين في CRM."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "AI"
+msgstr "الذكاء الاصطناعي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__intent_category__ai_automation_buyer
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__ai_intent_category__ai_automation_buyer
+msgid "AI Automation Buyer"
+msgstr "مشترٍ لأتمتة الذكاء الاصطناعي"
+
+#. module: ai_leadgen
+#: model:ir.ui.menu,name:ai_leadgen.ai_leadgen_menu_root
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_form
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_lead
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_opportunity
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "AI Lead Gen"
+msgstr "جلب العملاء بالذكاء الاصطناعي"
+
+#. module: ai_leadgen
+#: model:ir.model,name:ai_leadgen.model_ai_leadgen_candidate
+msgid "AI Lead Gen Candidate"
+msgstr "مرشح AI Lead Gen"
+
+#. module: ai_leadgen
+#: model:ir.model,name:ai_leadgen.model_ai_leadgen_dashboard
+msgid "AI Lead Gen Dashboard"
+msgstr "لوحة معلومات AI Lead Gen"
+
+#. module: ai_leadgen
+#: model:ir.model,name:ai_leadgen.model_ai_leadgen_session
+msgid "AI Lead Gen Platform Authorization"
+msgstr "جلسة دخول منصة في AI Lead Gen"
+
+#. module: ai_leadgen
+#: model:ir.model,name:ai_leadgen.model_ai_leadgen_run
+msgid "AI Lead Gen Run"
+msgstr "تشغيل AI Lead Gen"
+
+#. module: ai_leadgen
+#: model:ir.model,name:ai_leadgen.model_ai_leadgen_run_line
+msgid "AI Lead Gen Run Result"
+msgstr "نتيجة تشغيل AI Lead Gen"
+
+#. module: ai_leadgen
+#: model:ir.model,name:ai_leadgen.model_ai_leadgen_source_health
+msgid "AI Lead Gen Source Health"
+msgstr "حالة مصدر AI Lead Gen"
+
+#. module: ai_leadgen
+#: model:ir.model,name:ai_leadgen.model_leadgen_source
+msgid "AI Lead Gen Target Group"
+msgstr "مجموعة مستهدفة في AI Lead Gen"
+
+#. module: ai_leadgen
+#: model:ir.actions.server,name:ai_leadgen.ir_cron_cleanup_leads_ir_actions_server
+msgid "AI Lead Gen: delete untouched leads"
+msgstr "AI Lead Gen: حذف العملاء المحتملين غير المتابَعين"
+
+#. module: ai_leadgen
+#: model:ir.actions.server,name:ai_leadgen.ir_cron_refresh_running_ir_actions_server
+msgid "AI Lead Gen: refresh running runs"
+msgstr "AI Lead Gen: تحديث التشغيلات الجارية"
+
+#. module: ai_leadgen
+#: model:ir.actions.server,name:ai_leadgen.ir_cron_scheduled_run_ir_actions_server
+msgid "AI Lead Gen: scheduled run"
+msgstr "AI Lead Gen: التشغيل المجدول"
+
+#. module: ai_leadgen
+#: model:ir.actions.server,name:ai_leadgen.ir_cron_sync_target_groups_ir_actions_server
+msgid "AI Lead Gen: sync target groups with the engine"
+msgstr "AI Lead Gen: مزامنة المجموعات المستهدفة مع المحرك"
+
+#. module: ai_leadgen
+#: model:ir.actions.server,name:ai_leadgen.ir_cron_sync_ops_ir_actions_server
+msgid "AI Lead Gen: synchronize the operations dashboard"
+msgstr "AI Lead Gen: مزامنة لوحة العمليات"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_ai_provider
+msgid "AI Provider"
+msgstr "مزوّد الذكاء الاصطناعي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__ai_score
+msgid "AI Score"
+msgstr "تقييم الذكاء الاصطناعي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__ai_buyers
+msgid "AI automation buyers"
+msgstr "مشترو أتمتة الذكاء الاصطناعي"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/res_config_settings.py:0
+msgid "AI connection test (%s)"
+msgstr "اختبار اتصال الذكاء الاصطناعي (%s)"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "AI provider"
+msgstr "مزوّد الذكاء الاصطناعي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__score
+msgid "AI score"
+msgstr "تقييم الذكاء الاصطناعي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__enabled
+msgid "Active"
+msgstr "نشط"
+
+#. module: ai_leadgen
+#: model_terms:ir.actions.act_window,help:ai_leadgen.leadgen_source_action
+msgid "Add the Facebook groups to read"
+msgstr "أضف مجموعات فيسبوك المراد قراءتها"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__leadgen_source__source__manual
+msgid "Added here"
+msgstr "أُضيفت من هنا"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__intent_level__advertisement
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__ai_intent_level__advertisement
+msgid "Advertisement / spam"
+msgstr "إعلان / رسالة مزعجة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_session__age_days
+msgid "Age Days"
+msgstr "العمر بالأيام"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run__source__all
+msgid "All enabled sources"
+msgstr "كل المصادر المفعّلة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__comments_cap_today
+msgid "Allowed in 24 hours now"
+msgstr "المسموح به الآن خلال 24 ساعة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run_line__outcome__already_in_odoo
+msgid "Already in CRM"
+msgstr "موجود بالفعل في CRM"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid ""
+"An email counts as verified when its syntax is valid and its domain exists; the MX record is reported separately and the\n"
+"                        mailbox itself is never probed. A valid phone number is not proof of a reachable phone or a WhatsApp account."
+msgstr ""
+"يُعتبر البريد الإلكتروني موثّقاً إذا كانت صيغته صحيحة ونطاقه موجوداً؛ أما سجل MX فيُذكر على حدة،\n"
+"                        ولا يتم اختبار صندوق البريد نفسه أبداً. رقم الهاتف الصحيح ليس دليلاً على أن الهاتف متاح أو أن عليه حساب واتساب."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Arab countries only"
+msgstr "الدول العربية فقط"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__region__arab
+msgid "Arab country"
+msgstr "دولة عربية"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Arab world"
+msgstr "العالم العربي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__attempts
+msgid "Attempts"
+msgstr "المحاولات"
+
+#. module: ai_leadgen
+#: model:ir.actions.act_window,name:ai_leadgen.ai_leadgen_session_action
+#: model:ir.ui.menu,name:ai_leadgen.ai_leadgen_session_menu
+msgid "Authorizations"
+msgstr "جلسات الدخول"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_session_view_form
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_session_view_list
+msgid "Authorize"
+msgstr "تسجيل الدخول"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_run.py:0
+msgid ""
+"Authorize %s first (AI Lead Gen > Authorizations): the community source "
+"cannot read those groups yet."
+msgstr ""
+"سجّل الدخول إلى %s أولاً (AI Lead Gen > جلسات الدخول): مصدر المجتمعات لا "
+"يستطيع قراءة هذه المجموعات بعد."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_run.py:0
+msgid ""
+"Authorize %s first: open AI Lead Gen > Authorizations and press Authorize."
+msgstr ""
+"سجّل الدخول إلى %s أولاً: افتح AI Lead Gen > جلسات الدخول واضغط «تسجيل "
+"الدخول»."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_session_view_form
+msgid ""
+"Authorize opens the platform's login page in a visible browser window on the computer running Odoo.\n"
+"                        You log in yourself, including two-step verification. Only the saved browser session is kept, never\n"
+"                        your password. If the platform shows a security check, the engine stops and waits for you."
+msgstr ""
+"زر «تسجيل الدخول» يفتح صفحة الدخول الخاصة بالمنصة في نافذة متصفح ظاهرة على الجهاز الذي يعمل عليه Odoo.\n"
+"                        تسجّل الدخول بنفسك، بما يشمل التحقق بخطوتين. تُحفظ جلسة المتصفح فقط، ولا تُحفظ\n"
+"                        كلمة المرور أبداً. إذا أظهرت المنصة فحصاً أمنياً، يتوقف المحرك وينتظرك."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Automatic replies"
+msgstr "الردود التلقائية"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__leadgen_source__status__polled
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.leadgen_source_view_search
+msgid "Being polled"
+msgstr "تُقرأ حالياً"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_source_health__status__blocked
+msgid "Blocked"
+msgstr "محظور"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run__source__maps
+msgid "Businesses on maps"
+msgstr "الأنشطة التجارية على الخرائط"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__buyer_intent
+msgid "Buyer (AI verdict)"
+msgstr "مشترٍ (حكم الذكاء الاصطناعي)"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Buyers (AI)"
+msgstr "المشترون (الذكاء الاصطناعي)"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid "Buyers and CRM"
+msgstr "المشترون و CRM"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__lead_id
+msgid "CRM lead"
+msgstr "عميل محتمل في CRM"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__leads_created
+msgid "CRM leads created"
+msgstr "العملاء المحتملون المُنشَؤون في CRM"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run__state__cancelled
+msgid "Cancelled"
+msgstr "ملغي"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_form
+msgid "Candidate"
+msgstr "مرشح"
+
+#. module: ai_leadgen
+#: model:ir.actions.act_window,name:ai_leadgen.ai_leadgen_candidate_action
+#: model:ir.ui.menu,name:ai_leadgen.ai_leadgen_candidate_menu
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_list
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_pivot
+msgid "Candidates"
+msgstr "المرشحون"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__countries
+msgid "Candidates by Arab country"
+msgstr "المرشحون حسب الدولة العربية"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid "Candidates by country"
+msgstr "المرشحون حسب الدولة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_dashboard__comment_risk_zone__caution
+msgid "Caution: fewer replies"
+msgstr "حذر: ردود أقل"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Cleanup"
+msgstr "التنظيف"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/leadgen_source.py:0
+msgid "Closest match found"
+msgstr "أقرب نتيجة مطابقة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_comment_contact_lines
+msgid "Closing Lines"
+msgstr "عبارات الختام"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Closing lines"
+msgstr "عبارات الختام"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__comment_needs_resume
+msgid "Comment Needs Resume"
+msgstr "الرد يحتاج إلى استئناف"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__source_name
+msgid "Community / feed"
+msgstr "المجتمعات / آخر المنشورات"
+
+#. module: ai_leadgen
+#: model:ir.model,name:ai_leadgen.model_res_config_settings
+msgid "Config Settings"
+msgstr "تهيئة الإعدادات"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__configured
+msgid "Configured units"
+msgstr "الوحدات المُعدّة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.leadgen_source_view_form
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.leadgen_source_view_list
+msgid "Confirm"
+msgstr "تأكيد"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__leadgen_source__status__needs_confirm
+msgid "Confirm match"
+msgstr "تأكيد المطابقة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_session__state__connected
+msgid "Connected"
+msgstr "متصل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__failures
+msgid "Consecutive failures"
+msgstr "مرات الفشل المتتالية"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__ai_contact_status
+msgid "Contact Verification"
+msgstr "التحقق من بيانات الاتصال"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__contacts
+msgid "Contacts"
+msgstr "جهات الاتصال"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__country
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Country"
+msgstr "الدولة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__region__unknown
+msgid "Country unknown"
+msgstr "الدولة غير معروفة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__create_uid
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__create_uid
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__create_uid
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__create_uid
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_session__create_uid
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__create_uid
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__create_uid
+msgid "Created by"
+msgstr "أنشئ بواسطة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__create_date
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__create_date
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__create_date
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__create_date
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_session__create_date
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__create_date
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__create_date
+msgid "Created on"
+msgstr "أنشئ في"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_deepseek_daily_budget_usd
+msgid "Daily Budget (USD)"
+msgstr "الميزانية اليومية (دولار أمريكي)"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_dashboard__comment_risk_zone__danger
+msgid "Danger: stopped"
+msgstr "خطر: متوقف"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Data sources"
+msgstr "مصادر البيانات"
+
+#. module: ai_leadgen
+#: model:ir.actions.server,name:ai_leadgen.ai_leadgen_deep_sync_action
+#: model:ir.ui.menu,name:ai_leadgen.ai_leadgen_deep_sync_menu
+msgid "Deep Sync Run"
+msgstr "تشغيل المزامنة العميقة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "DeepSeek"
+msgstr "ديب سيك"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__res_config_settings__ai_leadgen_ai_provider__deepseek
+msgid "DeepSeek (paid per token)"
+msgstr "DeepSeek (مدفوع حسب الاستخدام)"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_deepseek_api_key
+msgid "DeepSeek API Key"
+msgstr "مفتاح API لـ DeepSeek"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_deepseek_model
+msgid "DeepSeek Model"
+msgstr "نموذج DeepSeek"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__res_config_settings__ai_leadgen_deepseek_model__deepseek-v4-pro
+msgid "DeepSeek V4 Pro: stronger, about 4 times the price"
+msgstr "DeepSeek V4 Pro: أقوى، بنحو 4 أضعاف السعر"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_res_config_settings__ai_leadgen_deepseek_thinking
+msgid ""
+"DeepSeek V4 reasons before answering and every reasoning token is billed. "
+"Off is the cheapest and is enough for sorting requests."
+msgstr ""
+"DeepSeek V4 يفكّر قبل الإجابة، وكل وحدة تفكير تُحتسب في التكلفة. الإيقاف هو "
+"الأرخص ويكفي لفرز الطلبات."
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__res_config_settings__ai_leadgen_deepseek_model__deepseek-flash
+msgid ""
+"DeepSeek V4.1 Flash: cheap, about $0.15 / $0.60 per million tokens "
+"(recommended)"
+msgstr ""
+"DeepSeek V4.1 Flash: رخيص، نحو 0.15 / 0.60 دولار لكل مليون وحدة (موصى به)"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__deferred_count
+msgid "Deferred Count"
+msgstr "عدد المؤجَّل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_auto_delete_days
+msgid "Delete Untouched Leads After (days)"
+msgstr "حذف العملاء المحتملين غير المتابَعين بعد (أيام)"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__detail
+msgid "Detail"
+msgstr "التفاصيل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_source_health__status__disabled
+msgid "Disabled"
+msgstr "معطّل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run_line__outcome__discarded
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_list
+msgid "Discarded"
+msgstr "مستبعد"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__discarded_count
+msgid "Discarded Count"
+msgstr "عدد المستبعد"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__discovered
+msgid "Discovered (Arab world)"
+msgstr "مكتشَف (العالم العربي)"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__discovered_at
+msgid "Discovered At"
+msgstr "تاريخ الاكتشاف"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__display_name
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__display_name
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__display_name
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__display_name
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_session__display_name
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__display_name
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__display_name
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__display_name
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "اسم العرض"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run__state__done
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_search
+msgid "Done"
+msgstr "منتهي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run__state__draft
+msgid "Draft"
+msgstr "مسودة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_leadgen_source__sequence
+msgid ""
+"Drag the handle to reorder. The top of the list is polled most often: ranks "
+"1-3 about 3x, ranks 4-6 about 2x."
+msgstr ""
+"اسحب المقبض لإعادة الترتيب. أعلى القائمة يُقرأ أكثر من غيره: المراكز 1-3 نحو"
+" 3 أضعاف، والمراكز 4-6 نحو الضعف."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__dry_run
+msgid "Dry Run"
+msgstr "تشغيل تجريبي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__state__duplicate
+msgid "Duplicate"
+msgstr "مكرر"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__duplicates
+msgid "Duplicates"
+msgstr "المكررات"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__intent_category__erp_buyer
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__ai_intent_category__erp_buyer
+msgid "ERP Buyer"
+msgstr "مشترٍ لنظام ERP"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__erp_buyers
+msgid "ERP buyers"
+msgstr "مشترو ERP"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__emails_found
+msgid "Emails Found"
+msgstr "عناوين البريد التي تم العثور عليها"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__emails_verified
+msgid "Emails Verified"
+msgstr "عناوين البريد الموثّقة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__enabled
+msgid "Enabled"
+msgstr "مفعّل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__sources_total
+msgid "Enabled sources"
+msgstr "المصادر المفعّلة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Engine"
+msgstr "المحرك"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_engine_path
+msgid "Engine Folder"
+msgstr "مجلد المحرك"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__log
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_form
+msgid "Engine Log"
+msgstr "سجل المحرك"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_python_path
+msgid "Engine Python"
+msgstr "Python المحرك"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_run.py:0
+msgid "Engine Python not found: %s. Set it in Settings."
+msgstr "لم يتم العثور على Python المحرك: %s. حدّده في الإعدادات."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__engine_synced
+msgid "Engine Synced"
+msgstr "تمت المزامنة مع المحرك"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_run.py:0
+msgid ""
+"Engine not found: %s/main.py does not exist. Set the engine folder in "
+"Settings."
+msgstr ""
+"لم يتم العثور على المحرك: الملف %s/main.py غير موجود. حدّد مجلد المحرك في "
+"الإعدادات."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/leadgen_source.py:0
+msgid "Engine queue read"
+msgstr "تمت قراءة قائمة انتظار المحرك"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run_line__outcome__error
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_source_health__status__error
+msgid "Error"
+msgstr "خطأ"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__error_count
+msgid "Error Count"
+msgstr "عدد الأخطاء"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_res_config_settings__ai_leadgen_auto_comment_enabled
+msgid ""
+"Every new request from a Facebook group gets its reply planned 10 to 20 "
+"minutes after the post was read. Off: replies are only written, and you plan"
+" each one from the lead."
+msgstr ""
+"كل طلب جديد من مجموعة فيسبوك يُجدول الرد عليه بعد 10 إلى 20 دقيقة من قراءة "
+"المنشور. عند الإيقاف: تُكتب الردود فقط، وتجدول كل رد بنفسك من العميل "
+"المحتمل."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_comment_examples
+msgid "Example Replies"
+msgstr "أمثلة للردود"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Example replies"
+msgstr "أمثلة للردود"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_session__state__expiring
+msgid "Expiring soon"
+msgstr "تنتهي قريباً"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__intent_category__odoo_buyer
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__ai_intent_category__odoo_buyer
+msgid "Explicit Odoo Buyer"
+msgstr "مشترٍ صريح لـ Odoo"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__intent_level__explicit_buyer
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__ai_intent_level__explicit_buyer
+msgid "Explicit buyer"
+msgstr "مشترٍ صريح"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_session__platform__facebook
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__leadgen_source__platform__facebook
+msgid "Facebook"
+msgstr "فيسبوك"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/leadgen_source.py:0
+msgid ""
+"Facebook found no group named \"%s\". Check the spelling or paste the "
+"group's link."
+msgstr "لم يجد فيسبوك مجموعة باسم \"%s\". راجع كتابة الاسم أو الصق رابط المجموعة."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Facebook groups"
+msgstr "مجموعات فيسبوك"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run__source__community
+msgid "Facebook groups (the ones listed in Target Groups)"
+msgstr "مجموعات فيسبوك (المدرجة في المجموعات المستهدفة)"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/leadgen_source.py:0
+msgid ""
+"Facebook returned \"%s\", not exactly what you typed. Check it, then press "
+"Confirm."
+msgstr ""
+"أرجع فيسبوك \"%s\"، وهو ليس مطابقاً تماماً لما كتبته. راجعه ثم اضغط «تأكيد»."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_lead
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_opportunity
+msgid "Facebook, no phone"
+msgstr "فيسبوك، بدون هاتف"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__state__error
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run__state__failed
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__fb_comment_status__failed
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_search
+msgid "Failed"
+msgstr "فشل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__failed
+msgid "Failed jobs"
+msgstr "المهام الفاشلة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_ai_leadgen_source_health__configured
+msgid "Feeds, pages, chats or searches set up for this source."
+msgstr ""
+"الصفحات أو المحادثات أو عمليات البحث أو مصادر المنشورات المُعدّة لهذا "
+"المصدر."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Filters"
+msgstr "عوامل التصفية"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__finished
+msgid "Finished"
+msgstr "انتهى"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_crm_lead__ai_score
+msgid "Fit with our services, from 1 to 10."
+msgstr "مدى التوافق مع خدماتنا، من 1 إلى 10."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_res_config_settings__ai_leadgen_engine_path
+msgid ""
+"Folder that contains the engine's main.py. Empty: the folder this module "
+"ships in."
+msgstr ""
+"المجلد الذي يحتوي على ملف main.py الخاص بالمحرك. فارغ: المجلد المرفق مع هذا "
+"التطبيق."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid ""
+"Forget every lesson the engine drew from its results? It starts again from "
+"the fixed rules."
+msgstr ""
+"هل تريد مسح كل ما استخلصه المحرك من نتائجه؟ سيبدأ من جديد بالقواعد الثابتة."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid "Forget what it learned"
+msgstr "مسح ما تعلّمه"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__leadgen_source__source__engine
+msgid "Found by the engine"
+msgstr "وجدها المحرك"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Free tier, per model per day. The key never leaves the server."
+msgstr "الباقة المجانية، لكل نموذج في اليوم. المفتاح لا يغادر الخادم أبداً."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__freshness
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Freshness"
+msgstr "الحداثة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_lead
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_opportunity
+msgid "From Facebook"
+msgstr "من فيسبوك"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__res_config_settings__ai_leadgen_gemini_model__gemini-2_5-flash
+msgid "Gemini 2.5 Flash: 20 free requests a day"
+msgstr "Gemini 2.5 Flash: 20 طلباً مجانياً في اليوم"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__res_config_settings__ai_leadgen_gemini_model__gemini-3_5-flash-lite
+msgid "Gemini 3.5 Flash Lite: 500 free requests a day (recommended)"
+msgstr "Gemini 3.5 Flash Lite: 500 طلب مجاني في اليوم (موصى به)"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_gemini_api_key
+msgid "Gemini API Key"
+msgstr "مفتاح API لـ Gemini"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_gemini_model
+msgid "Gemini Model"
+msgstr "نموذج Gemini"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__intent_level__general_prospect
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__ai_intent_level__general_prospect
+msgid "General prospect"
+msgstr "عميل محتمل عام"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid ""
+"Generated leads nobody moved out of New or the commented stage are deleted "
+"after these days. 0 keeps them."
+msgstr ""
+"العملاء المحتملون المُنشَؤون آلياً الذين لم ينقلهم أحد من مرحلة «جديد» أو "
+"مرحلة «تم التعليق» يُحذفون بعد هذا العدد من الأيام. القيمة 0 تُبقيهم."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_res_config_settings__ai_leadgen_auto_delete_days
+msgid ""
+"Generated leads still in New or in the commented stage are deleted after "
+"this many days. 0 keeps them forever."
+msgstr ""
+"العملاء المحتملون المُنشَؤون آلياً الذين ما زالوا في مرحلة «جديد» أو مرحلة "
+"«تم التعليق» يُحذفون بعد هذا العدد من الأيام. القيمة 0 تُبقيهم دائماً."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Google Gemini"
+msgstr "جوجل جيميناي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__res_config_settings__ai_leadgen_ai_provider__gemini
+msgid "Google Gemini (free tier)"
+msgstr "Google Gemini (الباقة المجانية)"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Google Places"
+msgstr "أماكن جوجل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_google_places_api_key
+msgid "Google Places API Key"
+msgstr "مفتاح API لـ Google Places"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__name
+msgid "Group Name"
+msgstr "اسم المجموعة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__url
+msgid "Group URL"
+msgstr "رابط المجموعة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.leadgen_source_view_list
+msgid "Group name, e.g. Odoo Egypt"
+msgstr "اسم المجموعة، مثال: Odoo Egypt"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/leadgen_source.py:0
+msgid "Group resolved"
+msgstr "تم جلب رابط المجموعة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__comment_groups_paused
+msgid "Groups with replies paused"
+msgstr "مجموعات توقفت الردود فيها مؤقتاً"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__res_config_settings__ai_leadgen_deepseek_thinking__high
+msgid "High: deeper analysis, many more tokens"
+msgstr "مرتفع: تحليل أعمق، ووحدات أكثر بكثير"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_res_config_settings__ai_leadgen_comment_style_guide
+msgid ""
+"How a reply must read: tone, length, what to say first, what never to say. "
+"The AI reads this before writing every reply."
+msgstr ""
+"كيف يجب أن يكون الرد: الأسلوب، الطول، ما يُقال أولاً، وما لا يُقال أبداً. "
+"يقرأ الذكاء الاصطناعي هذا قبل كتابة كل رد."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_ai_leadgen_source_health__permitted
+msgid "How many of those carry a permission record."
+msgstr "عدد ما له سجل إذن منها."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_leadgen_source__weight
+msgid ""
+"How many times more often than an unranked group the engine reads this one."
+msgstr "عدد مرات قراءة المحرك لهذه المجموعة مقارنةً بمجموعة بلا ترتيب."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "How to reach us"
+msgstr "كيف يتواصل العميل معنا"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__id
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__id
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__id
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__id
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_session__id
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__id
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__id
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__id
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__id
+msgid "ID"
+msgstr "المُعرّف"
+
+#. module: ai_leadgen
+#: model:ir.actions.server,name:ai_leadgen.leadgen_source_import_action
+#: model:ir.ui.menu,name:ai_leadgen.leadgen_source_import_menu
+msgid "Import groups from the engine"
+msgstr "استيراد المجموعات من المحرك"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__ai_intent_category
+msgid "Intent Category"
+msgstr "فئة النية"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__intent_level
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__ai_intent_level
+msgid "Intent Level"
+msgstr "مستوى النية"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__intent_category
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Intent category"
+msgstr "فئة النية"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Intent level"
+msgstr "مستوى النية"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__last_count
+msgid "Items last run"
+msgstr "عناصر آخر تشغيل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_ai_leadgen_run_line__contacts
+msgid "Kinds of verified contact points found."
+msgstr "أنواع وسائل الاتصال الموثّقة التي تم العثور عليها."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__label
+msgid "Label"
+msgstr "التسمية"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__language
+msgid "Language"
+msgstr "اللغة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__freshness__24h
+msgid "Last 24 hours"
+msgstr "آخر 24 ساعة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__freshness__7d
+msgid "Last 7 days"
+msgstr "آخر 7 أيام"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__last_run
+msgid "Last Run"
+msgstr "آخر تشغيل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__last_success
+msgid "Last Success"
+msgstr "آخر نجاح"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__write_uid
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__write_uid
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__write_uid
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__write_uid
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_session__write_uid
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__write_uid
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__write_uid
+msgid "Last Updated by"
+msgstr "آخر تحديث بواسطة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__write_date
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__write_date
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__write_date
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__write_date
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_session__write_date
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__write_date
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__write_date
+msgid "Last Updated on"
+msgstr "آخر تحديث في"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__last_visited
+msgid "Last Visited"
+msgstr "آخر زيارة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__comment_reported_at
+msgid "Last safety report"
+msgstr "آخر تقرير أمان"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__last_error
+msgid "Last sync error"
+msgstr "آخر خطأ في المزامنة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__last_sync
+msgid "Last synchronization"
+msgstr "آخر مزامنة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid "Last synchronization failed:"
+msgstr "فشلت آخر مزامنة:"
+
+#. module: ai_leadgen
+#: model:ir.model,name:ai_leadgen.model_crm_lead
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__lead_id
+msgid "Lead"
+msgstr "العميل المحتمل"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_form
+msgid "Lead Gen Run"
+msgstr "تشغيل توليد العملاء المحتملين"
+
+#. module: ai_leadgen
+#: model:ir.actions.act_window,name:ai_leadgen.ai_leadgen_run_action
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_list
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_search
+msgid "Lead Gen Runs"
+msgstr "تشغيلات توليد العملاء المحتملين"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__state__pushed
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Lead created"
+msgstr "تم إنشاء العميل المحتمل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__limit
+msgid "Limit"
+msgstr "الحد الأقصى"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_session__platform__linkedin
+msgid "LinkedIn"
+msgstr "لينكد إن"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Location"
+msgstr "الموقع"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__log_path
+msgid "Log Path"
+msgstr "مسار السجل"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_session.py:0
+msgid "Log in to %s"
+msgstr "تسجيل الدخول إلى %s"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_session__login_pid
+msgid "Login Pid"
+msgstr "معرّف عملية تسجيل الدخول"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__hours
+msgid "Lookback (hours)"
+msgstr "فترة الرجوع (ساعات)"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__res_config_settings__ai_leadgen_deepseek_thinking__low
+msgid "Low"
+msgstr "منخفض"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__intent_category__maintenance_customization_buyer
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__ai_intent_category__maintenance_customization_buyer
+msgid "Maintenance / Customization Buyer"
+msgstr "مشترٍ للصيانة / التخصيص"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__maintenance_buyers
+msgid "Maintenance / customization buyers"
+msgstr "مشترو الصيانة / التخصيص"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Manage target groups"
+msgstr "إدارة المجموعات المستهدفة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__res_config_settings__ai_leadgen_deepseek_thinking__max
+msgid "Max: deep research, the most tokens"
+msgstr "الأقصى: بحث عميق، وأكبر عدد من الوحدات"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__member_count
+msgid "Member Count"
+msgstr "عدد الأعضاء"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_enrich_min_score
+msgid "Minimum Score"
+msgstr "الحد الأدنى للتقييم"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__name
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__name
+msgid "Name"
+msgstr "الاسم"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_session__needed
+msgid "Needed"
+msgstr "مطلوب"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_session_view_list
+msgid "Needed by your groups"
+msgstr "مطلوبة لمجموعاتك"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__leadgen_source__status__needs_url
+msgid "Needs URL"
+msgstr "يحتاج إلى رابط"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.leadgen_source_view_search
+msgid "Needs attention"
+msgstr "يحتاج إلى انتباه"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__next_retry
+msgid "Next Retry"
+msgstr "المحاولة القادمة"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_ops.py:0
+msgid ""
+"No collection run is scheduled. Enable \"AI Lead Gen: scheduled run\" in "
+"Settings > Technical > Scheduled Actions."
+msgstr ""
+"لا يوجد تشغيل مجدول لجمع البيانات. فعّل \"AI Lead Gen: التشغيل المجدول\" من "
+"الإعدادات > تقني > الإجراءات المجدولة."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/leadgen_source.py:0
+msgid "No group found"
+msgstr "لم يتم العثور على مجموعة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_lead
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_opportunity
+msgid "No phone"
+msgstr "بدون هاتف"
+
+#. module: ai_leadgen
+#: model_terms:ir.actions.act_window,help:ai_leadgen.ai_leadgen_session_action
+msgid "No platform to authorize"
+msgstr "لا توجد منصة تحتاج إلى تسجيل دخول"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__fb_comment_tier__none
+msgid "No reply"
+msgstr "بدون رد"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_session__state__missing
+msgid "Not authorized"
+msgstr "لم يُسجَّل الدخول"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_source_health__status__not_configured
+msgid "Not configured"
+msgstr "غير مُعدّ"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__fb_comment_status__none
+msgid "Not planned"
+msgstr "غير مجدول"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_source_health__status__unknown
+msgid "Not run yet"
+msgstr "لم يُشغَّل بعد"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Odoo buyers"
+msgstr "مشترو Odoo"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__odoo_buyers
+msgid "Odoo-specific buyers"
+msgstr "مشترون يطلبون Odoo تحديداً"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__res_config_settings__ai_leadgen_deepseek_thinking__off
+msgid "Off: cheapest, enough for sorting requests (recommended)"
+msgstr "إيقاف: الأرخص، ويكفي لفرز الطلبات (موصى به)"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__freshness__older
+msgid "Older"
+msgstr "أقدم"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_res_config_settings__ai_leadgen_comment_contact_lines
+msgid ""
+"One closing line per row. {whatsapp} and {website} are replaced by the links"
+" above. The engine picks a different line each time, so two replies never "
+"end the same way."
+msgstr ""
+"عبارة ختام واحدة في كل سطر. يُستبدل {whatsapp} و {website} بالروابط أعلاه. "
+"يختار المحرك عبارة مختلفة كل مرة، فلا ينتهي ردّان بالطريقة نفسها."
+
+#. module: ai_leadgen
+#: model:ir.model.constraint,message:ai_leadgen.constraint_ai_leadgen_source_health_name_uniq
+msgid "One health record per source."
+msgstr "سجل حالة واحد لكل مصدر."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid ""
+"One per row, with {whatsapp} and {website}. A different one is used each "
+"time."
+msgstr ""
+"عبارة في كل سطر، مع {whatsapp} و {website}. تُستخدم عبارة مختلفة كل مرة."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_run.py:0
+msgid "Only a draft run can be started."
+msgstr "لا يمكن بدء إلا تشغيل في حالة المسودة."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_run.py:0
+msgid "Only a running run can be stopped."
+msgstr "لا يمكن إيقاف إلا تشغيل جارٍ."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_leadgen_source__enabled
+msgid "Only active, verified groups are polled by the engine."
+msgstr "المحرك يقرأ المجموعات النشطة والموثّقة فقط."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/crm_lead.py:0
+msgid "Only an administrator can drive the lead-generation engine."
+msgstr "مدير النظام وحده يستطيع التحكم في محرك توليد العملاء المحتملين."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_ops.py:0
+msgid "Only an administrator can report engine operations."
+msgstr "مدير النظام وحده يستطيع إرسال تقارير عمليات المحرك."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_ops.py:0
+msgid "Only failed or waiting candidates can be restarted."
+msgstr "لا يمكن إعادة تشغيل إلا المرشحين الفاشلين أو المنتظرين."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid ""
+"Only leads at or above the minimum score are enriched and can reach CRM. "
+"Facebook-group posts only need to be in scope. No budget or price filter "
+"exists: every price is targeted."
+msgstr ""
+"العملاء المحتملون الذين يبلغ تقييمهم الحد الأدنى أو أكثر هم فقط من تُستكمل "
+"بياناتهم ويمكن أن يصلوا إلى CRM. منشورات مجموعات فيسبوك يكفي أن تكون ضمن "
+"النطاق. لا يوجد فلتر للميزانية أو السعر: كل الأسعار مستهدفة."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_ops.py:0
+#: model:ir.actions.server,name:ai_leadgen.ai_leadgen_dashboard_action
+#: model:ir.ui.menu,name:ai_leadgen.ai_leadgen_ops_menu
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid "Operations"
+msgstr "العمليات"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid ""
+"Optional proxy for the engine's web traffic, to keep this server's IP away "
+"from the platforms."
+msgstr ""
+"بروكسي اختياري لحركة اتصال المحرك بالإنترنت، لإبقاء عنوان IP الخاص بهذا "
+"الخادم بعيداً عن المنصات."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_res_config_settings__ai_leadgen_google_places_api_key
+msgid ""
+"Optional. Phone numbers and websites of businesses from the official Google "
+"Places API."
+msgstr ""
+"اختياري. أرقام هواتف ومواقع الأنشطة التجارية من واجهة Google Places API "
+"الرسمية."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid ""
+"Optional. The official Google Places API (phone numbers and websites of "
+"businesses on maps) needs a Google Cloud billing account, so it is off by "
+"default and the engine uses OpenStreetMap, which has far fewer phone "
+"numbers."
+msgstr ""
+"اختياري. واجهة Google Places API الرسمية (أرقام هواتف ومواقع الأنشطة "
+"التجارية على الخرائط) تحتاج إلى حساب فوترة على Google Cloud، لذلك هي متوقفة "
+"افتراضياً ويستخدم المحرك OpenStreetMap الذي يحتوي على أرقام هواتف أقل بكثير."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__excerpt
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_form
+msgid "Original request (excerpt)"
+msgstr "الطلب الأصلي (مقتطف)"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__outcome
+msgid "Outcome"
+msgstr "النتيجة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__region__non_arab
+msgid "Outside the Arab world"
+msgstr "خارج العالم العربي"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid ""
+"Paid per token: choose the model and how much it thinks. Free Gemini stays "
+"as the fallback when DeepSeek is over budget or out of balance."
+msgstr ""
+"مدفوع حسب الاستخدام: اختر النموذج ومقدار تفكيره. يبقى Gemini المجاني بديلاً "
+"احتياطياً عندما يتجاوز DeepSeek الميزانية أو ينتهي رصيده."
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__fb_comment_status__paused_risk
+msgid "Paused (risk)"
+msgstr "متوقف مؤقتاً (خطر)"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_session__paused_until
+msgid "Paused Until"
+msgstr "متوقف مؤقتاً حتى"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_session__state__paused
+msgid "Paused after a platform warning"
+msgstr "متوقف مؤقتاً بعد تحذير من المنصة"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_ops.py:0
+msgid "Paused until %(until)s UTC: %(reason)s"
+msgstr "متوقف مؤقتاً حتى %(until)s UTC: %(reason)s"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_run.py:0
+msgid ""
+"Paused until %s (UTC): a platform showed a warning and the engine is staying"
+" away."
+msgstr ""
+"متوقف مؤقتاً حتى %s (UTC): أظهرت إحدى المنصات تحذيراً والمحرك يبتعد عنها."
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__state__new
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Pending"
+msgstr "قيد الانتظار"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__pending
+msgid "Pending candidates"
+msgstr "المرشحون قيد الانتظار"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__permission
+msgid "Permission"
+msgstr "الإذن"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__phones_found
+msgid "Phones Found"
+msgstr "الهواتف التي تم العثور عليها"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__phones_verified
+msgid "Phones Verified"
+msgstr "الهواتف الموثّقة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__pid
+msgid "Pid"
+msgstr "معرّف العملية"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_form
+msgid "Plan again"
+msgstr "إعادة الجدولة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_form
+msgid "Plan the reply"
+msgstr "جدولة الرد"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_session__platform
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__platform
+msgid "Platform"
+msgstr "المنصة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_session_view_form
+msgid "Platform Authorization"
+msgstr "جلسة دخول المنصة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_session_view_list
+msgid "Platform Authorizations"
+msgstr "جلسات دخول المنصات"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__weight
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.leadgen_source_view_list
+msgid "Poll weight"
+msgstr "وزن القراءة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__fb_post_url
+msgid "Post Link"
+msgstr "رابط المنشور"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__fb_comment_status__posted
+msgid "Posted"
+msgstr "تم النشر"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__processed
+msgid "Processed candidates"
+msgstr "المرشحون الذين تمت معالجتهم"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Proxy"
+msgstr "البروكسي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_proxy_url
+msgid "Proxy URL"
+msgstr "رابط البروكسي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__published_at
+msgid "Published At"
+msgstr "تاريخ النشر"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Published in 24 hours"
+msgstr "نُشر خلال 24 ساعة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Published in 7 days"
+msgstr "نُشر خلال 7 أيام"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__fresh_24h
+msgid "Published in the last 24 hours"
+msgstr "نُشر خلال آخر 24 ساعة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__fresh_7d
+msgid "Published in the last 7 days"
+msgstr "نُشر خلال آخر 7 أيام"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_list
+msgid "Pushed"
+msgstr "أُرسل إلى CRM"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__pushed_count
+msgid "Pushed Count"
+msgstr "عدد المُرسَل إلى CRM"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run_line__outcome__pushed
+msgid "Pushed to CRM"
+msgstr "أُرسل إلى CRM"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_comment_include_website
+msgid "Put the Website in Replies"
+msgstr "إضافة الموقع الإلكتروني في الردود"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_comment_include_whatsapp
+msgid "Put the WhatsApp Link in Replies"
+msgstr "إضافة رابط واتساب في الردود"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_res_config_settings__ai_leadgen_python_path
+msgid ""
+"Python interpreter of the engine's virtualenv. Empty: <engine "
+"folder>/.venv/bin/python."
+msgstr ""
+"مفسّر Python الخاص بالبيئة الافتراضية للمحرك. فارغ: <مجلد "
+"المحرك>/.venv/bin/python."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Qualification"
+msgstr "التأهيل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__qualified
+msgid "Qualified buyers (AI)"
+msgstr "المشترون المؤهلون (الذكاء الاصطناعي)"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid "Queue"
+msgstr "قائمة الانتظار"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__fb_comment_status__queued
+msgid "Queued"
+msgstr "في قائمة الانتظار"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_session_view_form
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_session_view_list
+msgid "Re-authorize"
+msgstr "إعادة تسجيل الدخول"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__reason
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__reason
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Reason"
+msgstr "السبب"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_form
+msgid "Refresh"
+msgstr "تحديث"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_session_view_form
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_session_view_list
+msgid "Refresh status"
+msgstr "تحديث الحالة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__region
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Region"
+msgstr "المنطقة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__state__rejected
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Rejected"
+msgstr "مرفوض"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__rejected
+msgid "Rejected candidates"
+msgstr "المرشحون المرفوضون"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__unknown_region
+msgid "Rejected: country unknown and not Arabic"
+msgstr "مرفوض: الدولة غير معروفة والمنشور ليس بالعربية"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__outside_region
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+msgid "Rejected: outside the Arab world"
+msgstr "مرفوض: خارج العالم العربي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__rejection_reasons
+msgid "Rejection Reasons"
+msgstr "أسباب الرفض"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/crm_lead.py:0
+msgid ""
+"Replies are stopped for safety. Lift the stop on the Operations screen "
+"first."
+msgstr "الردود متوقفة للأمان. ارفع الإيقاف من شاشة العمليات أولاً."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__comments_today
+msgid "Replies in the last 24 hours"
+msgstr "الردود خلال آخر 24 ساعة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Replies on Facebook posts"
+msgstr "الردود على منشورات فيسبوك"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_max_comments_per_day
+msgid "Replies per Day (maximum)"
+msgstr "عدد الردود في اليوم (الحد الأقصى)"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_ops.py:0
+msgid "Replies resumed"
+msgstr "تم استئناف الردود"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__comment_alert
+msgid "Replies stopped"
+msgstr "تم إيقاف الردود"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__comments_paused
+msgid "Replies stopped by a pause"
+msgstr "ردود أوقفها توقف مؤقت"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__comments_queued
+msgid "Replies waiting"
+msgstr "ردود في الانتظار"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_res_config_settings__ai_leadgen_comment_examples
+msgid ""
+"Replies you like, separated by an empty line. The AI imitates their tone, "
+"never their words."
+msgstr ""
+"ردود تعجبك، يفصل بينها سطر فارغ. يحاكي الذكاء الاصطناعي أسلوبها ولا ينقل "
+"كلماتها أبداً."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid ""
+"Replies you like, separated by an empty line. Their tone is imitated, their "
+"words are not copied."
+msgstr "ردود تعجبك، يفصل بينها سطر فارغ. يُحاكى أسلوبها ولا تُنسخ كلماتها."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__fb_comment_draft
+msgid "Reply"
+msgstr "الرد"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_auto_comment_enabled
+msgid "Reply Automatically"
+msgstr "الرد تلقائياً"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__fb_comment_scheduled_at
+msgid "Reply Planned At"
+msgstr "موعد الرد المجدول"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__fb_comment_posted_at
+msgid "Reply Posted At"
+msgstr "تاريخ نشر الرد"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__fb_comment_tier
+msgid "Reply Priority"
+msgstr "أولوية الرد"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__fb_comment_error
+msgid "Reply Problem"
+msgstr "مشكلة الرد"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__fb_comment_status
+msgid "Reply Status"
+msgstr "حالة الرد"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_comment_style_guide
+msgid "Reply Style"
+msgstr "أسلوب الرد"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_lead
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_opportunity
+msgid "Reply failed or paused"
+msgstr "الرد فشل أو متوقف مؤقتاً"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_form
+msgid "Reply on the post"
+msgstr "الرد على المنشور"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_lead
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_opportunity
+msgid "Reply posted"
+msgstr "تم نشر الرد"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/crm_lead.py:0
+msgid "Reply posted on the Facebook post"
+msgstr "تم نشر الرد على منشور فيسبوك"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_lead
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_search_opportunity
+msgid "Reply queued"
+msgstr "الرد في قائمة الانتظار"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Reply style"
+msgstr "أسلوب الرد"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__ai_source_published
+msgid "Request Published"
+msgstr "تاريخ نشر الطلب"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_form
+msgid "Restart"
+msgstr "إعادة التشغيل"
+
+#. module: ai_leadgen
+#: model:ir.actions.server,name:ai_leadgen.ai_leadgen_candidate_retry_action
+msgid "Restart failed jobs"
+msgstr "إعادة تشغيل المهام الفاشلة"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_ops.py:0
+msgid "Restart queued"
+msgstr "تمت جدولة إعادة التشغيل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__line_ids
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_form
+msgid "Results"
+msgstr "النتائج"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid "Resume replies"
+msgstr "استئناف الردود"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid ""
+"Resume replies? Do it only after you opened Facebook yourself and the "
+"account works normally."
+msgstr ""
+"هل تريد استئناف الردود؟ لا تفعل ذلك إلا بعد أن تفتح فيسبوك بنفسك وتتأكد أن "
+"الحساب يعمل بشكل طبيعي."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_list
+msgid "Retry"
+msgstr "إعادة المحاولة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid "Retry failed jobs"
+msgstr "إعادة محاولة المهام الفاشلة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run_line__outcome__deferred
+msgid "Retry next run"
+msgstr "إعادة المحاولة في التشغيل القادم"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__comment_risk_score
+msgid "Risk score (0-100)"
+msgstr "مؤشر الخطر (0-100)"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__comment_risk_zone
+msgid "Risk zone"
+msgstr "منطقة الخطر"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__run_id
+msgid "Run"
+msgstr "تشغيل"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_run.py:0
+msgid "Run %s"
+msgstr "التشغيل %s"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid "Run now"
+msgstr "تشغيل الآن"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run__state__running
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_search
+msgid "Running"
+msgstr "جارٍ"
+
+#. module: ai_leadgen
+#: model:ir.ui.menu,name:ai_leadgen.ai_leadgen_run_menu
+msgid "Runs"
+msgstr "التشغيلات"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_dashboard__comment_risk_zone__safe
+msgid "Safe"
+msgstr "آمن"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid ""
+"Saves the settings, then sends one tiny real request to each model of the "
+"chosen provider."
+msgstr ""
+"يحفظ الإعدادات، ثم يرسل طلباً حقيقياً صغيراً جداً إلى كل نموذج لدى المزوّد "
+"المختار."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__next_runs
+msgid "Scheduled runs"
+msgstr "التشغيلات المجدولة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__score
+msgid "Score"
+msgstr "التقييم"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_ai_leadgen_run__dry_run
+msgid "Scrape and analyse, but create nothing in CRM."
+msgstr "يجمع ويحلل، لكن لا ينشئ شيئاً في CRM."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.leadgen_source_view_form
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.leadgen_source_view_list
+msgid "Search / Resolve URL"
+msgstr "بحث / جلب الرابط"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__resolve_note
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.leadgen_source_view_form
+msgid "Search result"
+msgstr "نتيجة البحث"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid "Self-learning"
+msgstr "التعلّم الذاتي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__sequence
+msgid "Sequence"
+msgstr "التسلسل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__fb_comment_tier__high_lead
+msgid "Service request"
+msgstr "طلب خدمة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__session_warning
+msgid "Session Warning"
+msgstr "تحذير جلسة الدخول"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_session_view_list
+msgid "Session age (days)"
+msgstr "عمر جلسة الدخول (أيام)"
+
+#. module: ai_leadgen
+#: model:ir.actions.act_window,name:ai_leadgen.ai_leadgen_config_settings_action
+#: model:ir.ui.menu,name:ai_leadgen.ai_leadgen_config_settings_menu
+msgid "Settings"
+msgstr "الإعدادات"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.crm_lead_view_form
+msgid "Skip"
+msgstr "تخطي"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_source_health__status__skipped
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__fb_comment_status__skipped
+msgid "Skipped"
+msgstr "تم تخطيه"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/crm_lead.py:0
+msgid "Skipped by %s"
+msgstr "تم تخطيه بواسطة %s"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__intent_category__software_dev_buyer
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__ai_intent_category__software_dev_buyer
+msgid "Software Development Buyer"
+msgstr "مشترٍ لتطوير البرمجيات"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__software_buyers
+msgid "Software development buyers"
+msgstr "مشترو تطوير البرمجيات"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__source
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__source
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__source
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__source
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_search
+msgid "Source"
+msgstr "المصدر"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__url
+msgid "Source URL"
+msgstr "رابط المصدر"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__name
+msgid "Source key"
+msgstr "مفتاح المصدر"
+
+#. module: ai_leadgen
+#: model:ir.actions.act_window,name:ai_leadgen.ai_leadgen_source_health_action
+#: model:ir.ui.menu,name:ai_leadgen.ai_leadgen_source_health_menu
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_source_health_view_list
+msgid "Sources"
+msgstr "المصادر"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__sources_unconfigured
+msgid "Sources needing configuration"
+msgstr "مصادر تحتاج إلى إعداد"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__sources_connected
+msgid "Sources working"
+msgstr "المصادر العاملة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_form
+msgid "Start"
+msgstr "بدء"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid ""
+"Start a run over all enabled sources (Facebook groups, Telegram, maps)? It "
+"uses your AI quota."
+msgstr ""
+"هل تريد بدء تشغيل على كل المصادر المفعّلة (مجموعات فيسبوك، تيليجرام، "
+"الخرائط)؟ سيستهلك من حصة الذكاء الاصطناعي لديك."
+
+#. module: ai_leadgen
+#: model_terms:ir.actions.act_window,help:ai_leadgen.ai_leadgen_run_action
+msgid "Start your first lead generation run"
+msgstr "ابدأ أول تشغيل لتوليد العملاء المحتملين"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__started
+msgid "Started"
+msgstr "بدأ"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__state
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_session__state
+msgid "State"
+msgstr "الحالة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__state
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__status
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__status
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_candidate_view_search
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_search
+msgid "Status"
+msgstr "الحالة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_form
+msgid "Stop"
+msgstr "إيقاف"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_run_view_form
+msgid "Stop the engine now? Work already done is kept."
+msgstr "هل تريد إيقاف المحرك الآن؟ ما تم إنجازه يبقى محفوظاً."
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__intent_level__strong_intent
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__ai_intent_level__strong_intent
+msgid "Strong purchase intent"
+msgstr "نية شراء قوية"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__summary
+msgid "Summary"
+msgstr "الملخص"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run__summary_path
+msgid "Summary Path"
+msgstr "مسار الملخص"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__leadgen_source__status__off
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.leadgen_source_view_search
+msgid "Switched off"
+msgstr "متوقف"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.leadgen_source_view_form
+msgid "Target Group"
+msgstr "مجموعة مستهدفة"
+
+#. module: ai_leadgen
+#: model:ir.actions.act_window,name:ai_leadgen.leadgen_source_action
+#: model:ir.ui.menu,name:ai_leadgen.leadgen_source_menu
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.leadgen_source_view_list
+msgid "Target Groups"
+msgstr "المجموعات المستهدفة"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Target groups"
+msgstr "المجموعات المستهدفة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__fb_comment_tier__inquiry
+msgid "Technical question"
+msgstr "سؤال تقني"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_run__source__telegram
+msgid "Telegram (authorized communities and direct submissions)"
+msgstr "تيليجرام (المجتمعات المسجَّل الدخول إليها والطلبات المباشرة)"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Test AI connection"
+msgstr "اختبار اتصال الذكاء الاصطناعي"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Test the connection"
+msgstr "اختبار الاتصال"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid ""
+"The AI reads this before it writes any reply. Change it to change how every "
+"new reply reads."
+msgstr ""
+"يقرأ الذكاء الاصطناعي هذا قبل كتابة أي رد. غيّره لتغيير أسلوب كل رد جديد."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/res_config_settings.py:0
+msgid "The AI test could not run: %s"
+msgstr "تعذّر تشغيل اختبار الذكاء الاصطناعي: %s"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_leadgen_source__verified
+msgid ""
+"The URL is a direct group link: pasted by you, found by Search / Resolve URL"
+" with an exact name match, or confirmed by you."
+msgstr ""
+"الرابط هو رابط مباشر للمجموعة: لصقته أنت، أو وجده «بحث / جلب الرابط» بتطابق "
+"تام مع الاسم، أو أكدته أنت."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_crm_lead__fb_comment_draft
+msgid ""
+"The comment exactly as it is posted. You can edit it while it is queued."
+msgstr "التعليق كما سيُنشر تماماً. يمكنك تعديله ما دام في قائمة الانتظار."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/leadgen_source.py:0
+msgid "The engine did not answer within %s seconds and was stopped."
+msgstr "لم يستجب المحرك خلال %s ثانية وتم إيقافه."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_res_config_settings__ai_leadgen_max_comments_per_day
+msgid ""
+"The engine never posts more than this in 24 hours, and posts fewer whenever "
+"its risk score rises."
+msgstr ""
+"لا ينشر المحرك أكثر من هذا العدد خلال 24 ساعة، وينشر أقل كلما ارتفع مؤشر "
+"الخطر."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_res_config_settings__ai_leadgen_deepseek_daily_budget_usd
+msgid ""
+"The engine stops using DeepSeek for the rest of the day when its estimated "
+"spend reaches this amount."
+msgstr ""
+"يتوقف المحرك عن استخدام DeepSeek لبقية اليوم عندما يبلغ إنفاقه التقديري هذا "
+"المبلغ."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/leadgen_source.py:0
+msgid "The engine's group queue cannot be read: %s"
+msgstr "تعذّرت قراءة قائمة انتظار المجموعات لدى المحرك: %s"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_leadgen_source__engine_synced
+msgid "The engine's queue holds this group's current settings."
+msgstr "قائمة انتظار المحرك تحتوي على الإعدادات الحالية لهذه المجموعة."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid ""
+"The groups the engine reads, ranked by drag and drop. The top of the list is"
+" read most often."
+msgstr ""
+"المجموعات التي يقرؤها المحرك، مرتبة بالسحب والإفلات. أعلى القائمة يُقرأ أكثر"
+" من غيره."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "The links a reply may end with."
+msgstr "الروابط التي يمكن أن ينتهي بها الرد."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_ai_leadgen_session__paused_until
+msgid "The platform showed a warning: the engine stays away until then."
+msgstr "أظهرت المنصة تحذيراً: المحرك يبتعد عنها حتى ذلك الوقت."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/crm_lead.py:0
+msgid "The post got too old while replies were stopped."
+msgstr "أصبح المنشور قديماً جداً أثناء توقف الردود."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/crm_lead.py:0
+msgid "The report must be a dictionary."
+msgstr "يجب أن يكون التقرير من نوع قاموس (dictionary)."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/leadgen_source.py:0
+msgid "The search failed (exit code %s)."
+msgstr "فشل البحث (رمز الخروج %s)."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_ops.py:0
+msgid "The snapshot must be a dictionary."
+msgstr "يجب أن تكون اللقطة من نوع قاموس (dictionary)."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_ops.py:0
+msgid "There are no failed or waiting candidates."
+msgstr "لا يوجد مرشحون فاشلون أو منتظرون."
+
+#. module: ai_leadgen
+#: model:ir.model.constraint,message:ai_leadgen.constraint_ai_leadgen_session_platform_uniq
+msgid "There is one authorization record per platform."
+msgstr "لكل منصة سجل جلسة دخول واحد."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_deepseek_thinking
+msgid "Thinking"
+msgstr "التفكير"
+
+#. module: ai_leadgen
+#: model:ir.model.constraint,message:ai_leadgen.constraint_leadgen_source_url_uniq
+msgid "This group is already in the list."
+msgstr "هذه المجموعة موجودة بالفعل في القائمة."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/crm_lead.py:0
+msgid "This reply is already posted."
+msgstr "هذا الرد منشور بالفعل."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_session.py:0
+msgid ""
+"This server has no screen to open a login window on. Run the login on a computer with a screen:\n"
+"python main.py login --platform %(platform)s\n"
+"then copy data/sessions/%(platform)s.json and data/sessions/%(platform)s.meta.json to the server."
+msgstr ""
+"هذا الخادم ليس له شاشة لفتح نافذة تسجيل الدخول. نفّذ تسجيل الدخول على جهاز له شاشة:\n"
+"python main.py login --platform %(platform)s\n"
+"ثم انسخ الملفين data/sessions/%(platform)s.json و data/sessions/%(platform)s.meta.json إلى الخادم."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_candidate__name
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_run_line__title
+msgid "Title"
+msgstr "العنوان"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "Tone, length, what to say first, what never to say"
+msgstr "الأسلوب، الطول، ما يُقال أولاً، وما لا يُقال أبداً"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__state__stale
+msgid "Too old"
+msgstr "قديم جداً"
+
+#. module: ai_leadgen
+#: model_terms:ir.actions.act_window,help:ai_leadgen.leadgen_source_action
+msgid ""
+"Type a group name and press Search / Resolve URL, or paste the group link. Drag the handle to rank\n"
+"                a group: the top of the list is read most often. Only active, verified groups are polled."
+msgstr ""
+"اكتب اسم المجموعة واضغط «بحث / جلب الرابط»، أو الصق رابط المجموعة. اسحب المقبض لترتيب\n"
+"                المجموعة: أعلى القائمة يُقرأ أكثر من غيره. المحرك يقرأ المجموعات النشطة والموثّقة فقط."
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/leadgen_source.py:0
+msgid "Type the group name first."
+msgstr "اكتب اسم المجموعة أولاً."
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__freshness__unknown
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_session__state__unknown
+msgid "Unknown"
+msgstr "غير معروف"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/crm_lead.py:0
+msgid "Unknown reply status: %s"
+msgstr "حالة رد غير معروفة: %s"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__intent_level__unqualified
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__ai_intent_level__unqualified
+msgid "Unqualified"
+msgstr "غير مؤهل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__intent_category__unqualified
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__crm_lead__ai_intent_category__unqualified
+msgid "Unqualified Candidate"
+msgstr "مرشح غير مؤهل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_leadgen_source__verified
+msgid "Verified"
+msgstr "موثّق"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__emails_verified
+msgid "Verified emails (syntax + domain)"
+msgstr "عناوين البريد الموثّقة (الصيغة + النطاق)"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__phones_verified
+msgid "Verified phone numbers"
+msgstr "أرقام الهواتف الموثّقة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_session__state__logging_in
+msgid "Waiting for your login"
+msgstr "في انتظار تسجيل دخولك"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_candidate__state__deferred
+msgid "Waiting to retry"
+msgstr "في انتظار إعادة المحاولة"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_website_link
+msgid "Website"
+msgstr "الموقع الإلكتروني"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__learned_notes
+msgid "What the engine learned from its results"
+msgstr "ما تعلّمه المحرك من نتائجه"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_crm_lead__ai_contact_status
+msgid ""
+"What was actually checked. A valid phone number is not a confirmed WhatsApp "
+"account."
+msgstr "ما تم التحقق منه فعلاً. رقم الهاتف الصحيح ليس حساب واتساب مؤكداً."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_res_config_settings__ai_leadgen_whatsapp_link
+msgid "WhatsApp Link"
+msgstr "رابط واتساب"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_crm_lead__ai_whatsapp_pitch
+msgid "WhatsApp Pitch"
+msgstr "رسالة واتساب التعريفية"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_crm_lead__ai_source_published
+msgid "When the source published the request (UTC)."
+msgstr "وقت نشر الطلب في المصدر (UTC)."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid ""
+"Where the engine is installed on this server. Leave empty to use the folder "
+"this module ships in."
+msgstr ""
+"مكان تثبيت المحرك على هذا الخادم. اتركه فارغاً لاستخدام المجلد المرفق مع هذا"
+" التطبيق."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid ""
+"Which provider judges each request. Gemini has a free daily quota. DeepSeek "
+"is paid per token and is never used unless it is chosen here."
+msgstr ""
+"المزوّد الذي يحكم على كل طلب. لدى Gemini حصة يومية مجانية. أما DeepSeek "
+"فمدفوع حسب الاستخدام ولا يُستخدم أبداً إلا إذا اخترته هنا."
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_res_config_settings__ai_leadgen_ai_provider
+msgid ""
+"Which provider judges the requests. Gemini has a free tier. DeepSeek is paid"
+" per token and is only used when you choose it here."
+msgstr ""
+"المزوّد الذي يحكم على الطلبات. لدى Gemini باقة مجانية. أما DeepSeek فمدفوع "
+"حسب الاستخدام ولا يُستخدم إلا إذا اخترته هنا."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.ai_leadgen_dashboard_view_form
+msgid "Why candidates were rejected or failed"
+msgstr "أسباب رفض المرشحين أو فشلهم"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_dashboard__comment_risk_factors
+msgid "Why this score"
+msgstr "سبب هذا التقييم"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,field_description:ai_leadgen.field_ai_leadgen_source_health__permitted
+msgid "With permission"
+msgstr "بإذن"
+
+#. module: ai_leadgen
+#: model:ir.model.fields.selection,name:ai_leadgen.selection__ai_leadgen_source_health__status__ok
+msgid "Working"
+msgstr "يعمل"
+
+#. module: ai_leadgen
+#: model:ir.model.fields,help:ai_leadgen.field_ai_leadgen_session__needed
+msgid "Your configured groups are on this platform."
+msgstr "مجموعاتك المُعدّة موجودة على هذه المنصة."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "http://user:pass@host:port"
+msgstr "http://user:pass@host:port"
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "https://..."
+msgstr "https://..."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.res_config_settings_view_form
+msgid "https://wa.me/2010..."
+msgstr "https://wa.me/2010..."
+
+#. module: ai_leadgen
+#: model_terms:ir.ui.view,arch_db:ai_leadgen.leadgen_source_view_list
+msgid ""
+"https://www.facebook.com/groups/... (or leave empty and search by name)"
+msgstr "https://www.facebook.com/groups/... (أو اتركه فارغاً وابحث بالاسم)"
+
+#. module: ai_leadgen
+#. odoo-python
+#: code:addons/ai_leadgen/models/ai_leadgen_ops.py:0
+msgid "never"
+msgstr "أبداً"
+
+#. module: ai_leadgen
+#: model:crm.stage,name:ai_leadgen.crm_stage_commented
+msgid "تم التعليق"
+msgstr "تم التعليق"

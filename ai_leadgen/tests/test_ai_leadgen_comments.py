@@ -145,6 +145,23 @@ class TestAiLeadgenComments(BaseCommon):
         dashboard.invalidate_recordset()
         self.assertEqual((dashboard.comments_today, dashboard.comments_cap_today, dashboard.comment_risk_zone), (2, 5, 'safe'))
 
+    # ------------------------------------------------------------------ learning
+    def test_learning_feedback_tells_what_became_of_each_lead(self):
+        moved = self.lead(1, stage_id=self.qualified.id, fb_comment_status='posted')
+        untouched = self.lead(2)
+        lost = self.lead(3)
+        lost.action_set_lost()
+        rows = {row['id']: row for row in self.Lead.ai_leadgen_learning_feedback()}
+        self.assertTrue(rows[moved.id]['advanced'])
+        self.assertEqual((rows[untouched.id]['advanced'], rows[untouched.id]['lost'], rows[lost.id]['lost']), (False, False, True))
+        self.Lead.ai_leadgen_report_learning('- buyers name their Odoo version')
+        dashboard = self.env['ai.leadgen.dashboard']._the_dashboard()
+        self.assertIn('Odoo version', dashboard.learned_notes)
+        dashboard.action_forget_learning()
+        dashboard.invalidate_recordset()
+        self.assertFalse(dashboard.learned_notes)
+        self.assertTrue(self.Lead.ai_leadgen_engine_config()['learning_reset_token'])
+
     # ------------------------------------------------------------------ cleanup
     def test_cleanup_deletes_only_old_untouched_generated_leads(self):
         old_new = self.lead(1)

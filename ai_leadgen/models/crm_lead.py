@@ -112,7 +112,27 @@ class CrmLead(models.Model):
             'won_examples': advanced.mapped('fb_comment_draft'),  # replies whose lead moved forward in the pipeline
             'kill': self._fb_comment_pause_reason() or '',
             'resume_token': get(RESUME_PARAM) or '',
+            'learning_reset_token': get('ai_leadgen.learning_reset_token') or '',
+            'auto_delete_days': int(get('ai_leadgen.auto_delete_days') or 3),
         }
+
+    @api.model
+    def ai_leadgen_learning_feedback(self, limit=300):
+        """What became of the generated leads, for the engine to learn from: which moved forward, which were lost or archived.
+        A lead missing from this list was deleted."""
+        self._ai_leadgen_check_engine()
+        early = self._ai_leadgen_early_stages()
+        leads = self.sudo().with_context(active_test=False).search([('ai_score', '>', 0)], order='id desc', limit=limit)
+        return [{'id': lead.id, 'advanced': lead.stage_id not in early, 'won': bool(lead.stage_id.is_won), 'active': lead.active,
+                 'lost': bool(not lead.active and lead.probability == 0), 'lost_reason': lead.lost_reason_id.name or '',
+                 'reply_status': lead.fb_comment_status or 'none', 'tier': lead.fb_comment_tier or 'none'} for lead in leads]
+
+    @api.model
+    def ai_leadgen_report_learning(self, notes):
+        """The lessons the engine drew from its own results, shown on the Operations screen."""
+        self._ai_leadgen_check_engine()
+        self.env['ir.config_parameter'].sudo().set_param('ai_leadgen.learned_notes', str(notes or '')[:6000])
+        return True
 
     @api.model
     def ai_leadgen_comment_queue(self, limit=10):
